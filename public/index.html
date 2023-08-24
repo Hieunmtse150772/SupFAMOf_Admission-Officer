@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <link rel="icon" href="%PUBLIC_URL%/favicon.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
+  <title>SupFAMOf Dashboard</title>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script>
+    window.addEventListener('error', function (e) {
+      console.error(e.message);
+      // prevent React's listener from firing
+      e.stopImmediatePropagation();
+      // prevent the browser's console error message
+      e.preventDefault();
+    });</script>
+</body>
+
+</html>
