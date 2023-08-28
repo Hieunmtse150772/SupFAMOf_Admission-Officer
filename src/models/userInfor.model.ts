@@ -1,26 +1,23 @@
 type UserInfo = {
-  access_token: string;
-  account: {
-    id: number,
-    roleId: number,
-    accountInformationId: number,
-    name: string,
-    email: string,
-    phone: string,
-    dateOfBirth: string,
-    imgUrl: string,
-    postPermission: boolean,
-    isPremium: boolean,
-    isActive: boolean,
-    createAt: string,
-    updateAt: string,
-    accountMonthlyReport: {
-      totalPost: number,
-      totalSalary: number
-    },
-    accountInformations: AccountInfo[]
-  }
-};
+  id: number,
+  roleId: number,
+  accountInformationId: number,
+  name: string,
+  email: string,
+  phone: string,
+  dateOfBirth: string,
+  imgUrl: string,
+  postPermission: boolean,
+  isPremium: boolean,
+  isActive: boolean,
+  createAt: string,
+  updateAt: string,
+  accountMonthlyReport: {
+    totalPost: number,
+    totalSalary: number
+  },
+  accountInformations: AccountInfo[]
+}
 type AccountInfo = {
   id: 0,
   accountId: 0,

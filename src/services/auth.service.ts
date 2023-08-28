@@ -1,6 +1,7 @@
 // AuthService.ts
 import { AxiosResponse } from 'axios';
 
+import GetUserInfo from 'dtos/getUserInfo.dto';
 import LoginUser from 'dtos/login.user.dto';
 import LoginGoogleDto from 'dtos/loginGoogle.dto';
 import LoginDto from '../dtos/login.dto';
@@ -16,11 +17,11 @@ export const authService = {
     const url = '/admission/admission-account/login';
     return axiosClient.post(url, { ...payload });
   },
-  getUserProfile: (): Promise<AxiosResponse<LoginUser>> => {
+  getUserProfile: (): Promise<AxiosResponse<GetUserInfo>> => {
     const url = '/admission/admission-account/getAccountByToken/authorization';
     return axiosClient.get(url);
   },
-  updateUserProfile: (): Promise<AxiosResponse<LoginUser>> => {
+  updateUserProfile: (): Promise<AxiosResponse<GetUserInfo>> => {
     const url = '/admission/admission-account/update';
     return axiosClient.put(url);
   },

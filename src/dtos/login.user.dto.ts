@@ -1,5 +1,5 @@
-import UserInfo from "models/userInfor.model";
+import UserInfoLogin from "models/userInforLogin.model";
 
 export default interface LoginUser {
-    data: UserInfo;
+    data: UserInfoLogin;
 }

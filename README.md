@@ -34,7 +34,6 @@ Its clean codebase and design significantly reduce development costs, time, and 
   </li>
 </ul>
 
-
 <h2>Free vs Pro</h2>
 <table>
 <tr>
@@ -165,7 +164,6 @@ Its clean codebase and design significantly reduce development costs, time, and 
 </td>
 </tr>
 </table>
-
 
 <h3>Download</h3>
 Download From <a href="https://ui-lib.com/downloads/uko-lite-react-client-admin-dashboard/">official website</a>

@@ -21,7 +21,7 @@ const Wrapper = styled(Box)(({ theme }) => ({
 
 const DashboardLayout: FC = ({ children }) => {
   const [showMobileSideBar, setShowMobileSideBar] = useState(false);
-  const userInfo = useAppSelector(state => state.auth.user);
+  const userInfo = useAppSelector(state => state.auth.userInfo);
   return (
     <Fragment>
       <DashboardSidebar

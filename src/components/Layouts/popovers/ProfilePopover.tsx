@@ -60,7 +60,7 @@ const ProfilePopover: FC<ProfilePopoverProps> = (userInfo) => {
           }}
         >
           <UkoAvatar
-            src={userInfo?.userInfo?.account?.imgUrl ? userInfo?.userInfo?.account?.imgUrl : "/static/avatar/001-man.svg"}
+            src={userInfo?.userInfo?.imgUrl ? userInfo?.userInfo?.imgUrl : "/static/avatar/001-man.svg"}
             sx={{ width: 30, height: 30, ml: 1 }}
           />
         </Badge>
@@ -83,7 +83,7 @@ const ProfilePopover: FC<ProfilePopoverProps> = (userInfo) => {
             <Box ml={1}>
               <H6>Hieunmt</H6>
               <Tiny display="block" fontWeight={500} color="text.disabled">
-                {userInfo?.userInfo?.account?.email}
+                {userInfo?.userInfo?.email}
               </Tiny>
             </Box>
           </FlexBox>

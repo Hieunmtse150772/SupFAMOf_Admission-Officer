@@ -1,15 +1,17 @@
 import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import { signInWithPopup } from 'firebase/auth';
+import UserInfo from 'models/userInfor.model';
+import UserInfoLogin from 'models/userInforLogin.model';
 import { RootState } from '../app/store';
 import AppConstants from '../enums/app';
 import { auth, provider } from '../firebase';
-import UserInfo from '../models/userInfor.model';
 import { authService } from '../services/auth.service';
 
 interface AuthState {
   isAuthenticated: boolean;
-  user: UserInfo | null;
+  user: UserInfoLogin | null;
+  userInfo: UserInfo | null;
   loading: boolean,
   error: string | null,
   // Thêm các trường khác liên quan đến người dùng nếu cần thiết
@@ -18,6 +20,7 @@ interface AuthState {
 const initialState: AuthState = {
   isAuthenticated: false,
   user: null,
+  userInfo: null,
   loading: false,
   error: ''
 }
@@ -99,7 +102,8 @@ export const authSlice = createSlice({
       .addMatcher(
         isAnyOf(getUserProfile.fulfilled, updateUserProfile.fulfilled),
         (state, action) => {
-          state.user = action.payload.data;
+          state.userInfo = action.payload.data;
+          console.log("action.payload.data: ", action.payload.data)
           state.error = '';
           state.loading = false;
         },

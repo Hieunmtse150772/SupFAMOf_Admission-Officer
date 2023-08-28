@@ -11,7 +11,7 @@ import Gallery from "components/userProfile/Gallery";
 import Profile from "components/userProfile/Profile";
 import AppConstants from "enums/app";
 import useTitle from "hooks/useTitle";
-import UserInfo from "models/userInfor.model";
+import UserInfo from "models/userInforLogin.model";
 import { FC, SyntheticEvent, useEffect, useState } from "react";
 
 // styled components
@@ -56,7 +56,10 @@ const UserProfile: FC = () => {
   // change navbar title
   useTitle("User Profile");
   // const [userInfo, setUserInfo] = useState<UserInfo>()
-  const userInfo = useAppSelector(state => state.auth.user)
+  const userInfo = useAppSelector(state => state.auth.userInfo)
+  useEffect(() => {
+    console.log("userInfo profile: ", userInfo)
+  }, [userInfo])
   const [value, setValue] = useState("1");
   const storedValue = localStorage.getItem(AppConstants.USER);
   if (storedValue !== null) {
@@ -94,7 +97,7 @@ const UserProfile: FC = () => {
           >
             <ContentWrapper>
               <UkoAvatar
-                src={userInfo?.account?.imgUrl}
+                src={userInfo?.imgUrl}
                 sx={{
                   border: 4,
                   width: 100,
@@ -104,7 +107,7 @@ const UserProfile: FC = () => {
               />
 
               <Box marginLeft={3} marginTop={3}>
-                <H3 lineHeight={1.2}>{userInfo?.account?.name}</H3>
+                <H3 lineHeight={1.2}>{userInfo?.name}</H3>
                 <Small color="text.disabled">UI Designer</Small>
               </Box>
             </ContentWrapper>
