@@ -1,3 +1,5 @@
+import { LocalizationProvider } from "@mui/lab";
+import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { StyledEngineProvider } from "@mui/material/styles";
 import { unwrapResult } from "@reduxjs/toolkit";
@@ -7,6 +9,7 @@ import { getUserProfile } from "features/authSlice";
 import { FC, useEffect } from "react";
 import { Toaster } from "react-hot-toast";
 import { useNavigate, useRoutes } from "react-router-dom";
+import './app.scss';
 import routes from "./routes";
 import { ukoTheme } from "./theme";
 
@@ -41,9 +44,13 @@ const App: FC = () => {
   return (
     <StyledEngineProvider injectFirst>
       <ThemeProvider theme={appTheme}>
-        <CssBaseline />
-        <Toaster toastOptions={toasterOptions} />
-        {allPages}
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+
+          <CssBaseline />
+          <Toaster toastOptions={toasterOptions} />
+          {allPages}
+        </LocalizationProvider>
+
       </ThemeProvider>
     </StyledEngineProvider>
   );

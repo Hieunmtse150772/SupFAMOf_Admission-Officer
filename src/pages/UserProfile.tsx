@@ -58,13 +58,11 @@ const UserProfile: FC = () => {
   // const [userInfo, setUserInfo] = useState<UserInfo>()
   const userInfo = useAppSelector(state => state.auth.userInfo)
   useEffect(() => {
-    console.log("userInfo profile: ", userInfo)
   }, [userInfo])
   const [value, setValue] = useState("1");
   const storedValue = localStorage.getItem(AppConstants.USER);
   if (storedValue !== null) {
     const useInfo: UserInfo = JSON.parse(storedValue);
-    console.log("userInfo: ", useInfo)
     // setUserInfo(useInfo);
   } else {
     console.error("item is not found in local storage");

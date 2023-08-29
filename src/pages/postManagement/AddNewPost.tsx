@@ -1,30 +1,32 @@
 
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import DeleteIcon from '@mui/icons-material/Delete';
 import {
     Autocomplete,
     Box,
     Button,
-    Card,
+    Checkbox,
     CircularProgress,
     Grid,
     Switch,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
     Tooltip,
     styled
 } from "@mui/material";
-import { unwrapResult } from '@reduxjs/toolkit';
-import { useAppSelector } from 'app/hooks';
-import { useAppDispatch } from 'app/store';
-import background from 'assets/background/background-1.jpg';
+import { Col, DatePicker, InputNumber, Row, Slider, TimePicker } from 'antd';
 import LightTextField from "components/LightTextField";
 import { Small, Tiny } from "components/Typography";
-import { createPost } from 'features/postSlice';
-import { getPostTitle } from 'features/postTitleSlice';
 import useTitle from "hooks/useTitle";
-import PostOptionI from 'models/postOption.model';
-import { FC, Fragment, useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import DeleteIcon from 'icons/DeleteIcon';
+import { FC, Fragment } from "react";
+import { Controller } from "react-hook-form";
 import './styles.scss';
+import useAddNewPostHook from './useAddNewPostHook';
+
 // styled components
 const SwitchWrapper = styled(Box)(() => ({
     display: "flex",
@@ -33,313 +35,385 @@ const SwitchWrapper = styled(Box)(() => ({
     width: "100%",
     marginTop: 10,
 }));
-interface AdditionalPosition {
-    postPosition: string;
-    number: number;
-    salary: number;
-}
+
 const initialValues = {
     postTitle: "",
     description: "",
 };
 const AddNewPost: FC = () => {
-    const dispatch = useAppDispatch();
-    // change navbar title
-    useTitle("Add New User");
-    const {
-        handleSubmit,
-        control,
-        formState: { errors },
-        getValues, trigger
-    } = useForm();
-    const postTitleOptionsAPI = useAppSelector(state => state.postTitle.postTitleOption)
-    const [postTitleOptions, setPostTitleOptions] = useState<Pick<PostOptionI, 'id' | 'postTitleDescription' | 'postTitleType'>[]>([])
-    console.log("postTitleOptions: ", postTitleOptions)
-    const [error, setError] = useState<String>('');
-    const onSubmit = (data: any) => {
-        const result = dispatch(createPost(data)).then(() => {
-            console.log(result);
-        })
-        console.log("data: ", data);
-        // You can perform your submission logic here
-    };
-    const [additionalPositions, setAdditionalPositions] = useState<AdditionalPosition[]>([{
-        postPosition: '',
-        number: 0,
-        salary: 0,
-    }]);
+    const { handler, props } = useAddNewPostHook();
+    const { loading, open, options, control, errors, piority, additionalPositions, error, additionalTrainingPositions } = props
 
-    const handleAddPosition = () => {
-        const newPosition = {
-            postPosition: '',
-            number: 0,
-            salary: 0,
-        };
-        setError('');
-        setAdditionalPositions([...additionalPositions, newPosition]);
-    };
-    const handleDeletePosition = (indexToDelete: number) => {
-        if (additionalPositions.length === 1) {
-            setError('Need at least 1 position to make a post')
-        } else {
-            setError('')
-            const updatedPositions = additionalPositions.filter((_, index) => index !== indexToDelete);
-            setAdditionalPositions(updatedPositions);
-        }
+    useTitle("Add New Post");
 
-    };
-    const featchPostTitleOption = async () => {
-        const result = await dispatch(getPostTitle());
-        unwrapResult(result)
-        if (result) {
-            setPostTitleOptions(postTitleOptionsAPI);
-        }
-        console.log('postTitleOption', result)
-    }
-    const mappedOptions = postTitleOptionsAPI?.map((option) => ({
-        label: option.postTitleDescription,
-        id: option.id
-    }));
-    useEffect(() => {
-        featchPostTitleOption()
-        // setPostTitleOption1(postTitleOptionsAPI?.map((option) => ({
-        //     label: option.postTitleDescription,
-        //     id: option.id
-        // })))
-        console.log("posssss: ", postTitleOptionsAPI?.map((option) => ({
-            label: option.postTitleDescription,
-            id: option.id
-        })));
-    }, [])
-    const [open, setOpen] = useState(false);
-    const [options, setOptions] = useState<readonly PostOptionI[]>([]);
-    const isLoading = useAppSelector(state => state.postTitle.loading)
-    const loading = open && options.length === 0;
-    function sleep(delay = 0) {
-        return new Promise((resolve) => {
-            setTimeout(resolve, delay);
-        });
-    }
-
-    useEffect(() => {
-        let active = true;
-
-        if (!loading) {
-            return undefined;
-        }
-
-        (async () => {
-            await sleep(1e1); // For demo purposes.
-
-            if (active) {
-                setOptions([...postTitleOptionsAPI]);
-            }
-        })();
-
-        return () => {
-            active = false;
-        };
-    }, [loading]);
-
-    useEffect(() => {
-        if (!open) {
-            setOptions([]);
-        }
-    }, [open]);
+    const { RangePicker } = DatePicker;
     return (
-        <Box className="container" pt={2} pb={4} >
-            <form onSubmit={handleSubmit(onSubmit)}>
+        <Box pt={2} pb={4} >
 
-                <Card sx={{ padding: 4 }} style={{ backgroundImage: `url(${background})` }}>
-                    <Grid container spacing={3}>
-                        <Grid item md={5} xs={12} >
-                            <Card
-                                sx={{
-                                    padding: 3,
-                                    boxShadow: 2,
-                                    minHeight: 400,
-                                    display: "flex",
-                                    flexDirection: "column",
-                                }}
-                            >
-                                <Grid container spacing={3}>
-                                    <Grid item sm={12} xs={12}>
-                                        <Controller
-                                            name="selectedOption"
-                                            control={control}
-                                            defaultValue={initialValues.postTitle}
-                                            render={({ field }) => (
-                                                <Autocomplete
-                                                    id="position-option"
-                                                    open={open}
-                                                    onOpen={() => {
-                                                        setOpen(true);
-                                                    }}
-                                                    onClose={() => {
-                                                        setOpen(false);
-                                                    }}
-                                                    isOptionEqualToValue={(option, value) => option.postTitleDescription === value.postTitleDescription}
-                                                    getOptionLabel={(option) => option.postTitleDescription}
-                                                    options={options}
-                                                    loading={loading}
-                                                    renderInput={(params) => (
-                                                        <LightTextField
-                                                            {...params}
-                                                            label="Position Options"
-                                                            fullWidth
-                                                            InputProps={{
-                                                                ...params.InputProps,
-                                                                endAdornment: (
-                                                                    <Fragment>
-                                                                        {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                                                                        {params.InputProps.endAdornment}
-                                                                    </Fragment>
-                                                                ),
-                                                            }}
-                                                        />
-                                                    )}
-                                                />
-                                            )}
-                                        /></Grid>
-                                    <Grid item sm={12} xs={12}>
-                                        <Controller
-                                            name="description"
-                                            control={control}
-                                            defaultValue={initialValues.description}
-                                            render={({ field }) => (
-                                                <div>
-                                                    <LightTextField
-                                                        multiline
-                                                        fullWidth
-                                                        rows={10}
-                                                        label="Description"
-                                                        placeholder="Description"
-                                                        {...field}
-                                                    />
-                                                    {errors['description'] && (
-                                                        <span>Description is required</span>
-                                                    )}
-                                                </div>
-                                            )}
-                                            rules={{ required: true }} // Add validation rules here
+            <form onSubmit={handler.handleSubmit(handler.onSubmit)}>
+
+                <Grid container spacing={1}>
+                    <Grid item md={5} xs={12} >
+                        <Grid container spacing={1}>
+                            <Grid item sm={12} xs={12}>
+
+                                <Autocomplete
+                                    id="postTitle-option"
+                                    open={open}
+                                    onOpen={() => {
+                                        handler.setOpen(true);
+                                    }}
+                                    onClose={() => {
+                                        handler.setOpen(false);
+                                    }}
+                                    value={options[0]}
+                                    onChange={(event, newValue) => handler.handleChangePosition(newValue)}
+                                    isOptionEqualToValue={(option, value) => option.postTitleDescription === value.postTitleDescription}
+                                    getOptionLabel={(option) => option.postTitleDescription}
+                                    options={options}
+                                    loading={loading}
+                                    renderInput={(params) => (
+                                        <LightTextField
+                                            {...params}
+                                            label="Post title Options"
+                                            value={params.InputProps.endAdornment}
+                                            fullWidth
+                                            InputProps={{
+                                                ...params.InputProps,
+                                                endAdornment: (
+                                                    <Fragment>
+                                                        {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                                        {params.InputProps.endAdornment}
+                                                    </Fragment>
+                                                ),
+                                            }}
                                         />
-                                    </Grid>
-                                </Grid>
+                                    )}
+                                />
+                            </Grid>
+                            <Grid item sm={12} xs={12}>
+                                <Controller
+                                    name="postDescription"
+                                    control={control}
+                                    defaultValue={initialValues.description}
+                                    render={({ field }) => (
+                                        <div>
+                                            <LightTextField
+                                                multiline
+                                                fullWidth
+                                                rows={10}
+                                                label="Description"
+                                                placeholder="Description"
+                                                {...field}
+                                            />
+                                            {errors['description'] && (
+                                                <span className="error">Description is required</span>
+                                            )}
+                                        </div>
+                                    )}
+                                    rules={{ required: true }} // Add validation rules here
+                                />
+                            </Grid>
 
-                                <Box maxWidth={250} marginTop={5} marginBottom={1}>
-                                    <SwitchWrapper>
-                                        <Small display="block" fontWeight={600}>
-                                            Is premium show
-                                        </Small>
+                            <Grid item sm={12} xs={12}>
+                                <Small display="block" fontWeight={400}>
+                                    Choose date from, date to
+                                </Small>
+                                <Controller
+                                    name="DateFrom-DateTo"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <RangePicker size="large" style={{ width: '100%' }}
+                                            {...field}
+                                        />
+                                    )}
+                                    rules={{ required: true }} // Add validation rules here
+                                />
+                            </Grid>
+                            <Grid item sm={12} xs={12}>
+                                <Small display="block" fontWeight={400}>
+                                    Choose time from, time to
+                                </Small>
+                                <Controller
+                                    name="TimeFrom-TimeTo"
+                                    control={control}
+                                    defaultValue={initialValues.description}
+                                    render={({ field }) => (
+                                        <TimePicker.RangePicker size="large" style={{ width: '100%' }}
+                                            {...field}
+                                        />
+                                    )}
+                                    rules={{ required: true }} // Add validation rules here
+                                />
+                            </Grid>
+                            <Grid item sm={12} xs={12}>
+                                <Small display="block" fontWeight={400}>
+                                    Piority 1 - 5
+                                </Small>
+                                <Row>
+                                    <Col span={12}>
+                                        <Slider
+                                            min={1}
+                                            max={5}
+                                            onChange={handler.onChangeSliderPiority}
+                                            value={typeof piority === 'number' ? piority : 0}
+                                        />
+                                    </Col>
+                                    <Col span={4}>
+                                        <InputNumber
+                                            min={1}
+                                            max={5}
+                                            style={{ margin: '0 16px' }}
+                                            value={piority}
+                                            onChange={handler.onChangeSliderPiority}
+                                        />
+                                    </Col>
+                                </Row>
+                            </Grid>
 
-                                        <Switch defaultChecked />
-                                    </SwitchWrapper>
-                                    <Tiny display="block" color="text.disabled" fontWeight={500}>
-                                        Just premium account can see this post
-                                    </Tiny>
-                                </Box>
-                            </Card>
                         </Grid>
-                        <Grid item md={7} xs={12}>
-                            <Card sx={{ padding: 3, boxShadow: 2 }}>
 
-                                {additionalPositions.map((position, index) => (
-                                    <Card key={index} sx={{ padding: 3 }} style={{ marginTop: '20px' }}>
-                                        <Small sx={{
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                        }} fontWeight={600} fontSize={15}> Position {index}</Small>
-                                        <Tooltip title={'Click to delete position'} placement="top">
-                                            <> <DeleteIcon fontSize='large' color='error' sx={{ "&:hover": { color: "#F09101" } }} onClick={() => handleDeletePosition(index)} />
-                                                <span>{error}</span></>
-                                        </Tooltip>
-                                        <Grid container spacing={3}>
+                        <Box maxWidth={250} marginTop={5} marginBottom={1}>
+                            <SwitchWrapper>
+                                <Small display="block" fontWeight={600}>
+                                    Is premium show
+                                </Small>
+                                <Switch onChange={handler.onPremiumChange} />
+                            </SwitchWrapper>
+                            <Tiny display="block" color="text.disabled" fontWeight={500}>
+                                Just premium account can see this post
+                            </Tiny>
+                        </Box>
+                        <Grid item xs={12} alignItems={'end'}>
+                            <Button type="submit" variant="contained">
+                                Create Post
+                            </Button>
+                        </Grid>
+                    </Grid>
+                    <Grid item md={7} xs={12} container>
 
-                                            <Grid item sm={6} xs={12}>
-                                                <Controller
-                                                    name={`postPosition${index}`}
-                                                    control={control}
-                                                    defaultValue={position.postPosition}
-                                                    render={({ field }) => (
-                                                        <div>
-                                                            <LightTextField
-                                                                fullWidth
-                                                                label="Position name"
-                                                                placeholder="Post position"
-                                                                {...field}
-                                                            />
-                                                            {errors[`postPosition${index}`] && (
-                                                                <span>Position name of position {index} is required</span>
-                                                            )}
-                                                        </div>
-                                                    )}
-                                                    rules={{ required: true }} // Add validation rules here
-                                                />
-                                            </Grid>
-                                            <Grid item sm={6} xs={12}>
-                                                <Controller
+                        <Grid item md={12} xs={12}>
+                            <TableContainer>
+                                <Table >
+                                    <TableHead>
+                                        <TableRow style={{ backgroundColor: '#F09101' }}>
+                                            <TableCell padding="checkbox">
+                                                {/* <Checkbox
+                                                color="primary"
+                                                checked={selectedAllCryptoOrders}
+                                                indeterminate={selectedSomeCryptoOrders}
+                                                onChange={handleSelectAllCryptoOrders}
+                                            /> */}
+                                            </TableCell>
+                                            <TableCell>No</TableCell>
+                                            <TableCell>Name position</TableCell>
+                                            <TableCell>Number</TableCell>
+                                            <TableCell>Salary</TableCell>
+                                            <TableCell>Delete</TableCell>
+
+                                        </TableRow>
+                                    </TableHead>
+                                    <TableBody>
+
+                                        {additionalPositions.map((position, index) => (
+                                            <TableRow
+                                            // hover
+                                            // key={account?.id}
+                                            // selected={isCryptoOrderSelected}
+                                            >
+                                                <TableCell padding="checkbox">
+                                                    <Checkbox
+                                                        color="primary"
+                                                    //   checked={isCryptoOrderSelected}
+                                                    //   onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                                                    //     handleSelectOneCryptoOrder(event, account?.id)
+                                                    //   }
+                                                    //   value={isCryptoOrderSelected}
+                                                    />
+                                                </TableCell>
+                                                <TableCell>
+
+                                                    <Small sx={{
+                                                        display: "flex",
+                                                        alignItems: "center",
+                                                        justifyContent: "center",
+                                                    }} fontWeight={600} fontSize={15}> {index}</Small>
+                                                </TableCell>
+                                                <TableCell>
+
+                                                    <Controller
+                                                        name={`postPosition${index}`}
+                                                        control={control}
+                                                        defaultValue={position.namePosition}
+                                                        render={({ field }) => (
+                                                            <div>
+                                                                <LightTextField
+                                                                    fullWidth
+                                                                    size='small'
+                                                                    label="Position name"
+                                                                    placeholder="Post position"
+                                                                    {...field}
+                                                                />
+                                                                {errors[`postPosition${index}`] && (
+                                                                    <span className="error">Position name of position {index} is required</span>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                        rules={{ required: true }} // Add validation rules here
+                                                    />
+                                                </TableCell>
+                                                <TableCell> <Controller
                                                     name={`numberStudent${index}`}
                                                     control={control}
-                                                    defaultValue={position.postPosition}
+                                                    defaultValue={position.number}
                                                     render={({ field }) => (
                                                         <div>
-                                                            <LightTextField
-                                                                label="Number student can registration"
-                                                                fullWidth
-                                                                placeholder="Number student can registration"
+                                                            <InputNumber
+                                                                style={{ width: '100%' }}
+                                                                size="large"
+                                                                min={1} max={100} defaultValue={1}
                                                                 {...field} />
                                                             {errors[`numberStudent${index}`] && (
-                                                                <span>Number of position {index} required</span>
+                                                                <span className="error">Number of position {index} required</span>
                                                             )}
                                                         </div>
                                                     )}
                                                     rules={{ required: true }} // Add validation rules here
-                                                /></Grid>
-                                            <Grid item sm={6} xs={12}>
-                                                <Controller
+                                                /></TableCell>
+                                                <TableCell><Controller
                                                     name={`Salary${index}`}
                                                     control={control}
-                                                    defaultValue={position.postPosition}
+                                                    defaultValue={position.salary}
                                                     render={({ field }) => (
                                                         <div>
-                                                            <LightTextField
-                                                                label="Salary"
-                                                                fullWidth
-                                                                placeholder="Salary"
+                                                            <InputNumber
+                                                                prefix='VND'
+                                                                style={{ width: '100%' }}
+                                                                formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                                                parser={(value) => value!.replace(/\$\s?|(,*)/g, '')}
                                                                 {...field}
+                                                                size='large'
                                                             />
                                                             {errors[`Salary${index}`] && (
-                                                                <span>Salary of position {index} is required</span>
+                                                                <span className="error">Salary of position {index} is required</span>
                                                             )}
                                                         </div>
                                                     )}
                                                     rules={{ required: true }} // Add validation rules here
-                                                />
-                                            </Grid>
-                                        </Grid>
+                                                /></TableCell>
+                                                <TableCell> <Tooltip title={'Click to delete position'} placement="right">
+                                                    <DeleteIcon fontSize='medium' color='primary' sx={{ "&:hover": { color: "#F09101" } }} onClick={() => handler.handleDeletePosition(index)} />
+                                                </Tooltip>
+                                                    <span className="error">{error}</span></TableCell>
+                                            </TableRow>
+                                        ))}
 
-                                    </Card>
-                                ))}
 
-                                <Box style={{ marginLeft: '45%' }} sx={{ "&:hover": { color: "#F09101" } }}>
-                                    <Tooltip title={'Click to add more position'} placement="top">
-                                        <AddCircleIcon fontSize='large' color='primary' sx={{ "&:hover": { color: "#F09101" } }} onClick={handleAddPosition} />
-                                    </Tooltip>
-                                </Box>
-                                <Grid item xs={12}>
-                                    <Button type="submit" variant="contained">
-                                        Create Post
-                                    </Button>
-                                </Grid>
-                            </Card>
-
+                                    </TableBody>
+                                </Table>
+                            </TableContainer>
+                            <Box style={{ marginLeft: '45%' }} sx={{ "&:hover": { color: "#F09101" } }}>
+                                <Tooltip title={'Click to add more position'} placement="bottom">
+                                    <AddCircleIcon fontSize='large' color='primary' sx={{ "&:hover": { color: "#F09101" } }} onClick={handler.handleAddPosition} />
+                                </Tooltip>
+                            </Box>
                         </Grid>
+
+                        {/* <Grid item md={6} xs={12}>
+
+
+                            {additionalTrainingPositions.map((position, index) => (
+                                <>
+                                    <Small sx={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                    }} fontWeight={600} fontSize={15}> Training position {index}</Small>
+                                    <Tooltip title={'Click to delete position'} placement="right">
+                                        <DeleteIcon fontSize='large' color='error' sx={{ "&:hover": { color: "#F09101" } }} onClick={() => handler.handleDeletePosition(index)} />
+                                    </Tooltip>
+                                    <span className="error">{error}</span>
+                                    <Grid container spacing={3}>
+                                        <Grid item sm={12} xs={12}>
+                                                    <Controller
+                                                        name={`postPosition${index}`}
+                                                        control={control}
+                                                        defaultValue={position.namePosition}
+                                                        render={({ field }) => (
+                                                            <div>
+                                                                <LightTextField
+                                                                    fullWidth
+                                                                    label="Position name"
+                                                                    placeholder="Post position"
+                                                                    {...field}
+                                                                />
+                                                                {errors[`postPosition${index}`] && (
+                                                                    <span className="error">Position name of position {index} is required</span>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                        rules={{ required: true }} // Add validation rules here
+                                                    />
+                                                </Grid>
+                                        <Grid item sm={4} xs={12}>
+                                            <Controller
+                                                name={`numberTrainingStudent${index}`}
+                                                control={control}
+                                                defaultValue={position.number}
+                                                render={({ field }) => (
+                                                    <div>
+                                                        <InputNumber
+                                                            style={{ width: '100%' }}
+                                                            size="large"
+                                                            min={1} max={100} defaultValue={1}
+                                                            {...field} />
+                                                        {errors[`numberTrainingStudent${index}`] && (
+                                                            <span className="error">Number of position {index} required</span>
+                                                        )}
+                                                    </div>
+                                                )}
+                                                rules={{ required: true }} // Add validation rules here
+                                            /></Grid>
+                                        <Grid item sm={8} xs={12}>
+                                            <Controller
+                                                name={`SalaryTraining${index}`}
+                                                control={control}
+                                                defaultValue={position.salary}
+                                                render={({ field }) => (
+                                                    <div>
+                                                        <InputNumber
+                                                            prefix='VND'
+                                                            style={{ width: '100%' }}
+                                                            formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                                                            parser={(value) => value!.replace(/\$\s?|(,*)/g, '')}
+                                                            {...field}
+                                                            size='large'
+                                                        />
+                                                        {errors[`SalaryTraining${index}`] && (
+                                                            <span className="error">Salary Training of position {index} is required</span>
+                                                        )}
+                                                    </div>
+                                                )}
+                                                rules={{ required: true }} // Add validation rules here
+                                            />
+                                        </Grid>
+                                    </Grid>
+
+                                </>))}
+
+                            <Box style={{ marginLeft: '45%' }} sx={{ "&:hover": { color: "#F09101" } }}>
+                                <Tooltip title={'Click to add more position'} placement="top">
+                                    <AddCircleIcon fontSize='large' color='primary' sx={{ "&:hover": { color: "#F09101" } }} onClick={handler.handleAddTrainingPosition} />
+                                </Tooltip>
+                            </Box>
+
+                        </Grid> */}
 
                     </Grid>
 
-                </Card>
-            </form>
+                </Grid >
+
+            </form >
         </Box >
     );
 };

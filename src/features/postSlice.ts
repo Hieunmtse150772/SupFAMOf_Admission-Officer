@@ -17,7 +17,6 @@ export const createPost = createAsyncThunk(
     async (payload: PostCreated, { rejectWithValue }) => {
         try {
             const result = await postService.createPost(payload)
-            console.log("ressult: ", result)
             return result.data;
         } catch (error) {
             const axiosError = error as AxiosError;

@@ -1,5 +1,4 @@
 import { styled, TextField, TextFieldProps } from "@mui/material";
-import React from "react";
 
 const StyledTextField = styled(TextField)<TextFieldProps>(({ theme }) => ({
   "& .MuiOutlinedInput-input": {

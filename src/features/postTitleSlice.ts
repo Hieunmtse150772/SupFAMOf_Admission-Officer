@@ -19,7 +19,6 @@ export const getPostTitle = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const result = await postTitleService.getPostTitle()
-            console.log("ressult: ", result)
             return result.data;
         } catch (error) {
             const axiosError = error as AxiosError;

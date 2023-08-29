@@ -104,7 +104,7 @@ const DashboardSideBar: FC<SideNavBarProps> = ({
             overflow: "hidden",
             flexDirection: "column",
             boxShadow: (theme) => theme.shadows[1],
-            backgroundColor: (theme) => theme.palette.background.paper,
+            backgroundColor: (theme) => '#F09101',
             "& .simplebar-track.simplebar-vertical": { width: 7 },
             "& .simplebar-scrollbar:before": {
               background: (theme) => theme.palette.text.primary,
