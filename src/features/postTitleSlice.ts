@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import PostOptionI from 'models/postOption.model';
+import PostTitleCreated from 'models/postTitle.model';
 import { postTitleService } from 'services/postTitle.service';
 
 interface PostTitleState {
@@ -26,6 +27,18 @@ export const getPostTitle = createAsyncThunk(
         }
     },
 );
+export const createPostTitle = createAsyncThunk(
+    'auth/create-post-title',
+    async (payload: PostTitleCreated, { rejectWithValue }) => {
+        try {
+            const result = await postTitleService.createPostTitle(payload)
+            return result;
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data);
+        }
+    },
+);
 export const postTitleSlice = createSlice({
     name: 'post',
     initialState,
@@ -41,6 +54,17 @@ export const postTitleSlice = createSlice({
                 state.loading = false;
             })
             .addCase(getPostTitle.rejected, (state, action) => {
+                state.error = String(action.payload);
+                state.loading = false;
+            })
+            .addCase(createPostTitle.pending, (state) => {
+                state.loading = true;
+                state.error = "";
+            })
+            .addCase(createPostTitle.fulfilled, (state) => {
+                state.loading = false;
+            })
+            .addCase(createPostTitle.rejected, (state, action) => {
                 state.error = String(action.payload);
                 state.loading = false;
             })

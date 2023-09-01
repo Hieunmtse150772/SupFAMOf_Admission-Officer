@@ -16,6 +16,10 @@ const StyledTextField = styled(TextField)<TextFieldProps>(({ theme }) => ({
   "& .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-notchedOutline": {
     borderColor: theme.palette.secondary[300],
   },
+  "& .MuiInputBase-root": {
+    padding: '0px 0px 0px 10px',
+    height: '40px'
+  }
 }));
 
 const LightTextField = (props: TextFieldProps) => {

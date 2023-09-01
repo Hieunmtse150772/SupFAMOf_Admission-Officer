@@ -13,11 +13,12 @@ type PostCreated = {
     trainingPositions: TrainingPositionsI[]
 }
 export type PositionI = {
-    position: string,
+    positionName: string,
     amount: number | null,
     salary: number | null
 }
 export type TrainingPositionsI = {
+    positionName: string,
     amount: number | null,
     salary: number | null
 }

@@ -1,10 +1,11 @@
-import { BusinessCenter, Mail, Place } from "@mui/icons-material";
+import { Mail, Phone } from "@mui/icons-material";
+import CakeIcon from '@mui/icons-material/Cake';
 import { Box, Card, Divider, Grid, styled } from "@mui/material";
 import FlexBox from "components/FlexBox";
 import MoreOptions from "components/MoreOptions";
-import { H3, H4, H6, Small } from "components/Typography";
-import FollowerIcon from "icons/FollowerIcon";
-import UserPlusIcon from "icons/UserPlusIcon";
+import { H4, H6, Small } from "components/Typography";
+import UserInfo from "models/userInfor.model";
+import moment from "moment";
 import { FC, MouseEvent, useState } from "react";
 import PostCard from "./PostCard";
 
@@ -29,19 +30,37 @@ const FollowWrapper = styled(Box)(() => ({
   alignItems: "center",
   justifyContent: "space-between",
 }));
+interface UserProfileProps {
+  userInfo: UserInfo | null;
+}
 
-const Profile: FC = () => {
+const Profile: FC<UserProfileProps> = (userInfo) => {
+  const Formatter = 'DD/MM/YYYY'
   const [moreEl, setMoreEl] = useState<null | HTMLElement>(null);
   const handleMoreOpen = (event: MouseEvent<HTMLButtonElement>) => {
     setMoreEl(event.currentTarget);
   };
+  const details = [
+    {
+      Icon: Phone,
+      boldText: userInfo?.userInfo?.phone,
+    },
+    {
+      Icon: Mail,
+      smallText: userInfo?.userInfo?.email,
+    },
+    {
+      Icon: CakeIcon,
+      smallText: moment(userInfo?.userInfo?.dateOfBirth).format(Formatter),
+    }
+  ];
   const handleMoreClose = () => setMoreEl(null);
 
   return (
     <Grid container spacing={3}>
       <Grid item md={5} xs={12}>
         <Card>
-          <FollowWrapper>
+          {/* <FollowWrapper>
             <FlexBox alignItems="center">
               <IconWrapper>
                 <UserPlusIcon fontSize="small" />
@@ -68,16 +87,16 @@ const Profile: FC = () => {
                 </H3>
               </Box>
             </FlexBox>
-          </FollowWrapper>
+          </FollowWrapper> */}
 
           <Divider />
 
           <Box padding={3}>
             <H4 fontWeight={600}>About</H4>
-            <Small mt={1} display="block" lineHeight={1.9}>
+            {/* <Small mt={1} display="block" lineHeight={1.9}>
               Tart I love sugar plum I love oat cake. Sweet roll caramels I love
               jujubes. Topping cake wafer..
-            </Small>
+            </Small> */}
 
             <Box mt={3}>
               {details.map(({ Icon, smallText, boldText }, index) => (
@@ -104,28 +123,7 @@ const Profile: FC = () => {
   );
 };
 
-const details = [
-  {
-    Icon: Place,
-    boldText: "Kuwait",
-    smallText: "Lives at",
-  },
-  {
-    Icon: Mail,
-    boldText: "",
-    smallText: "Lenore_Rosenbaum@gmail.com",
-  },
-  {
-    Icon: BusinessCenter,
-    boldText: "UI_LIB",
-    smallText: "Manager at",
-  },
-  {
-    Icon: BusinessCenter,
-    smallText: "Studied at",
-    boldText: "Corwin - Blick",
-  },
-];
+
 
 const postList = [
   {

@@ -81,7 +81,7 @@ const ProfilePopover: FC<ProfilePopoverProps> = (userInfo) => {
             />
 
             <Box ml={1}>
-              <H6>Hieunmt</H6>
+              <H6>{userInfo?.userInfo?.name}</H6>
               <Tiny display="block" fontWeight={500} color="text.disabled">
                 {userInfo?.userInfo?.email}
               </Tiny>
