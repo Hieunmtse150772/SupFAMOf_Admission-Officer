@@ -1,9 +1,10 @@
+import SettingsIcon from '@mui/icons-material/Settings';
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { Box, Card, Grid, Tab, styled } from "@mui/material";
 import { useAppSelector } from "app/hooks";
 import FlexBox from "components/FlexBox";
 import SearchInput from "components/SearchInput";
-import { H3, Small } from "components/Typography";
+import { H3 } from "components/Typography";
 import UkoAvatar from "components/UkoAvatar";
 import FollowerCard from "components/userProfile/FollowerCard";
 import FriendCard from "components/userProfile/FriendCard";
@@ -13,7 +14,8 @@ import AppConstants from "enums/app";
 import useTitle from "hooks/useTitle";
 import UserInfo from "models/userInforLogin.model";
 import { FC, SyntheticEvent, useEffect, useState } from "react";
-
+import ProfileEditDrawer from './drawer/profileEditDrawer';
+import useUserProfileHook from './useUserProfileHook';
 // styled components
 const StyledCard = styled(Card)(() => ({
   position: "relative",
@@ -53,18 +55,17 @@ const StyledTabPanel = styled(TabPanel)(() => ({
 }));
 
 const UserProfile: FC = () => {
+  const { handler, props } = useUserProfileHook();
   // change navbar title
   useTitle("User Profile");
   // const [userInfo, setUserInfo] = useState<UserInfo>()
   const userInfo = useAppSelector(state => state.auth.userInfo)
   useEffect(() => {
-    console.log("userInfo profile: ", userInfo)
   }, [userInfo])
   const [value, setValue] = useState("1");
   const storedValue = localStorage.getItem(AppConstants.USER);
   if (storedValue !== null) {
     const useInfo: UserInfo = JSON.parse(storedValue);
-    console.log("userInfo: ", useInfo)
     // setUserInfo(useInfo);
   } else {
     console.error("item is not found in local storage");
@@ -80,13 +81,13 @@ const UserProfile: FC = () => {
       <TabContext value={value}>
         <StyledCard>
           <Box sx={{ height: 200, width: "100%", overflow: "hidden" }}>
-            {/* <img
-              src={userInfo?.account.imgUrl}
+            <img
+              src={"/static/cover/cover-2.png"}
               alt="User Cover"
               height="100%"
               width="100%"
               style={{ objectFit: "cover" }}
-            /> */}
+            />
           </Box>
 
           <FlexBox
@@ -108,22 +109,26 @@ const UserProfile: FC = () => {
 
               <Box marginLeft={3} marginTop={3}>
                 <H3 lineHeight={1.2}>{userInfo?.name}</H3>
-                <Small color="text.disabled">UI Designer</Small>
+                {/* <Small color="text.disabled">UI Designer</Small> */}
               </Box>
             </ContentWrapper>
 
-            <StyledTabList onChange={handleChange}>
+            <StyledTabList onChange={handleChange} >
               <StyledTab label="Profile" value="1" />
               <StyledTab label="Follower" value="2" />
               <StyledTab label="Friends" value="3" />
               <StyledTab label="Gallery" value="4" />
+
             </StyledTabList>
+            <SettingsIcon fontSize='medium' sx={{ "&:hover": { color: "#F09101" } }} onClick={handler.handleOpenSetting} />
+            {props.openSetting && <ProfileEditDrawer onClose={handler.onClose} userInfo={userInfo} open={props.openSetting} />}
+
           </FlexBox>
         </StyledCard>
 
         <Box marginTop={3}>
           <StyledTabPanel value="1">
-            <Profile />
+            <Profile userInfo={userInfo} />
           </StyledTabPanel>
 
           <StyledTabPanel value="2">
