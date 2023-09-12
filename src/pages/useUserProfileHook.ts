@@ -1,6 +1,6 @@
 import { useState } from 'react';
 const useUserProfileHook = () => {
-    const [openSetting, setOpenSetting] = useState<boolean>();
+    const [openSetting, setOpenSetting] = useState(false);
     const handleOpenSetting = () => {
         setOpenSetting(true)
     }
@@ -9,7 +9,8 @@ const useUserProfileHook = () => {
     };
     const handler = {
         handleOpenSetting,
-        onClose
+        onClose,
+        setOpenSetting
     }
     const props = {
         openSetting

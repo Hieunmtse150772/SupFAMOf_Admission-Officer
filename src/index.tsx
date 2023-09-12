@@ -1,3 +1,5 @@
+import { ConfigProvider } from 'antd';
+import en_US from 'antd/es/locale/en_US'; // for American English
 import { store } from "app/store";
 import "nprogress/nprogress.css";
 import { StrictMode } from "react";
@@ -14,7 +16,9 @@ ReactDOM.render(
   <StrictMode>
     <Provider store={store}>
       <BrowserRouter>
-        <App />
+        <ConfigProvider locale={en_US}>
+          <App />
+        </ConfigProvider>
       </BrowserRouter>
     </Provider>
   </StrictMode>,

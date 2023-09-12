@@ -5,9 +5,9 @@ import { useAppDispatch } from 'app/store';
 import { createPost } from 'features/postSlice';
 import { getPostTitle } from 'features/postTitleSlice';
 import useTitle from 'hooks/useTitle';
-import PostCreated, { PositionI, TrainingPositionsI } from 'models/post.model';
+import PostCreated, { PositionCreatedI, TrainingPositionsCreatedI } from 'models/postCreated.model';
 import PostOptionI from 'models/postOption.model';
-import moment, { Moment } from 'moment';
+import { Moment } from 'moment';
 import { useEffect, useState } from 'react';
 import { useForm } from "react-hook-form";
 
@@ -81,12 +81,13 @@ const useAddNewPostHook = () => {
         setPiority(newValue);
     };
     const onSubmit = async (data: any) => {
-        console.log("data: ", data);
-        console.log("positionValue1", getValues('postPosition1'))
         const timeRange: Moment[] = getValues('TimeFrom-TimeTo')
+        const dateRange: Moment[] = getValues('DateFrom-DateTo')
+
         const formattedTimeRange = timeRange.map((time) => time.format('HH:mm:ss'));
-        console.log('formattedTimeRange :', formattedTimeRange)
-        const position: PositionI[] = (additionalPositions || []).map((_, index) => {
+        const formattedDateRange = dateRange.map((time) => time.format(Formater));
+
+        const position: PositionCreatedI[] = (additionalPositions || []).map((_, index) => {
             const positionValue = getValues(`postPosition${index}`);
             const numberStudentValue = getValues(`numberStudent${index}`);
             const salaryValue = getValues(`Salary${index}`);
@@ -96,7 +97,7 @@ const useAddNewPostHook = () => {
                 salary: salaryValue,
             };
         });
-        const trainingPosition: TrainingPositionsI[] = (additionalTrainingPositions || []).map((_, index) => {
+        const trainingPosition: TrainingPositionsCreatedI[] = (additionalTrainingPositions || []).map((_, index) => {
             const positionValue = getValues(`postPositionTraining${index}`);
             const numberStudentValue = getValues(`numberStudentTraining${index}`);
             const salaryValue = getValues(`SalaryTraining${index}`);
@@ -109,8 +110,8 @@ const useAddNewPostHook = () => {
         const params: PostCreated = {
             postTitleId: getValues('postTitle'), //completetext box 
             postDescription: getValues('postDescription'),
-            dateFrom: moment(getValues('DateFrom-DateTo')[0]).format(Formater),
-            dateTo: moment(getValues('DateFrom-DateTo')[1]).format(Formater),
+            dateFrom: formattedDateRange[0],
+            dateTo: formattedDateRange[1],
             timeFrom: formattedTimeRange[0], //00:00:00 
             timeTo: formattedTimeRange[1],
             priority: piority, //độ ưu tiên 1-5, defaultvalue: 0
@@ -119,11 +120,8 @@ const useAddNewPostHook = () => {
             postPositions: position,
             trainingPositions: trainingPosition ? trainingPosition : []
         }
-        console.log("params: ", params)
-        const result = await dispatch(createPost(params)).then((response) => {
-            console.log('response111: ', response.meta.requestStatus)
+        await dispatch(createPost(params)).then((response) => {
             const result2 = unwrapResult(response);
-            console.log('first: ', result2)
             if (result2.status === 200) {
                 message.success('Create post success!');
                 reset()
@@ -176,7 +174,6 @@ const useAddNewPostHook = () => {
     }
     const handleChangePosition = (value: PostOptionI | null) => {
         setValue('postTitle', value?.id)
-        console.log("newValue: ", value)
     }
     useEffect(() => {
         fetchPostTitleOption()

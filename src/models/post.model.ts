@@ -1,25 +1,77 @@
 
-type PostCreated = {
-    postTitleId: 0, //completetext box 
+type Post = {
+    accountId: number,
+    postTitleId: number,
+    postCode: string,
     postDescription: string,
     dateFrom: string,
     dateTo: string,
-    timeFrom: string, //00:00:00 
+    timeFrom: string,
     timeTo: string,
-    priority: number | null, //độ ưu tiên 1-5, defaultvalue: 0
-    isPremium: boolean, // false
+    priority: number,
+    isPremium: boolean,
     location: string,
+    attendanceComplete: boolean,
+    isActive: true,
+    isEnd: false,
+    createAt: string,
+    updateAt: string,
+    account: {
+        id: number,
+        roleId: number,
+        accountInformationId: number,
+        name: string,
+        email: string,
+        phone: string,
+        dateOfBirth: string,
+        imgUrl: string,
+        postPermission: boolean,
+        isPremium: boolean,
+        isActive: boolean,
+        createAt: string,
+        updateAt: string,
+        accountMonthlyReport: {
+            totalPost: number,
+            totalSalary: number
+        },
+        accountInformations: []
+    },
+    postTitle: {
+        id: number,
+        postTitleDescription: string,
+        postTitleType: string,
+        isActive: boolean,
+        createAt: string,
+        updateAt: string
+    },
     postPositions: PositionI[],
     trainingPositions: TrainingPositionsI[]
-}
-export type PositionI = {
-    positionName: string,
-    amount: number | null,
-    salary: number | null
+
 }
 export type TrainingPositionsI = {
+    id: number,
+    postId: number,
     positionName: string,
-    amount: number | null,
-    salary: number | null
+    amount: number,
+    salary: number
 }
-export default PostCreated
+export type PositionI = {
+    id: number,
+    postId: number,
+    positionName: string,
+    amount: number,
+    salary: number
+}
+export type ListPositionI = {
+    key: string,
+    position: PositionI[];
+}
+export type PostTitleI = {
+    id: number,
+    postTitleDescription: string,
+    postTitleType: string,
+    isActive: boolean,
+    createAt: string,
+    updateAt: string
+}
+export default Post

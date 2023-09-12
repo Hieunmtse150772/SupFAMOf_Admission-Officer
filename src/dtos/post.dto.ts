@@ -1,6 +1,6 @@
-import PostCreated from "models/post.model";
+import Post from "models/post.model";
 
 
-export default interface LoginUser {
-    data: PostCreated;
+export default interface PostI {
+    data: Array<Post>;
 }
