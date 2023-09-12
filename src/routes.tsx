@@ -38,7 +38,10 @@ const AddNewUser = Loadable(
   lazy(() => import("./pages/userManagement/AddNewUser"))
 );
 const AddNewPost = Loadable(
-  lazy(() => import("./pages/postManagement/AddNewPost"))
+  lazy(() => import("./pages/postManagement/create post/AddNewPost"))
+);
+const ViewPostList = Loadable(
+  lazy(() => import("./pages/postManagement/view post/ViewPostList"))
 );
 // error
 const Error = Loadable(lazy(() => import("./pages/404")));
@@ -101,6 +104,10 @@ const routes = [
       {
         path: "add-user",
         element: <AddNewUser />,
+      },
+      {
+        path: "post-list",
+        element: <ViewPostList />,
       },
       {
         path: "add-post",

@@ -48,6 +48,7 @@ const AddPostTitleModal: FC<AddPostTitleModalProps> = ({ open, setOpenAddTitleMo
 
         return result;
     }
+
     return (
         <>
             <ModalForm
@@ -68,13 +69,15 @@ const AddPostTitleModal: FC<AddPostTitleModalProps> = ({ open, setOpenAddTitleMo
                         label="Post title type"
                         tooltip="Enter name of post title"
                         placeholder="Post title type"
+                        rules={[{ required: true, message: 'Post title type is required!' }]}
                     />
-
                     <ProFormText
                         width="md"
                         name="postTitleDescription"
                         label="Description of post"
                         placeholder="Description"
+                        rules={[{ required: true, message: 'Description is required!' }]}
+
                     />
                 </ProForm.Group>
             </ModalForm>

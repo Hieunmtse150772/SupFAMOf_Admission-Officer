@@ -13,6 +13,7 @@ import { loginGoogle } from "features/authSlice";
 import GoogleIcon from "icons/GoogleIcon";
 import { FC, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import './styles.scss';
 const Login: FC = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -46,7 +47,7 @@ const Login: FC = () => {
       }}
       style={{ backgroundImage: `url(${background})`, backgroundRepeat: 'none', backgroundSize: "100%" }}
     >
-      <Card sx={{ padding: 4, width: 650, boxShadow: 10 }} >
+      <Card sx={{ padding: 4, width: 650, boxShadow: 10, backgroundColor: 'rgba(255, 255, 255, 0.8)' }} >
         <FlexBox
           alignItems="center"
           flexDirection="column"
@@ -58,20 +59,21 @@ const Login: FC = () => {
             <img src="/static/logo/supfamof_logo.png" width="100%" alt="Uko Logo" />
           </Box>
           <H1 fontSize={24} fontWeight={600}>
-            Sign In to SuFAMOf
+            Sign In to SupFAmOf
           </H1>
         </FlexBox>
 
-        <FlexBox justifyContent="space-between" flexWrap="wrap" my="1rem" margin={10}
+        <FlexBox justifyContent="space-between" flexWrap="wrap" my="1rem" margin={10} alignItems={'center'}
         >
           <SocialIconButton
+            className="button-login"
             onClick={() => loginWithGoogle()}
             startIcon={<GoogleIcon sx={{ mr: 1 }} />}
           >
             Sign in with Google
           </SocialIconButton>
 
-          <Small justifyContent="space-between" mt={3} color="text.disabled">
+          <Small className="noted-text" justifyContent="space-between" alignItems={'center'} mt={3} color="text.disabled">
             Sign in with fe.edu.vn mail
           </Small>
         </FlexBox>

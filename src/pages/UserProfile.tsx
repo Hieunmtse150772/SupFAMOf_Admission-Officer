@@ -121,7 +121,7 @@ const UserProfile: FC = () => {
 
             </StyledTabList>
             <SettingsIcon fontSize='medium' sx={{ "&:hover": { color: "#F09101" } }} onClick={handler.handleOpenSetting} />
-            {props.openSetting && <ProfileEditDrawer onClose={handler.onClose} userInfo={userInfo} open={props.openSetting} />}
+            {props.openSetting && <ProfileEditDrawer setOpenSetting={handler.setOpenSetting} onClose={handler.onClose} userInfo={userInfo} open={props.openSetting} />}
 
           </FlexBox>
         </StyledCard>
