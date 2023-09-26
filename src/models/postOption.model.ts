@@ -1,7 +1,7 @@
 type PostOptionI = {
     id: number;
-    postTitleDescription: string;
-    postTitleType: string;
+    postCategoryDescription: string;
+    postCategoryType: string;
     isActive: boolean;
     creatAt: string;
     updateAt: string

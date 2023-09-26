@@ -1,15 +1,16 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
-import PostI from 'dtos/post.dto';
+import PostI from 'dtos/Post/Post View/post.dto';
 import Post from 'models/post.model';
 import PostCreated from 'models/postCreated.model';
+import { PostInfo } from 'models/postInfo.model';
 import { postService } from 'services/post.service';
 
 interface PostState {
     loading: boolean,
     error: string | null,
     posts: PostI;
-    postInfo: Post,
+    postInfo: PostInfo | null,
 }
 
 const initialState: PostState = {
@@ -18,54 +19,7 @@ const initialState: PostState = {
     posts: {
         data: [] as Post[]
     },
-    postInfo: {
-        accountId: 0,
-        postTitleId: 0,
-        postCode: '',
-        postDescription: '',
-        dateFrom: '',
-        dateTo: '',
-        timeFrom: '',
-        timeTo: '',
-        priority: 0,
-        isPremium: false,
-        location: '',
-        attendanceComplete: false,
-        isActive: true,
-        isEnd: false,
-        createAt: '',
-        updateAt: '',
-        account: {
-            id: 0,
-            roleId: 0,
-            accountInformationId: 0,
-            name: '',
-            email: '',
-            phone: '',
-            dateOfBirth: '',
-            imgUrl: '',
-            postPermission: false,
-            isPremium: false,
-            isActive: false,
-            createAt: '',
-            updateAt: '',
-            accountMonthlyReport: {
-                totalPost: 0,
-                totalSalary: 0
-            },
-            accountInformations: []
-        },
-        postTitle: {
-            id: 0,
-            postTitleDescription: '',
-            postTitleType: '',
-            isActive: false,
-            createAt: '',
-            updateAt: ''
-        },
-        postPositions: [],
-        trainingPositions: []
-    }
+    postInfo: null
 }
 export const createPost = createAsyncThunk(
     'post/create-post',
@@ -93,6 +47,16 @@ export const getPostByPostId = createAsyncThunk('post/get-post-by-PostId',
     async (id: string, { rejectWithValue }) => {
         try {
             const result = await postService.getPostByPostId(id);
+            return result
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data)
+        }
+    })
+export const updatePostById = createAsyncThunk('post/update-post-by-PostId',
+    async (params: PostCreated, { rejectWithValue }) => {
+        try {
+            const result = await postService.updatePostById(params);
             return result
         } catch (error) {
             const axiosError = error as AxiosError;

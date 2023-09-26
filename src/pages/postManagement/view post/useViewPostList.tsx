@@ -31,15 +31,16 @@ function useViewPostList() {
   const [showDetail, setShowDetail] = useState<boolean>(false);
   const [openEditPostModal, setOpenEditPostModal] = useState<boolean>(false);
   const [editPostModalId, setEditPostModalId] = useState<string>('');
-  const { posts, loading } = useAppSelector(state => state.post)
-  const postInfoAPI = useAppSelector(state => state.post.postInfo)
-  const [postInfo, setPostInfo] = useState<any>()
+  const { posts, loading } = useAppSelector(state => state.post);
+  const postInfoAPI = useAppSelector(state => state.post.postInfo);
+  const isLoading = useAppSelector(state => state.post.loading);
+  const [postInfo, setPostInfo] = useState<any>();
   const columns: ProColumns[] = [
     {
       title: 'Name',
       dataIndex: 'title',
       key: 'title',
-      width: 10,
+      width: 5,
       render: (dom, entity) => {
         return (
           // eslint-disable-next-line jsx-a11y/anchor-is-valid
@@ -61,6 +62,7 @@ function useViewPostList() {
       dataIndex: 'titleType',
       key: 'titleType',
       width: 10,
+      hideInTable: true
     },
     {
       title: 'Address',
@@ -70,20 +72,35 @@ function useViewPostList() {
     },
     {
       title: 'Date',
-      dataIndex: 'dateFrom_dateTo',
+      dataIndex: 'dateFrom',
       key: 'dateFrom',
       width: 30,
       sorter: true,
       hideInSearch: true,
     },
     {
+      title: 'Date',
+      dataIndex: 'dateTo',
+      key: 'dateTo',
+      width: 30,
+      sorter: true,
+      hideInSearch: true,
+    },
+    {
       title: 'Time',
-      dataIndex: 'timeFrom_timeTo',
+      dataIndex: 'timeFrom',
       key: 'timeFrom',
       width: 20,
       sorter: true,
       hideInSearch: true,
-
+    },
+    {
+      title: 'Time To',
+      dataIndex: 'timeTo',
+      key: 'timeFrom',
+      width: 20,
+      sorter: true,
+      hideInSearch: true,
     },
     {
       title: 'Description',
@@ -129,7 +146,7 @@ function useViewPostList() {
     },
     {
       title: 'Option',
-      width: 20,
+      width: 50,
       hideInSearch: true,
       render: (value) => (
         <Box>
@@ -191,8 +208,10 @@ function useViewPostList() {
     description: post?.postDescription,
     location: post?.location,
     status: post?.isActive,
-    dateFrom_dateTo: ` ${moment(post?.dateFrom).format(Formatter)}-${moment(post?.dateTo).format(Formatter)}`,
-    timeFrom_timeTo: `${post?.timeFrom}-${post?.timeTo}`,
+    dateFrom: moment(post?.dateFrom).format(Formatter),
+    dateTo: moment(post?.dateTo).format(Formatter),
+    timeFrom: post?.timeFrom,
+    timeTo: post?.timeTo,
     priority: post?.priority,
     // ...
   }));
@@ -212,7 +231,7 @@ function useViewPostList() {
     return unwrapResult(reusult);
   }
   const handler = { setCurrentRow, setShowDetail, setOpenEditPostModal }
-  const props = { columns, posts, loading, rows, showDetail, currentRow, rowsExpanded, openEditPostModal, editPostModalId, postInfo, postInfoAPI }
+  const props = { columns, posts, loading, rows, showDetail, currentRow, rowsExpanded, openEditPostModal, editPostModalId, postInfo, postInfoAPI, isLoading }
   return {
     handler,
     props,

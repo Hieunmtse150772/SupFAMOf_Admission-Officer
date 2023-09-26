@@ -52,7 +52,7 @@ const AddPostTitleModal: FC<AddPostTitleModalProps> = ({ open, setOpenAddTitleMo
     return (
         <>
             <ModalForm
-                title="Add more position Title"
+                title="Add more post category"
                 open={open}
                 onFinish={(value) => handleCreatePostTitle(value)}
                 onOpenChange={setOpenAddTitleModal}
@@ -65,19 +65,19 @@ const AddPostTitleModal: FC<AddPostTitleModalProps> = ({ open, setOpenAddTitleMo
                 <ProForm.Group>
                     <ProFormText
                         width="md"
-                        name="postTitleType"
-                        label="Post title type"
+                        name="postCategoryDescription"
+                        label="Post category name"
+                        placeholder="Category name"
                         tooltip="Enter name of post title"
-                        placeholder="Post title type"
-                        rules={[{ required: true, message: 'Post title type is required!' }]}
+                        rules={[{ required: true, message: 'Category name is required!' }]}
+
                     />
                     <ProFormText
                         width="md"
-                        name="postTitleDescription"
-                        label="Description of post"
-                        placeholder="Description"
-                        rules={[{ required: true, message: 'Description is required!' }]}
-
+                        name="postTitleType"
+                        label="Post category ID"
+                        placeholder="Post category ID"
+                        rules={[{ required: true, message: 'Post category ID is required!' }]}
                     />
                 </ProForm.Group>
             </ModalForm>

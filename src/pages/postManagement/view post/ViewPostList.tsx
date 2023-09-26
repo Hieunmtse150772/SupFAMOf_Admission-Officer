@@ -49,7 +49,7 @@ const ViewPostList = () => {
                     />
                 )}
             </Drawer>
-            {props.openEditPostModal && <EditPostModal postInfo={props.postInfoAPI} postId={props.editPostModalId} open={props.openEditPostModal} setOpenEditPostModal={handler.setOpenEditPostModal} ></EditPostModal>}
+            {(props.openEditPostModal && props.postInfoAPI !== null) && <EditPostModal postInfo={props.postInfoAPI} postId={props.editPostModalId} open={props.openEditPostModal} setOpenEditPostModal={handler.setOpenEditPostModal} ></EditPostModal>}
         </>
     )
 }

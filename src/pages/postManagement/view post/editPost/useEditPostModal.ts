@@ -12,7 +12,7 @@ const useEditPostModal = () => {
 
     const options = optionsAPI?.map((title) => ({
         value: title.id,
-        label: title.postTitleDescription
+        label: title.postCategoryDescription
     }));
     const fetchPostTitleOption = async () => {
         const result = await dispatch(getPostTitle());

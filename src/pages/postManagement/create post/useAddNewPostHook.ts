@@ -2,6 +2,7 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { message } from 'antd';
 import { useAppSelector } from 'app/hooks';
 import { useAppDispatch } from 'app/store';
+import { getProvince } from 'features/addressSlice';
 import { createPost } from 'features/postSlice';
 import { getPostTitle } from 'features/postTitleSlice';
 import useTitle from 'hooks/useTitle';
@@ -12,8 +13,8 @@ import { useEffect, useState } from 'react';
 import { useForm } from "react-hook-form";
 
 interface AdditionalPosition {
-    namePosition: string;
-    number: number | null;
+    positionName: string;
+    amount: number | null;
     salary: number | null;
 }
 interface AdditionalTrainingPosition {
@@ -21,16 +22,7 @@ interface AdditionalTrainingPosition {
     number: number | null;
     salary: number | null;
 }
-const steps = [
-    {
-        title: 'First',
-        content: 'First-content',
-    },
-    {
-        title: 'Last',
-        content: 'Last-content',
-    }
-]
+
 const useAddNewPostHook = () => {
     const {
         handleSubmit,
@@ -43,18 +35,21 @@ const useAddNewPostHook = () => {
     useTitle("Add New Post");
 
     const postTitleOptionsAPI = useAppSelector(state => state.postTitle.postTitleOption)
+    const province = useAppSelector(state => state.address.province)
+    const district = useAppSelector(state => state.address.district)
+    const ward = useAppSelector(state => state.address.ward)
+
     const [error, setError] = useState<String>('');
     const [errorTraining, setErrorTraining] = useState<String>('');
     const [modalVisit, setModalVisit] = useState(false);
-
     const [piority, setPiority] = useState<number | null>(0);
     const [isPremium, setIsPremium] = useState<boolean>(false);
     const [createParams, setCreateParams] = useState<PostCreated>()
     const [messageApi, contextHolder] = message.useMessage();
     const [additionalPositions, setAdditionalPositions] = useState<AdditionalPosition[]>([{
-        namePosition: '',
-        number: null,
-        salary: null,
+        positionName: '',
+        amount: 0,
+        salary: 0,
     }]);
     const [additionalTrainingPositions, setAdditionalTrainingPositions] = useState<AdditionalTrainingPosition[]>([{
         namePosition: '',
@@ -62,8 +57,27 @@ const useAddNewPostHook = () => {
         salary: null,
     }]);
     const [open, setOpen] = useState(false);
-    const [options, setOptions] = useState<readonly PostOptionI[]>([]);
-    const loading = open && options.length === 0;
+    const [optionsAPI, setOptionsAPI] = useState<readonly PostOptionI[]>([]);
+    const options = postTitleOptionsAPI?.map((title) => ({
+        value: title.id,
+        label: title.postCategoryDescription
+    }));
+    const provinceOptions = province?.map((province) => ({
+        value: province.province_id,
+        label: province.province_name
+    }));
+    const districtOptions = district?.map((district) => ({
+        value: district.district_id,
+        label: district.district_name
+    }));
+
+    const wardOptions = ward?.map((ward) => ({
+        value: ward.ward_id,
+        label: ward.ward_name
+    }));
+
+
+    const loading = open && optionsAPI.length === 0;
     const FormatTime = 'HH:mm:ss'
     const isLoading = useAppSelector(state => state.postTitle.loading)
     const [openAddTitleModal, setOpenAddTitleModal] = useState(false)
@@ -82,10 +96,10 @@ const useAddNewPostHook = () => {
     };
     const onSubmit = async (data: any) => {
         const timeRange: Moment[] = getValues('TimeFrom-TimeTo')
-        const dateRange: Moment[] = getValues('DateFrom-DateTo')
+        const dateRange: Date[] = getValues('DateFrom-DateTo')
 
-        const formattedTimeRange = timeRange.map((time) => time.format('HH:mm:ss'));
-        const formattedDateRange = dateRange.map((time) => time.format(Formater));
+        const formattedTimeRange = timeRange.map((time) => time.format(FormatTime));
+        const formattedDateRange = dateRange.map((time) => time);
 
         const position: PositionCreatedI[] = (additionalPositions || []).map((_, index) => {
             const positionValue = getValues(`postPosition${index}`);
@@ -108,7 +122,7 @@ const useAddNewPostHook = () => {
             };
         });
         const params: PostCreated = {
-            postTitleId: getValues('postTitle'), //completetext box 
+            postTitleId: getValues('postTitle'), //completetext box     
             postDescription: getValues('postDescription'),
             dateFrom: formattedDateRange[0],
             dateTo: formattedDateRange[1],
@@ -134,8 +148,8 @@ const useAddNewPostHook = () => {
 
     const handleAddPosition = () => {
         const newPosition = {
-            namePosition: '',
-            number: null,
+            positionName: '',
+            amount: null,
             salary: null,
         };
         setError('');
@@ -170,12 +184,16 @@ const useAddNewPostHook = () => {
     };
     const fetchPostTitleOption = async () => {
         const result = await dispatch(getPostTitle());
-        unwrapResult(result)
+    }
+    const fetchProvinceOption = async () => {
+        const result = await dispatch(getProvince());
+        console.log('first: ', province)
     }
     const handleChangePosition = (value: PostOptionI | null) => {
         setValue('postTitle', value?.id)
     }
     useEffect(() => {
+        fetchProvinceOption()
         fetchPostTitleOption()
     }, [])
 
@@ -195,7 +213,7 @@ const useAddNewPostHook = () => {
             await sleep(1e1); // For demo purposes.
 
             if (active) {
-                setOptions([...postTitleOptionsAPI]);
+                setOptionsAPI([...postTitleOptionsAPI]);
             }
         })();
 
@@ -206,7 +224,7 @@ const useAddNewPostHook = () => {
 
     useEffect(() => {
         if (!open) {
-            setOptions([]);
+            setOptionsAPI([]);
         }
     }, [open]);
     const handler = {
@@ -237,7 +255,10 @@ const useAddNewPostHook = () => {
         error,
         additionalTrainingPositions,
         contextHolder,
-        openAddTitleModal
+        openAddTitleModal,
+        provinceOptions,
+        districtOptions,
+        wardOptions
     }
     return { handler, props }
 
