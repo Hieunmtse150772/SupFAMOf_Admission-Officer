@@ -1,12 +1,15 @@
 import { unwrapResult } from '@reduxjs/toolkit';
 import { message } from 'antd';
+import { RcFile, UploadProps } from 'antd/es/upload';
+import { UploadFile } from 'antd/lib/upload';
 import { useAppSelector } from 'app/hooks';
 import { useAppDispatch } from 'app/store';
-import { getProvince } from 'features/addressSlice';
+import { Dayjs } from 'dayjs';
+import { getDistrict, getProvince, getWard } from 'features/addressSlice';
 import { createPost } from 'features/postSlice';
 import { getPostTitle } from 'features/postTitleSlice';
 import useTitle from 'hooks/useTitle';
-import PostCreated, { PositionCreatedI, TrainingPositionsCreatedI } from 'models/postCreated.model';
+import PostCreated, { PositionCreatedI, PostCreatedV2, TrainingPositionsCreatedI } from 'models/postCreated.model';
 import PostOptionI from 'models/postOption.model';
 import { Moment } from 'moment';
 import { useEffect, useState } from 'react';
@@ -22,7 +25,16 @@ interface AdditionalTrainingPosition {
     number: number | null;
     salary: number | null;
 }
+type RangeType = 'start' | 'end';
 
+type RangeDisabledTime = (
+    now: Dayjs | null,
+    type: RangeType,
+) => {
+    disabledHours?: () => number[];
+    disabledMinutes?: (selectedHour: number) => number[];
+    disabledSeconds?: (selectedHour: number, selectedMinute: number) => number[];
+};
 const useAddNewPostHook = () => {
     const {
         handleSubmit,
@@ -81,6 +93,46 @@ const useAddNewPostHook = () => {
     const FormatTime = 'HH:mm:ss'
     const isLoading = useAppSelector(state => state.postTitle.loading)
     const [openAddTitleModal, setOpenAddTitleModal] = useState(false)
+    const [previewOpen, setPreviewOpen] = useState(false);
+    const [previewImage, setPreviewImage] = useState('');
+    const [previewTitle, setPreviewTitle] = useState('');
+    const [fileList, setFileList] = useState<UploadFile[]>([]);
+    const [provinceId, setProvinceId] = useState<number>(0);
+    const [districId, setDistricId] = useState<number>(0);
+    const disabledTime: RangeDisabledTime = (now, defaultType) => {
+        if (defaultType === 'start') {
+            // Vô hiệu hóa giờ từ 0-3 và từ 21-24 cho lựa chọn bắt đầu
+            return {
+                disabledHours: () => Array.from({ length: 4 }, (_, i) => i).concat(Array.from({ length: 4 }, (_, i) => i + 21)),
+            };
+        }
+        // Vô hiệu hóa giờ từ 0-3 và từ 21-24 cho lựa chọn kết thúc
+        return {
+            disabledHours: () => Array.from({ length: 4 }, (_, i) => i).concat(Array.from({ length: 4 }, (_, i) => i + 21)),
+        };
+    };
+
+    const getBase64 = (file: RcFile): Promise<string> =>
+        new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result as string);
+            reader.onerror = (error) => reject(error);
+        });
+    const handleCancel = () => setPreviewOpen(false);
+
+    const handlePreview = async (file: UploadFile) => {
+        if (!file.url && !file.preview) {
+            file.preview = await getBase64(file.originFileObj as RcFile);
+        }
+
+        setPreviewImage(file.url || (file.preview as string));
+        setPreviewOpen(true);
+        setPreviewTitle(file.name || file.url!.substring(file.url!.lastIndexOf('/') + 1));
+    };
+
+    const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) =>
+        setFileList(newFileList);
     const onCloseAddTitleModal = () => {
         setOpenAddTitleModal(false);
     };
@@ -100,7 +152,6 @@ const useAddNewPostHook = () => {
 
         const formattedTimeRange = timeRange.map((time) => time.format(FormatTime));
         const formattedDateRange = dateRange.map((time) => time);
-
         const position: PositionCreatedI[] = (additionalPositions || []).map((_, index) => {
             const positionValue = getValues(`postPosition${index}`);
             const numberStudentValue = getValues(`numberStudent${index}`);
@@ -145,7 +196,33 @@ const useAddNewPostHook = () => {
         })
         // You can perform your submission logic here
     };
-
+    const handleChangeProvince = (value: any) => {
+        console.log("value: ", value)
+        setProvinceId(value)
+        fetchDistrictOption(value)
+    }
+    const handleChangeDistrict = (value: any) => {
+        console.log("value: ", value)
+        setDistricId(value)
+        fetchWardOption(value)
+    }
+    const handleSubmitAnt = (props: any) => {
+        // Thực hiện các xử lý trước khi gửi biểu mẫu (nếu cần)
+        console.log(' props.form: ', props.form?.getFieldValue('postCategory'))
+        props.form?.submit();
+        console.log(props.getFieldValue('postPositions'))
+        const params: PostCreatedV2 = {
+            postCategoryId: props.getFieldValue('postCategory'),
+            postDescription: props.getFieldValue('postDescription'),
+            dateFrom: props.getFieldValue('postCategory'),
+            dateTo: props.getFieldValue('postCategory'),
+            priority: props.getFieldValue('postCategory'),
+            isPremium: props.getFieldValue('postCategory'),
+            postPositions: props.getFieldValue('postPositions'),
+            trainingPositions: props.getFieldValue('trainingPosition'),
+            postImg: ''
+        }
+    }
     const handleAddPosition = () => {
         const newPosition = {
             positionName: '',
@@ -188,6 +265,13 @@ const useAddNewPostHook = () => {
     const fetchProvinceOption = async () => {
         const result = await dispatch(getProvince());
         console.log('first: ', province)
+    }
+    const fetchDistrictOption = async (value: string) => {
+        const result = await dispatch(getDistrict(value));
+        console.log('first: ', province)
+    }
+    const fetchWardOption = async (value: string) => {
+        const result = await dispatch(getWard(value));
     }
     const handleChangePosition = (value: PostOptionI | null) => {
         setValue('postTitle', value?.id)
@@ -242,7 +326,13 @@ const useAddNewPostHook = () => {
         onCloseAddTitleModal,
         onOpenAddTitleModal,
         fetchPostTitleOption,
-        handleDeleteTrainingPosition
+        handleDeleteTrainingPosition,
+        handlePreview,
+        handleChange,
+        handleCancel,
+        handleSubmitAnt,
+        handleChangeProvince,
+        handleChangeDistrict
     }
     const props = {
         open,
@@ -258,7 +348,11 @@ const useAddNewPostHook = () => {
         openAddTitleModal,
         provinceOptions,
         districtOptions,
-        wardOptions
+        wardOptions,
+        previewOpen,
+        previewTitle,
+        previewImage,
+        fileList
     }
     return { handler, props }
 

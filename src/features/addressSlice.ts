@@ -37,7 +37,7 @@ export const getProvince = createAsyncThunk(
 );
 export const getDistrict = createAsyncThunk(
     'address/get-district',
-    async (id: number, { rejectWithValue }) => {
+    async (id: string, { rejectWithValue }) => {
         try {
             const result = await addressService.getDistrict(id)
             console.log('result: ', result)
@@ -50,7 +50,7 @@ export const getDistrict = createAsyncThunk(
 );
 export const getWard = createAsyncThunk(
     'address/get-ward',
-    async (id: number, { rejectWithValue }) => {
+    async (id: string, { rejectWithValue }) => {
         try {
             const result = await addressService.getWard(id)
             console.log('result: ', result)

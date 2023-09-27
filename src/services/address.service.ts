@@ -12,20 +12,12 @@ export const addressService = {
         const url = URL + '/api/province/';
         return axios.get(url);
     },
-    getDistrict: (id: number): Promise<AxiosResponse<DistrictI>> => {
-        const url = URL + '/api/distprict/';
-        return axios.get(url, {
-            params: {
-                province_id: id,
-            },
-        })
+    getDistrict: (id: string): Promise<AxiosResponse<DistrictI>> => {
+        const url = URL + `/api/province/district/${id}`;
+        return axios.get(url)
     },
-    getWard: (id: number): Promise<AxiosResponse<WardI>> => {
-        const url = URL + '/api/ward/';
-        return axios.get(url, {
-            params: {
-                district_id: id,
-            },
-        })
+    getWard: (id: string): Promise<AxiosResponse<WardI>> => {
+        const url = URL + `/api/province/ward/${id}`;
+        return axios.get(url)
     }
 };

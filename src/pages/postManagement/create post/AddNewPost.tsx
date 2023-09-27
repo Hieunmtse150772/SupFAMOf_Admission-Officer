@@ -1,18 +1,14 @@
 
 import { PlusOutlined } from '@ant-design/icons';
-import { FooterToolbar, ProForm, ProFormDateRangePicker, ProFormDigit, ProFormGroup, ProFormList, ProFormMoney, ProFormSelect, ProFormSlider, ProFormSwitch, ProFormText, ProFormTimePicker } from '@ant-design/pro-components';
+import { FooterToolbar, ProCard, ProForm, ProFormDateRangePicker, ProFormDigit, ProFormGroup, ProFormList, ProFormMoney, ProFormSelect, ProFormSlider, ProFormSwitch, ProFormText, ProFormTimePicker } from '@ant-design/pro-components';
 import { Box, Grid, Table, TableBody, TableCell, TableHead, TableRow, alpha, styled } from '@mui/material';
 import { Button, Divider, Modal, Upload } from 'antd';
-import { RcFile, UploadProps } from 'antd/es/upload';
-import { UploadFile } from 'antd/lib/upload';
 import { Small } from 'components/Typography';
-import { Dayjs } from 'dayjs';
 import useTitle from "hooks/useTitle";
 import { PositionI } from 'models/post.model';
 import { FC, useState } from "react";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'; // Import Quill styles
-import { primary } from 'theme/themeColors';
 import useAddNewPostHook from './useAddNewPostHook';
 
 
@@ -47,6 +43,8 @@ const dumbFormList: PositionI[] = [{
 },]
 const AddNewPost: FC = () => {
     const { handler, props } = useAddNewPostHook();
+    const { options, provinceOptions, districtOptions, wardOptions } = props
+
     const modules = {
         toolbar: [
             [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
@@ -56,58 +54,13 @@ const AddNewPost: FC = () => {
             ['link'],
         ],
     };
-    const getBase64 = (file: RcFile): Promise<string> =>
-        new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result as string);
-            reader.onerror = (error) => reject(error);
-        });
-    const { options, provinceOptions, districtOptions, wardOptions } = props
-    type RangeType = 'start' | 'end';
+
 
     const [position, setPosition] = useState<'bottom' | 'top'>('bottom');
 
-    const disabledTime: RangeDisabledTime = (now, defaultType) => {
-        if (defaultType === 'start') {
-            // Vô hiệu hóa giờ từ 0-3 và từ 21-24 cho lựa chọn bắt đầu
-            return {
-                disabledHours: () => Array.from({ length: 4 }, (_, i) => i).concat(Array.from({ length: 4 }, (_, i) => i + 21)),
-            };
-        }
-        // Vô hiệu hóa giờ từ 0-3 và từ 21-24 cho lựa chọn kết thúc
-        return {
-            disabledHours: () => Array.from({ length: 4 }, (_, i) => i).concat(Array.from({ length: 4 }, (_, i) => i + 21)),
-        };
-    };
-    type RangeDisabledTime = (
-        now: Dayjs | null,
-        type: RangeType,
-    ) => {
-        disabledHours?: () => number[];
-        disabledMinutes?: (selectedHour: number) => number[];
-        disabledSeconds?: (selectedHour: number, selectedMinute: number) => number[];
-    };
+
     useTitle("Add New Post");
-    const [previewOpen, setPreviewOpen] = useState(false);
-    const [previewImage, setPreviewImage] = useState('');
-    const [previewTitle, setPreviewTitle] = useState('');
-    const [fileList, setFileList] = useState<UploadFile[]>([]);
 
-    const handleCancel = () => setPreviewOpen(false);
-
-    const handlePreview = async (file: UploadFile) => {
-        if (!file.url && !file.preview) {
-            file.preview = await getBase64(file.originFileObj as RcFile);
-        }
-
-        setPreviewImage(file.url || (file.preview as string));
-        setPreviewOpen(true);
-        setPreviewTitle(file.name || file.url!.substring(file.url!.lastIndexOf('/') + 1));
-    };
-
-    const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) =>
-        setFileList(newFileList);
 
     const uploadButton = (
         <div>
@@ -125,11 +78,7 @@ const AddNewPost: FC = () => {
                             // Thực hiện các xử lý trước khi gửi biểu mẫu (nếu cần)
                             props.form?.resetFields();
                         }}>Reset</Button>
-                        <Button color='primary' type="primary" htmlType="submit" onClick={() => {
-                            // Thực hiện các xử lý trước khi gửi biểu mẫu (nếu cần)
-                            console.log(' props.form: ', props.form?.getFieldValue('postCategory'))
-                            props.form?.submit();
-                        }}
+                        <Button color='primary' type="primary" htmlType="submit" onClick={() => handler.handleSubmitAnt(props)}
                         >Submit</Button>
                     </FooterToolbar>)
                 }}>
@@ -161,23 +110,25 @@ const AddNewPost: FC = () => {
                                     name="province"
                                     label="Province"
                                     debounceTime={5}
+                                    onChange={(value) => handler.handleChangeProvince(value)}
                                     placeholder={'Select province'}
                                     rules={[{ required: true, message: 'Chose one options of province!' }]}
                                 />
                                 <ProFormSelect
                                     width="sm"
                                     options={districtOptions}
-                                    name="postDescription"
+                                    name="district"
                                     label="District"
                                     debounceTime={5}
                                     placeholder={'Select district'}
+                                    onChange={(value) => handler.handleChangeDistrict(value)}
                                     style={{ marginRight: 60 }}
                                     rules={[{ required: true, message: 'Chose one options of district!' }]}
                                 />
                                 <ProFormSelect
                                     width="sm"
                                     options={wardOptions}
-                                    name="postDescription"
+                                    name="ward"
                                     label="Ward"
                                     debounceTime={5}
                                     placeholder={'Select ward'}
@@ -198,14 +149,14 @@ const AddNewPost: FC = () => {
                             <Upload
                                 action="https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188"
                                 listType="picture-card"
-                                fileList={fileList}
-                                onPreview={handlePreview}
-                                onChange={handleChange}
+                                fileList={props.fileList}
+                                onPreview={handler.handlePreview}
+                                onChange={handler.handleChange}
                             >
-                                {fileList.length >= 8 ? null : uploadButton}
+                                {props.fileList.length >= 8 ? null : uploadButton}
                             </Upload>
-                            <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
-                                <img alt="example" style={{ width: '100%' }} src={previewImage} />
+                            <Modal open={props.previewOpen} title={props.previewTitle} footer={null} onCancel={handler.handleCancel}>
+                                <img alt="example" style={{ width: '100%' }} src={props.previewImage} />
                             </Modal>
                         </Grid>
                         <Grid item sm={7}>
@@ -245,14 +196,23 @@ const AddNewPost: FC = () => {
                         creatorRecord={{
                             name: 'position',
                         }}
-
+                        itemRender={({ listDom, action }, { index }) => (
+                            <ProCard
+                                bordered
+                                style={{ marginBlockEnd: 8 }}
+                                title={`Position${index + 1}`}
+                                extra={action}
+                                bodyStyle={{ paddingBlockEnd: 0 }}
+                            >
+                                {listDom}
+                            </ProCard>
+                        )}
                         initialValue={dumbFormList}
                     >
                         <ProFormGroup >
-
                             <Table>
                                 <TableHead >
-                                    <TableRow style={{ backgroundColor: primary.main, borderRadius: "10px", width: '1000px' }}>
+                                    <TableRow style={{ backgroundColor: '#f09101', borderRadius: "10px", width: '1000px' }}>
                                         <TableCell style={{ color: 'white' }}>Position name</TableCell>
                                         <TableCell style={{ color: 'white' }}>Document</TableCell>
                                         <TableCell style={{ color: 'white' }}>Certificate</TableCell>
@@ -262,7 +222,6 @@ const AddNewPost: FC = () => {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-
                                     <TableRow>
                                         <TableCell>
                                             <ProFormText
@@ -334,7 +293,7 @@ const AddNewPost: FC = () => {
                         Post training position
                     </Divider>
                     <ProFormList
-                        name="postPositions"
+                        name="trainingPosition"
                         rules={[
                             {
                                 required: true,
@@ -353,57 +312,96 @@ const AddNewPost: FC = () => {
                         creatorRecord={{
                             name: 'test',
                         }}
+                        itemRender={({ listDom, action }, { index }) => (
+                            <ProCard
+                                bordered
+                                style={{ marginBlockEnd: 8 }}
+                                title={`Position${index + 1}`}
+                                extra={action}
+                                bodyStyle={{ paddingBlockEnd: 0 }}
+                            >
+                                {listDom}
+                            </ProCard>
+                        )}
                         initialValue={dumbFormList}
                     >
-                        <ProFormGroup key="group">
-                            <ProFormText
-                                rules={[
-                                    {
-                                        required: true,
-                                    },
-                                ]}
-                                name="positionName"
-                                label="Position name"
-                                width="sm"
-                            />
-                            <ProFormSelect
-                                rules={[
-                                    {
-                                        required: true,
-                                    },
-                                ]}
-                                name="documentOption"
-                                label="Document Option"
-                                width="sm"
-                            />
-                            <ProFormTimePicker.RangePicker
-                                name="timeFrom-timeTo"
-                                label="TimeForm-To"
-                                width='sm'
-                                rules={[{ required: true, message: 'Chose time from & time to!' }]}
-                            // initialValue={[postInfo?.data.timeFrom, postInfo?.data.timeTo]}
-                            />
-                            <ProFormDigit
-                                name="amount"
-                                label="Number of colab"
-                                width="sm"
-                                rules={[
-                                    {
-                                        required: true,
-                                    },
-                                ]}
-                            />
-                            <ProFormMoney
-                                label="Salary"
-                                name="salary"
-                                width="sm"
-                                customSymbol="vnd"
-                                rules={[
-                                    {
-                                        required: true,
-                                    },
-                                ]}
-                            />
+                        <ProFormGroup >
+                            <Table>
+                                <TableHead >
+                                    <TableRow style={{ backgroundColor: 'gray', borderRadius: "10px", width: '1000px' }}>
+                                        <TableCell style={{ color: 'white' }}>Position name</TableCell>
+                                        <TableCell style={{ color: 'white' }}>Document</TableCell>
+                                        <TableCell style={{ color: 'white' }}>Certificate</TableCell>
+                                        <TableCell style={{ color: 'white' }}>TimeForm-To</TableCell>
+                                        <TableCell style={{ color: 'white' }}>Amount</TableCell>
+                                        <TableCell style={{ color: 'white' }}>Salary</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    <TableRow>
+                                        <TableCell>
+                                            <ProFormText
+                                                rules={[
+                                                    {
+                                                        required: true,
+                                                    },
+                                                ]}
+                                                name="positionName"
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <ProFormSelect
+                                                rules={[
+                                                    {
+                                                        required: false,
+                                                    },
+                                                ]}
+                                                name="documentOption"
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <ProFormSelect
+                                                rules={[
+                                                    {
+                                                        required: false,
+                                                    },
+                                                ]}
+                                                name="certificateOption"
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <ProFormTimePicker.RangePicker
+                                                name="timeFrom-timeTo"
+                                                rules={[{ required: true, message: 'Chose time from & time to!' }]}
+                                            // initialValue={[postInfo?.data.timeFrom, postInfo?.data.timeTo]}
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <ProFormDigit
+                                                name="amount"
+                                                rules={[
+                                                    {
+                                                        required: true,
+                                                    },
+                                                ]}
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <ProFormMoney
+                                                name="salary"
+                                                customSymbol="vnd"
+                                                rules={[
+                                                    {
+                                                        required: true,
+                                                    },
+                                                ]}
+                                            />
+                                        </TableCell>
+                                    </TableRow>
+
+                                </TableBody>
+
+                            </Table>
                         </ProFormGroup>
                     </ProFormList>
 
