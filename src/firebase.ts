@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, onAuthStateChanged, updateProfile, User } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, onAuthStateChanged, User } from "firebase/auth";
 import { getMessaging, Messaging } from "firebase/messaging";
 import { getDownloadURL, getStorage, ref, uploadBytesResumable, UploadTaskSnapshot } from "firebase/storage";
 import { useEffect, useState } from "react";
@@ -34,8 +34,8 @@ export function useAuth(): User | null {
 }
 
 // Storage
-export async function upload(file: File, currentUser: User, setLoading: React.Dispatch<React.SetStateAction<boolean>>): Promise<void> {
-  const fileRef = ref(storage, `images/${uuidv4()}`);
+export async function upload(file: File, setLoading: React.Dispatch<React.SetStateAction<boolean>>, setPhotoURL: React.Dispatch<React.SetStateAction<string>>): Promise<void> {
+  const fileRef = ref(storage, `images/admission/event${uuidv4()}`);
 
   setLoading(true);
 
@@ -45,11 +45,11 @@ export async function upload(file: File, currentUser: User, setLoading: React.Di
 
   const photoURL: string = await getDownloadURL(snapshot.ref);
 
-  await updateProfile(currentUser, { photoURL });
+  setPhotoURL(photoURL);
+  // await updateProfile(currentUser, { photoURL });
 
   setLoading(false);
 
-  window.location.reload();
 }
 
 // export async function uploadImgPost(
@@ -57,7 +57,7 @@ export async function upload(file: File, currentUser: User, setLoading: React.Di
 //   setLoading: React.Dispatch<React.SetStateAction<boolean>>,
 //   setPhotoURL: React.Dispatch<React.SetStateAction<{ url: string }[]>>,
 //   setIsCreated: React.Dispatch<React.SetStateAction<boolean>>
-// ): Promise<boolean> {
+// ): Promise<boolean | undefined> {
 //   setLoading(true);
 //   const urls: string[] = [];
 //   try {
@@ -84,3 +84,32 @@ export async function upload(file: File, currentUser: User, setLoading: React.Di
 //     return false;
 //   }
 // }
+// const uploadImageToFirebase = async (file: UploadFile) => {
+//   try {
+//     // Tạo một tham chiếu đến nơi bạn muốn lưu trữ hình ảnh trong Firebase Storage.
+    
+//     const storageRef = storage().ref(`path/to/upload/${file.name}`);
+
+//     // Upload hình ảnh lên Firebase Storage.
+//     const snapshot = await storageRef.put(file.originFileObj);
+
+//     // Lấy URL của hình ảnh sau khi đã upload lên Firebase.
+//     const downloadURL = await snapshot.ref.getDownloadURL();
+
+//     // Cập nhật thuộc tính "url" trong đối tượng "file".
+//     file.url = downloadURL;
+//     // Cập nhật trạng thái "done" nếu bạn muốn.
+//     file.status = 'done';
+
+//     // Trả về đối tượng file sau khi đã upload thành công.
+//     return file;
+//   } catch (error) {
+//     // Xử lý lỗi nếu có.
+//     console.error('Lỗi khi upload hình ảnh:', error);
+//     // Cập nhật trạng thái "error" và lưu thông báo lỗi nếu bạn muốn.
+//     file.status = 'error';
+//     file.error = error.message;
+//     return file;
+//   }
+// };
+

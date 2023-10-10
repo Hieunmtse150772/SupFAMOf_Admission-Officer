@@ -1,18 +1,21 @@
 
 type Post = {
     accountId: number,
-    postTitleId: number,
+    id: number;
+    postCategoryId: number,
     postCode: string,
     postDescription: string,
     dateFrom: Date,
     dateTo: Date,
     timeFrom: Date,
     timeTo: Date,
+    postImg: string;
     priority: number,
     isPremium: boolean,
     location: string,
     attendanceComplete: boolean,
     isActive: true,
+    status: number,
     isEnd: false,
     createAt: string,
     updateAt: string,
@@ -36,29 +39,38 @@ type Post = {
         },
         accountInformations: []
     },
-    postTitle: {
-        id: number,
-        postTitleDescription: string,
-        postTitleType: string,
-        isActive: boolean,
-        createAt: string,
-        updateAt: string
-    },
     postPositions: PositionI[],
-    trainingPositions: TrainingPositionsI[]
+    trainingPositions: TrainingPositionsI[];
+    postCategory: PostTitleI;
 
 }
 export type TrainingPositionsI = {
     id: number,
     postId: number,
+    trainingCertificateId: number;
     positionName: string,
+    documentId: number;
+    isBusService: boolean;
+    latitude: string;
+    longtitude: string;
+    timeFrom: Date;
+    timeTo: Date;
+    registerAmount: number;
     amount: number,
     salary: number
 }
 export type PositionI = {
     id: number,
     postId: number,
+    trainingCertificateId: number;
     positionName: string,
+    documentId: number;
+    isBusService: boolean;
+    latitude: string;
+    longtitude: string;
+    timeFrom: Date;
+    timeTo: Date;
+    registerAmount: number;
     amount: number,
     salary: number
 }
@@ -68,8 +80,8 @@ export type ListPositionI = {
 }
 export type PostTitleI = {
     id: number,
-    postTitleDescription: string,
-    postTitleType: string,
+    postCategoryDescription: string,
+    postCategoryType: string,
     isActive: boolean,
     createAt: string,
     updateAt: string

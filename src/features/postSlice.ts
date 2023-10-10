@@ -1,8 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import PostI from 'dtos/Post/Post View/post.dto';
+import SearchPostParams from 'dtos/Post/Post View/searchPost.dto';
 import Post from 'models/post.model';
-import PostCreated from 'models/postCreated.model';
+import { PostCreatedV2, PostUpdated } from 'models/postCreated.model';
 import { PostInfo } from 'models/postInfo.model';
 import { postService } from 'services/post.service';
 
@@ -11,6 +12,7 @@ interface PostState {
     error: string | null,
     posts: PostI;
     postInfo: PostInfo | null,
+    isDeleted: boolean,
 }
 
 const initialState: PostState = {
@@ -19,11 +21,12 @@ const initialState: PostState = {
     posts: {
         data: [] as Post[]
     },
-    postInfo: null
+    postInfo: null,
+    isDeleted: false
 }
 export const createPost = createAsyncThunk(
     'post/create-post',
-    async (payload: PostCreated, { rejectWithValue }) => {
+    async (payload: PostCreatedV2, { rejectWithValue }) => {
         try {
             const result = await postService.createPost(payload)
             return result;
@@ -34,9 +37,9 @@ export const createPost = createAsyncThunk(
     },
 );
 export const getPostByAccountId = createAsyncThunk('post/get-post-by-AccountId',
-    async (_, { rejectWithValue }) => {
+    async (params: SearchPostParams, { rejectWithValue }) => {
         try {
-            const result = await postService.getPostByAccountId();
+            const result = await postService.getPostByAccountId(params);
             return result
         } catch (error) {
             const axiosError = error as AxiosError;
@@ -54,9 +57,19 @@ export const getPostByPostId = createAsyncThunk('post/get-post-by-PostId',
         }
     })
 export const updatePostById = createAsyncThunk('post/update-post-by-PostId',
-    async (params: PostCreated, { rejectWithValue }) => {
+    async (params: PostUpdated, { rejectWithValue }) => {
         try {
             const result = await postService.updatePostById(params);
+            return result
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data)
+        }
+    })
+export const deletePostById = createAsyncThunk('post/delete-post-by-PostId',
+    async (id: string, { rejectWithValue }) => {
+        try {
+            const result = await postService.deletePostById(id);
             return result
         } catch (error) {
             const axiosError = error as AxiosError;
@@ -103,6 +116,20 @@ export const postSlice = createSlice({
             .addCase(getPostByPostId.rejected, (state, action) => {
                 state.error = String(action.payload);
                 state.loading = false;
+            })
+            .addCase(deletePostById.pending, (state) => {
+                state.loading = true;
+                state.error = "";
+                state.isDeleted = false;
+            })
+            .addCase(deletePostById.fulfilled, (state, action) => {
+                state.loading = false;
+                state.isDeleted = true;
+            })
+            .addCase(deletePostById.rejected, (state, action) => {
+                state.error = String(action.payload);
+                state.loading = false;
+                state.isDeleted = false;
             })
     },
 });

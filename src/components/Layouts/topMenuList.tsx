@@ -34,6 +34,12 @@ const index = [
   }
   ,
   {
+    title: "Post Registration",
+    Icon: Icons.RegistrationList,
+    path: "/dashboard/registration-list",
+  }
+  ,
+  {
     title: "Add post",
     Icon: Icons.AddPostIcon,
     path: "/dashboard/add-post",

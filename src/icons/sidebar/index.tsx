@@ -3,12 +3,14 @@ import {
   PersonAdd as AddUserIcon,
   Login as LoginIcon,
   LocalPostOffice as PostList,
+  AppRegistration as RegistrationList,
   GridView as UserGridIcon
 } from "@mui/icons-material";
 import DashboardIcon from "./Dashboard";
 import SessionsIcon from "./Sessions";
 import UserManagementIcon from "./UserManagement";
 import UserProfileIcon from "./UserProfile";
+
 
 // eslint-disable-next-line import/no-anonymous-default-export
 export default {
@@ -21,4 +23,5 @@ export default {
   DashboardIcon,
   UserProfileIcon,
   UserManagementIcon,
+  RegistrationList
 };

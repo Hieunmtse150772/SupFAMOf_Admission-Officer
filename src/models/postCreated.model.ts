@@ -12,6 +12,24 @@ type PostCreated = {
     postPositions: PositionCreatedI[],
     trainingPositions: TrainingPositionsCreatedI[]
 }
+export type PostUpdated = {
+    postId: number,
+    postCategoryId: number,
+    postDescription: string,
+    postImg: string,
+    postPositions: [
+        {
+            id: number,
+            positionName: string,
+            schoolName: string,
+            location: string,
+            latitude: number,
+            longtitude: number,
+            amount: number,
+            salary: number
+        }
+    ]
+}
 export type PositionCreatedI = {
     positionName: string,
     amount: number | null,
@@ -38,9 +56,9 @@ export type PositionCreatedV2I = {
     documentId: number,
     positionName: string,
     schoolName: string,
-    location: number,
-    latitude: number,
-    longtitude: string,
+    location: string,
+    latitude: string,
+    longitude: string,
     timeFrom: {
         ticks: number
     },
@@ -58,7 +76,7 @@ export type TrainingPositionsCreatedV2I = {
     schoolName: string,
     location: string,
     latitude: number,
-    longtitude: number,
+    longitude: number,
     timeFrom: {
         ticks: number
     },
@@ -69,4 +87,5 @@ export type TrainingPositionsCreatedV2I = {
     amount: number,
     salary: number
 }
+
 export default PostCreated;
