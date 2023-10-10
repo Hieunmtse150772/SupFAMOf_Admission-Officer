@@ -38,10 +38,13 @@ const AddNewUser = Loadable(
   lazy(() => import("./pages/userManagement/AddNewUser"))
 );
 const AddNewPost = Loadable(
-  lazy(() => import("./pages/postManagement/create post/AddNewPost"))
+  lazy(() => import("./pages/postManagement/CreatePost/AddNewPost"))
 );
 const ViewPostList = Loadable(
-  lazy(() => import("./pages/postManagement/view post/ViewPostList"))
+  lazy(() => import("./pages/postManagement/ViewPost/ViewPostList"))
+);
+const ViewRegistration = Loadable(
+  lazy(() => import("./pages/registerManagement/ViewRegistration/ViewRegistration"))
 );
 // error
 const Error = Loadable(lazy(() => import("./pages/404")));
@@ -113,6 +116,10 @@ const routes = [
         path: "add-post",
         element: <AddNewPost />,
       },
+      {
+        path: "registration-list",
+        element: <ViewRegistration />
+      }
     ],
   },
   {

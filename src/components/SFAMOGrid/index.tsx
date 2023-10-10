@@ -1,27 +1,26 @@
 import { ProColumns, ProTable } from "@ant-design/pro-components";
 import { PlusOneOutlined } from "@mui/icons-material";
 import { Button } from "@mui/material";
-import { Badge, Table, TableColumnsType } from "antd";
 import { TableLocale } from "antd/es/table/interface";
 import { ListPositionI } from "models/post.model";
 import { useState } from "react";
-
+import './style.scss';
 interface SFAMOGridProps {
     isLoading: boolean;
     rows: any[];
     columns: ProColumns[];
     rowsExpanded: ListPositionI[];
+    page: number;
+    total?: number;
+    pageSize: number;
+    onPageChange: (page: number) => void;
+    onChangePageSize: (size: number) => void;
+    pageSizeOptions: number[];
+    expandedRowRender: (record: any) => JSX.Element | null;
 }
-interface ExpandedDataType {
-    id: number,
-    postId: number,
-    positionName: string,
-    amount: number,
-    salary: number
-}
-const SFAMOGrid = ({ isLoading, rows, columns, rowsExpanded }: SFAMOGridProps) => {
+const SFAMOGrid = ({ isLoading, rows, columns, rowsExpanded, page, total, pageSize, onPageChange, onChangePageSize, pageSizeOptions, expandedRowRender }: SFAMOGridProps) => {
     const [selectedRowsState, setSelectedRows] = useState<any[]>([]);
-
+    console.log('total: ', total)
     const customLocale: TableLocale = {
         filterTitle: 'Custom Filter Title',
         filterConfirm: 'Custom Confirm',
@@ -32,45 +31,41 @@ const SFAMOGrid = ({ isLoading, rows, columns, rowsExpanded }: SFAMOGridProps) =
     const handleSubmit = (value: any) => {
         console.log(value)
     }
-    const expandedRowRender = (record: any) => {
-        const columnsExpanded: TableColumnsType<ExpandedDataType> = [
-            { title: 'id', dataIndex: 'id', key: 'id' },
-            { title: 'postId', dataIndex: 'postId', key: 'postId' },
-            {
-                title: 'Status',
-                key: 'state',
-                render: () => <Badge status="success" text="Finished" />,
-            },
-            { title: 'positionName', dataIndex: 'positionName', key: 'positionName' },
-            { title: 'amount', dataIndex: 'amount', key: 'amount' },
-            { title: 'salary', dataIndex: 'salary', key: 'salary' },
 
-        ];
 
-        const data = rowsExpanded.find((value) => value.key === record?.id);
-        console.log('data: ', data)
-        return <Table columns={columnsExpanded} dataSource={data?.position} pagination={false} />;
+    const customPagination = {
+        current: page,
+        pageSize: pageSize,
+        total: total,
+        showSizeChanger: true,
+        showQuickJumper: true,
+        pageSizeOptions: pageSizeOptions,
+        onChange: (page: number) => onPageChange(page),
+        onShowSizeChange: (current: number, size: number) => onChangePageSize(size),
     };
     return (
-        <ProTable
-            expandable={{ expandedRowRender }}
+        <>
+            <ProTable
+                expandable={{ expandedRowRender }}
 
-            headerTitle={'Post list'}
-            toolBarRender={() => [
-                <Button color='primary' variant="contained" style={{ float: 'right' }}><PlusOneOutlined />New</Button>
+                headerTitle={'POST LIST'}
+                toolBarRender={() => [
+                    <Button color='primary' variant="contained" style={{ float: 'right' }}><PlusOneOutlined />New</Button>
 
-            ]}
-            onSubmit={value => handleSubmit(value)}
-            dataSource={rows} columns={columns} loading={isLoading}
-            rowSelection={{
-                onChange: (_, selectedRows) => {
-                    setSelectedRows(selectedRows);
-                },
-            }}
-            locale={customLocale}
-        >
+                ]}
+                onSubmit={value => handleSubmit(value)}
+                dataSource={rows} columns={columns} loading={isLoading}
+                rowSelection={{
+                    onChange: (_, selectedRows) => {
+                        setSelectedRows(selectedRows);
+                    },
+                }}
+                locale={customLocale}
+                pagination={customPagination}
 
-        </ProTable>
+            >
+            </ProTable>
+        </>
     )
 }
 

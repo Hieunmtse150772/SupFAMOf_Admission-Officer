@@ -1,5 +1,8 @@
-import { DrawerForm, ProForm, ProFormText } from '@ant-design/pro-components';
+import { DrawerForm, ProForm, ProFormDatePicker, ProFormText } from '@ant-design/pro-components';
 import { Select } from 'antd';
+import { useAppDispatch } from 'app/store';
+import updateAccountDto from 'dtos/Auth/update.account.dto';
+import { updateUserProfile } from 'features/authSlice';
 import UserInfo from 'models/userInfor.model';
 import { FC } from 'react';
 
@@ -12,19 +15,28 @@ interface ProfileEditDrawerProps {
     setOpenSetting: React.Dispatch<React.SetStateAction<boolean>>
 }
 const ProfileEditDrawer: FC<ProfileEditDrawerProps> = ({ setOpenSetting, onClose, userInfo, open }) => {
+    const Formatter = 'DD/MM/YYYY';
+    const dispatch = useAppDispatch();
     const handleSubmit = (value: any) => {
         console.log("value: ", value)
     }
     const handleUpdateProfile = async (value: any) => {
+        const payload: updateAccountDto = {
+            dateOfBirth: value?.dateOfBirth,
+            imgUrl: value?.imgUrl,
+            name: value?.name,
+            phone: value?.phoneNumber
+        }
+        dispatch(updateUserProfile(value))
+        console.log('User Infor: ', userInfo?.id)
         console.log("value: ", value)
-
     }
     return (
 
         <>
             <DrawerForm
                 title="Edit profile infomation"
-                width={720}
+                width={800}
                 open={open}
                 onFinish={(value) => handleUpdateProfile(value)}
                 onOpenChange={setOpenSetting}
@@ -50,8 +62,8 @@ const ProfileEditDrawer: FC<ProfileEditDrawerProps> = ({ setOpenSetting, onClose
                         ]}
                     />
                     <ProFormText
-                        width="sm"
-                        name="Phone number"
+                        width="md"
+                        name="phoneNumber"
                         label="Phone number"
                         initialValue={userInfo?.phone}
                         rules={[
@@ -69,6 +81,18 @@ const ProfileEditDrawer: FC<ProfileEditDrawerProps> = ({ setOpenSetting, onClose
                         label="Email"
                         initialValue={userInfo?.email}
                         disabled
+                    />
+                    <ProFormDatePicker
+                        width="md"
+                        name="dateOfBirth"
+                        label="Date of Birth"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Date of Birth is required!'
+                            },
+                        ]}
+                    // initialValue={moment(userInfo?.dateOfBirth).format(Formatter)}
                     />
                 </ProForm.Group>
             </DrawerForm>

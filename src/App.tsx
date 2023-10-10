@@ -1,13 +1,15 @@
+import { Close } from "@mui/icons-material";
 import { LocalizationProvider } from "@mui/lab";
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
-import { CssBaseline, ThemeProvider } from "@mui/material";
+import { CssBaseline, IconButton, ThemeProvider } from "@mui/material";
 import { StyledEngineProvider } from "@mui/material/styles";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { useAppDispatch } from "app/store";
 import AppConstants from "enums/app";
 import { getUserProfile } from "features/authSlice";
 import { getToken } from "firebase/messaging";
-import { FC, useEffect } from "react";
+import { SnackbarProvider } from "notistack";
+import React, { FC, RefObject, useEffect } from "react";
 import { Toaster } from "react-hot-toast";
 import { useNavigate, useRoutes } from "react-router-dom";
 import './app.scss';
@@ -60,19 +62,37 @@ const App: FC = () => {
     // Req user for notification permission
     requestPermission();
   }, []);
+  const notistackRef: RefObject<SnackbarProvider> = React.createRef();
 
+  const onClickDismiss = (key: string | number) => () => {
+    notistackRef.current?.closeSnackbar(key);
+  };
   return (
-    <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={appTheme}>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
+    <SnackbarProvider
+      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+      maxSnack={3}
+      ref={notistackRef}
+      autoHideDuration={3000}
+      action={key => (
+        <IconButton onClick={onClickDismiss(key)} color="secondary">
+          <Close />
+        </IconButton>
+      )}
+      dense
+    >
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={appTheme}>
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
 
-          <CssBaseline />
-          <Toaster toastOptions={toasterOptions} />
-          {allPages}
-        </LocalizationProvider>
+            <CssBaseline />
+            <Toaster toastOptions={toasterOptions} />
+            {allPages}
+          </LocalizationProvider>
 
-      </ThemeProvider>
-    </StyledEngineProvider>
+        </ThemeProvider>
+      </StyledEngineProvider>
+    </SnackbarProvider>
+
   );
 };
 

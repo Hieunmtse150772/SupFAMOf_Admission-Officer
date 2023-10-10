@@ -1,9 +1,9 @@
 import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
+import updateAccountDto from 'dtos/Auth/update.account.dto';
 import { signInWithPopup } from 'firebase/auth';
 import UserInfo from 'models/userInfor.model';
 import UserInfoLogin from 'models/userInforLogin.model';
-import { RootState } from '../app/store';
 import AppConstants from '../enums/app';
 import { auth, provider } from '../firebase';
 import { authService } from '../services/auth.service';
@@ -11,7 +11,7 @@ import { authService } from '../services/auth.service';
 interface AuthState {
   isAuthenticated: boolean;
   user: UserInfoLogin | null;
-  userInfo: UserInfo | null;
+  userInfo: UserInfo;
   loading: boolean,
   error: string | null,
   // Thêm các trường khác liên quan đến người dùng nếu cần thiết
@@ -20,9 +20,28 @@ interface AuthState {
 const initialState: AuthState = {
   isAuthenticated: false,
   user: null,
-  userInfo: null,
   loading: false,
-  error: ''
+  error: '',
+  userInfo: {
+    id: 0,
+    roleId: 0,
+    accountInformationId: 0,
+    name: '',
+    email: '',
+    phone: '',
+    dateOfBirth: '',
+    imgUrl: '',
+    postPermission: false,
+    isPremium: false,
+    isActive: false,
+    createAt: '',
+    updateAt: '',
+    accountMonthlyReport: {
+      totalPost: 0,
+      totalSalary: 0
+    },
+    accountInformations: []
+  }
 }
 export const loginGoogle = createAsyncThunk(
   'auth/login-google',
@@ -58,10 +77,10 @@ export const getUserProfile = createAsyncThunk(
 );
 export const updateUserProfile = createAsyncThunk(
   'auth/get-user_profile',
-  async (_, { rejectWithValue }) => {
+  async (payload: updateAccountDto, { rejectWithValue }) => {
     try {
 
-      const result = await authService.updateUserProfile()
+      const result = await authService.updateUserProfile(payload)
       return result.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -133,5 +152,4 @@ export const authSlice = createSlice({
   },
 });
 
-export const selectUser = (state: RootState) => state.auth.user;
 export default authSlice.reducer;

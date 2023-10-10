@@ -7,11 +7,11 @@ import axiosClient from './axiosClient';
 
 export const postTitleService = {
     getPostTitle: (): Promise<AxiosResponse<PostTitleOption>> => {
-        const url = '/admission/admission-post-title/getAll?pagesize=100';
+        const url = '/admission/admission-post-category/getAll?pagesize=100';
         return axiosClient.get(url);
     },
     createPostTitle: (payload: PostTitleCreated): Promise<AxiosResponse<PostTitleOption>> => {
-        const url = '/admission/admission-post-title/create';
+        const url = '/admission/admission-post-category/create';
         return axiosClient.post(url, payload);
     }
 };

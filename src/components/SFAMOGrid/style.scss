@@ -1,0 +1,14 @@
+.ant-table-content {
+  .ant-table-thead {
+    tr {
+      td {
+        background-color: #f9a62a;
+      }
+      th {
+        background-color: #f9a62a;
+        ::after {
+        }
+      }
+    }
+  }
+}

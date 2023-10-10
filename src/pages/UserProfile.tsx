@@ -1,11 +1,12 @@
-import SettingsIcon from '@mui/icons-material/Settings';
+import ModeOutlinedIcon from '@mui/icons-material/ModeOutlined';
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { Box, Card, Grid, Tab, styled } from "@mui/material";
 import { useAppSelector } from "app/hooks";
+import AvatarChangeModal from 'components/AvatarChangeModal/AvatarChangeModal';
+import AvatarFilePicker from 'components/AvatarFilePicker';
 import FlexBox from "components/FlexBox";
 import SearchInput from "components/SearchInput";
 import { H3 } from "components/Typography";
-import UkoAvatar from "components/UkoAvatar";
 import FollowerCard from "components/userProfile/FollowerCard";
 import FriendCard from "components/userProfile/FriendCard";
 import Gallery from "components/userProfile/Gallery";
@@ -16,6 +17,7 @@ import UserInfo from "models/userInforLogin.model";
 import { FC, SyntheticEvent, useEffect, useState } from "react";
 import ProfileEditDrawer from './drawer/profileEditDrawer';
 import useUserProfileHook from './useUserProfileHook';
+
 // styled components
 const StyledCard = styled(Card)(() => ({
   position: "relative",
@@ -56,6 +58,19 @@ const StyledTabPanel = styled(TabPanel)(() => ({
 
 const UserProfile: FC = () => {
   const { handler, props } = useUserProfileHook();
+  const [imageUrl, setImageUrl] = useState<any>()
+  const [openModal, setOpenModal] = useState<boolean>(false)
+
+  const handleOpenEditAvatarModal = () => {
+    setOpenModal(true)
+  }
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    // if (event.target.files) {
+    //   await setImageUrl(event.target.files[0]);
+    // }
+  };
   // change navbar title
   useTitle("User Profile");
   // const [userInfo, setUserInfo] = useState<UserInfo>()
@@ -82,7 +97,7 @@ const UserProfile: FC = () => {
         <StyledCard>
           <Box sx={{ height: 200, width: "100%", overflow: "hidden" }}>
             <img
-              src={"/static/cover/cover-2.png"}
+              src={"/static/cover/dai-hoc-fpt-tp-hcm-1.jpeg"}
               alt="User Cover"
               height="100%"
               width="100%"
@@ -97,14 +112,13 @@ const UserProfile: FC = () => {
             justifyContent="space-between"
           >
             <ContentWrapper>
-              <UkoAvatar
-                src={userInfo?.imgUrl}
-                sx={{
-                  border: 4,
-                  width: 100,
-                  height: 100,
-                  borderColor: "background.paper",
-                }}
+
+              <AvatarFilePicker
+                handleOpenEditAvatarModal={handleOpenEditAvatarModal}
+                imgUrl={userInfo?.imgUrl}
+                name='imgUrl'
+                onChange={handleFileUpload}
+              // src={userInfo?.imgUrl}
               />
 
               <Box marginLeft={3} marginTop={3}>
@@ -114,14 +128,11 @@ const UserProfile: FC = () => {
             </ContentWrapper>
 
             <StyledTabList onChange={handleChange} >
-              <StyledTab label="Profile" value="1" />
-              <StyledTab label="Follower" value="2" />
-              <StyledTab label="Friends" value="3" />
-              <StyledTab label="Gallery" value="4" />
-
             </StyledTabList>
-            <SettingsIcon fontSize='medium' sx={{ "&:hover": { color: "#F09101" } }} onClick={handler.handleOpenSetting} />
-            {props.openSetting && <ProfileEditDrawer setOpenSetting={handler.setOpenSetting} onClose={handler.onClose} userInfo={userInfo} open={props.openSetting} />}
+            <Box style={{ borderRadius: 50, backgroundColor: '#E5EAEA', width: 40, height: 40, display: 'flex' }} sx={{ "&:hover": { color: "#F09101" } }} onClick={handler.handleOpenSetting} >
+              <ModeOutlinedIcon fontSize='medium' sx={{ margin: 'auto' }} />
+              {props.openSetting && <ProfileEditDrawer setOpenSetting={handler.setOpenSetting} onClose={handler.onClose} userInfo={userInfo} open={props.openSetting} />}
+            </Box>
 
           </FlexBox>
         </StyledCard>
@@ -159,6 +170,7 @@ const UserProfile: FC = () => {
           </StyledTabPanel>
         </Box>
       </TabContext>
+      <AvatarChangeModal isModalOpen={openModal} avatar={userInfo?.imgUrl} />
     </Box>
   );
 };

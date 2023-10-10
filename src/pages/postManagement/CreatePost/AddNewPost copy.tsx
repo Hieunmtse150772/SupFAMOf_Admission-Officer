@@ -3,11 +3,9 @@ import { PlusOutlined } from '@ant-design/icons';
 import { FooterToolbar, ProFormText } from '@ant-design/pro-components';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import {
-    Autocomplete,
     Box,
     Button,
     Checkbox,
-    CircularProgress,
     Grid,
     Switch,
     Table,
@@ -27,11 +25,14 @@ import { Dayjs } from 'dayjs';
 import useTitle from "hooks/useTitle";
 import DeleteIcon from 'icons/DeleteIcon';
 import AddPostTitleModal from 'pages/modal/AddPostTitleModal';
-import { FC, Fragment } from "react";
+import { FC } from "react";
 import { Controller } from "react-hook-form";
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css'; // Import Quill styles
 import { primary } from 'theme/themeColors';
 import './styles.scss';
 import useAddNewPostHook from './useAddNewPostHook';
+
 // styled components
 const SwitchWrapper = styled(Box)(() => ({
     display: "flex",
@@ -47,6 +48,15 @@ const initialValues = {
 };
 const AddNewPost: FC = () => {
     const { handler, props } = useAddNewPostHook();
+    const modules = {
+        toolbar: [
+            [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
+            ['bold', 'italic', 'underline', 'strike'],
+            [{ 'color': [] }, { 'background': [] }],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+            ['link'],
+        ],
+    };
     const { loading, open, options, control, errors, piority, additionalPositions, error, additionalTrainingPositions, contextHolder, openAddTitleModal } = props
     const { TextArea } = Input;
     const defaultType = 'start'; // Giá trị mặc định cho tham số "type"
@@ -87,12 +97,12 @@ const AddNewPost: FC = () => {
                             Post infomation
                         </Divider>
                         <Grid spacing={2} container>
-                            <Grid item sm={7} xs={12} container spacing={3}>
-                                <Grid item sm={12} xs={12} >
+                            <Grid item sm={7} xs={12} container>
+                                <Grid item sm={12} xs={12}>
                                     <Small display="block" fontWeight={400}>
                                         Postitle
                                     </Small>
-                                    <Autocomplete
+                                    {/* <Autocomplete
                                         id="postTitle-option"
                                         open={open}
                                         onOpen={() => {
@@ -103,8 +113,8 @@ const AddNewPost: FC = () => {
                                         }}
                                         value={options[0]}
                                         onChange={(event, newValue) => handler.handleChangePosition(newValue)}
-                                        isOptionEqualToValue={(option, value) => option.postTitleDescription === value.postTitleDescription}
-                                        getOptionLabel={(option) => option.postTitleDescription}
+                                        isOptionEqualToValue={(option, value) => option.postCategoryDescription === value.postCategoryDescription}
+                                        getOptionLabel={(option) => option.postCategoryDescription}
                                         options={options}
                                         loading={loading}
                                         renderInput={(params) => (
@@ -122,9 +132,9 @@ const AddNewPost: FC = () => {
                                                 }}
                                             />
                                         )}
-                                    />
+                                    /> */}
                                 </Grid>
-                                <Grid item sm={12} xs={12} >
+                                <Grid item sm={12} xs={12} style={{ marginBottom: 20 }}>
                                     <Small display="block" fontWeight={400}>
                                         Description
                                     </Small>
@@ -134,12 +144,12 @@ const AddNewPost: FC = () => {
                                         defaultValue={initialValues.description}
                                         render={({ field }) => (
                                             <div>
-                                                <TextArea
-                                                    showCount
-                                                    maxLength={2000}
-                                                    rows={15}
-                                                    placeholder="Description"
+                                                <ReactQuill
+                                                    modules={modules}
                                                     {...field}
+                                                    value={field.value || ''} // Ensure value is always a string
+                                                    onChange={(newValue: string) => field.onChange(newValue)}
+                                                    style={{ height: 260, paddingBottom: 30 }}
                                                 />
                                                 {errors['postDescription'] && (
                                                     <span className="error">Description is required</span>
@@ -250,7 +260,7 @@ const AddNewPost: FC = () => {
 
                         </Grid>
 
-                        <Grid item md={12} xs={12}>
+                        <Grid item md={12} xs={12} marginTop={5}>
                             <Divider orientation="left">
                                 Position infomation
                             </Divider>
@@ -303,7 +313,7 @@ const AddNewPost: FC = () => {
                                                     <Controller
                                                         name={`postPosition${index}`}
                                                         control={control}
-                                                        defaultValue={position.namePosition}
+                                                        defaultValue={position.positionName}
                                                         render={({ field }) => (
                                                             <div>
                                                                 <LightTextField
@@ -324,7 +334,7 @@ const AddNewPost: FC = () => {
                                                 <TableCell> <Controller
                                                     name={`numberStudent${index}`}
                                                     control={control}
-                                                    defaultValue={position.number}
+                                                    defaultValue={position.amount}
                                                     render={({ field }) => (
                                                         <div>
                                                             <InputNumber
