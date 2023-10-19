@@ -13,5 +13,13 @@ export const documentService = {
     createDocument: (payload: DocumentCreated): Promise<AxiosResponse<DocumentOption>> => {
         const url = '/admission/admission-document';
         return axiosClient.post(url, payload);
+    },
+    deleteDocument: (id: string): Promise<AxiosResponse<DocumentOption>> => {
+        const url = '/admission/admission-document';
+        return axiosClient.delete(url, {
+            params: {
+                documentId: id,
+            },
+        });
     }
 };

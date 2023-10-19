@@ -1,17 +1,17 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import PostI from 'dtos/Post/Post View/post.dto';
+import PostInfoDto from 'dtos/Post/Post View/postInfo.dto';
 import SearchPostParams from 'dtos/Post/Post View/searchPost.dto';
-import Post from 'models/post.model';
+import PostInfo from 'models/post.model';
 import { PostCreatedV2, PostUpdated } from 'models/postCreated.model';
-import { PostInfo } from 'models/postInfo.model';
 import { postService } from 'services/post.service';
 
 interface PostState {
     loading: boolean,
     error: string | null,
     posts: PostI;
-    postInfo: PostInfo | null,
+    postInfo: PostInfoDto | null,
     isDeleted: boolean,
 }
 
@@ -19,7 +19,7 @@ const initialState: PostState = {
     loading: false,
     error: '',
     posts: {
-        data: [] as Post[]
+        data: [] as PostInfo[]
     },
     postInfo: null,
     isDeleted: false
@@ -68,6 +68,16 @@ export const updatePostById = createAsyncThunk('post/update-post-by-PostId',
     })
 export const deletePostById = createAsyncThunk('post/delete-post-by-PostId',
     async (id: string, { rejectWithValue }) => {
+        try {
+            const result = await postService.deletePostById(id);
+            return result
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data)
+        }
+    })
+export const confirmColabborator = createAsyncThunk('post/confirm-post-collabList',
+    async (id: number[], { rejectWithValue }) => {
         try {
             const result = await postService.deletePostById(id);
             return result

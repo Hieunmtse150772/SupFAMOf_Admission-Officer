@@ -7,6 +7,7 @@ import { Button, Image, Table, TableColumnsType } from 'antd';
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import Status from 'enums/status.enum';
+import { getCollabByPositionId } from 'features/collabSlice';
 import { getPostByAccountId } from "features/postSlice";
 import { ListPositionI } from 'models/post.model';
 import moment from "moment";
@@ -43,13 +44,16 @@ function useViewRegistrationHook() {
     const [openEditPostModal, setOpenEditPostModal] = useState<boolean>(false);
     const [openConFirmModal, setOpenConfirmModal] = useState<boolean>(false);
     const [editPostModalId, setEditPostModalId] = useState<string>('');
-    const { posts, loading, isDeleted } = useAppSelector(state => state.post);
+    const { posts, isDeleted } = useAppSelector(state => state.post);
     const postInfoAPI = useAppSelector(state => state.post.postInfo);
     const isLoading = useAppSelector(state => state.post.loading);
+    const { collabs, loading } = useAppSelector(state => state.collab)
+    const collabsList = collabs?.data ? collabs?.data : []
     const [postInfo, setPostInfo] = useState<any>();
     const [page, setPage] = useState<number>(1);
     const pageSizeOptions = [10, 20, 30]; // Các tùy chọn cho pageSize
-    const total = posts?.metadata?.total
+    const total = posts?.metadata?.total;
+    const [totalCollab, setTotalCollab] = useState<number>(0);
     const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
 
     const columns: ProColumns[] = [
@@ -144,8 +148,6 @@ function useViewRegistrationHook() {
                 }
             },
             render: (value, valueEnum) => {
-                console.log("Rendering value:", value);
-                console.log("Rendering valueEnum:", valueEnum);
                 let color = grey[400].toString();
                 let statusText = 'Unknown';
                 switch (valueEnum?.status) {
@@ -213,12 +215,18 @@ function useViewRegistrationHook() {
         return <Table columns={columnsExpanded} dataSource={data?.position} pagination={false} />;
     };
     const dispatch = useAppDispatch();
-    const handleOpenConfirmModal = (value: any) => {
-        console.log('value: ', value)
-        setOpenConfirmModal(true)
+    const handleOpenConfirmModal = async (value: any) => {
+        setTotalCollab(value?.amount)
+        const result = await dispatch(getCollabByPositionId(value?.id));
+        if (result) {
+            setOpenConfirmModal(true)
+        }
     }
     const handleEndingEvent = (value: any) => {
         console.log('value: ', value)
+    }
+    const handleSubmit = async (value: any) => {
+        console.log('list: ', value)
     }
     const onPageChange = (value: any) => {
         setPage(value)
@@ -250,6 +258,7 @@ function useViewRegistrationHook() {
         // ...
     }));
     console.log('trainingposition: ', rowsExpanded)
+
     const fetchPostList = async () => {
         await dispatch(getPostByAccountId({ page: page, PageSize: pageSize }))
     }
@@ -262,8 +271,8 @@ function useViewRegistrationHook() {
         fetchPostList()
     }, [isDeleted])
 
-    const handler = { setCurrentRow, setShowDetail, setOpenConfirmModal, onPageChange, setPageSize, onChangePageSize }
-    const props = { openConFirmModal, total, columns, posts, loading, rows, showDetail, rowsExpanded, postInfo, postInfoAPI, isLoading, page, pageSize, pageSizeOptions }
+    const handler = { setCurrentRow, setShowDetail, setOpenConfirmModal, onPageChange, setPageSize, onChangePageSize, handleSubmit }
+    const props = { openConFirmModal, total, columns, posts, loading, rows, showDetail, rowsExpanded, postInfo, postInfoAPI, isLoading, page, pageSize, pageSizeOptions, totalCollab, collabs, collabsList }
     return {
         handler,
         props,

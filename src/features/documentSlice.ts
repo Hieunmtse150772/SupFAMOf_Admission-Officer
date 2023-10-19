@@ -39,8 +39,20 @@ export const createDocument = createAsyncThunk(
         }
     },
 );
+export const deleteDocument = createAsyncThunk(
+    'auth/delete-document',
+    async (id: string, { rejectWithValue }) => {
+        try {
+            const result = await documentService.deleteDocument(id)
+            return result;
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data);
+        }
+    },
+);
 export const documentSlice = createSlice({
-    name: 'post',
+    name: 'document',
     initialState,
     reducers: {},
     extraReducers: (builder) => {
@@ -65,6 +77,17 @@ export const documentSlice = createSlice({
                 state.loading = false;
             })
             .addCase(createDocument.rejected, (state, action) => {
+                state.error = String(action.payload);
+                state.loading = false;
+            })
+            .addCase(deleteDocument.pending, (state) => {
+                state.loading = true;
+                state.error = "";
+            })
+            .addCase(deleteDocument.fulfilled, (state) => {
+                state.loading = false;
+            })
+            .addCase(deleteDocument.rejected, (state, action) => {
                 state.error = String(action.payload);
                 state.loading = false;
             })

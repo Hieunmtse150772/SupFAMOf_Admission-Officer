@@ -6,7 +6,7 @@ import ProvinceI from 'dtos/Address/province.dto';
 import WardI from 'dtos/Address/ward.dto';
 
 const URL = 'https://vapi.vnappmob.com'
-
+const ULRCoordinates = ''
 export const addressService = {
     getProvince: (): Promise<AxiosResponse<ProvinceI>> => {
         const url = URL + '/api/province/';
@@ -17,6 +17,10 @@ export const addressService = {
         return axios.get(url)
     },
     getWard: (id: string): Promise<AxiosResponse<WardI>> => {
+        const url = URL + `/api/province/ward/${id}`;
+        return axios.get(url)
+    },
+    getCoordinates: (id: string): Promise<AxiosResponse<WardI>> => {
         const url = URL + `/api/province/ward/${id}`;
         return axios.get(url)
     }

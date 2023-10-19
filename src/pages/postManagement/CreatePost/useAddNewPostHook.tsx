@@ -32,6 +32,7 @@ interface AdditionalTrainingPosition {
 }
 interface PostPosition {
     positionName: string;
+    positionDescription: string;
     documentOption: number;
     certificateOption: number;
     timeFrom_timeTo: Moment[];
@@ -132,6 +133,10 @@ const useAddNewPostHook = () => {
     const FormatTime = 'HH:mm:ss'
     const loading = useAppSelector(state => state.postTitle.loading)
     const [openAddTitleModal, setOpenAddTitleModal] = useState(false)
+    const [openAddCertificateModal, setOpenAddCertificateModal] = useState(false)
+    const [openAddDocumentModal, setOpenAddDocumentModal] = useState(false)
+
+
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
     const [previewTitle, setPreviewTitle] = useState('');
@@ -186,6 +191,20 @@ const useAddNewPostHook = () => {
 
     const onOpenAddTitleModal = () => {
         setOpenAddTitleModal(true);
+    };
+    const onCloseAddDocumentModal = () => {
+        setOpenAddDocumentModal(false);
+    };
+
+    const onOpenAddDocumentModal = () => {
+        setOpenAddDocumentModal(true);
+    };
+    const onCloseAddCertificateModal = () => {
+        setOpenAddCertificateModal(false);
+    };
+
+    const onOpenAddCertificateModal = () => {
+        setOpenAddCertificateModal(true);
     };
     const onPremiumChange = () => {
         setIsPremium(!isPremium);
@@ -278,6 +297,7 @@ const useAddNewPostHook = () => {
                     // const formattedTimeRange = timeRange?.map((time) => time.format(FormatTime));
                     return {
                         trainingCertificateId: postPosition.certificateOption,
+                        positionDescription: postPosition.positionDescription,
                         documentId: postPosition.documentOption,
                         positionName: postPosition.positionName,
                         amount: postPosition.amount,
@@ -317,7 +337,10 @@ const useAddNewPostHook = () => {
                 // content: 'Some descriptions',
                 onOk() {
                     setLoading(true)
-                    handleAddPost(params)
+                    handleAddPost(params).then().catch((error) => {
+                        message.error('Intenal server error!')
+                        setLoading(false)
+                    })
                 },
                 onCancel() {
                     console.log('Cancel');
@@ -470,7 +493,15 @@ const useAddNewPostHook = () => {
         handleChangeDistrict,
         setDescription,
         customRequest,
-        removeImage
+        removeImage,
+        onOpenAddCertificateModal,
+        onCloseAddCertificateModal,
+        onOpenAddDocumentModal,
+        onCloseAddDocumentModal,
+        setOpenAddDocumentModal,
+        setOpenAddCertificateModal,
+        fetchDocumentOption,
+        fetchCertificateOption
     }
     const props = {
         open,
@@ -495,7 +526,12 @@ const useAddNewPostHook = () => {
         certificateOptions,
         errorUrl,
         form,
-        isloading
+        isloading,
+        openAddDocumentModal,
+        openAddCertificateModal,
+        certificateOptionsAPI,
+        documentOptionsAPI,
+        postTitleOptionsAPI
     }
     return { handler, props }
 

@@ -8,42 +8,44 @@ import { unwrapResult } from '@reduxjs/toolkit';
 import { Space, Tag, message } from 'antd';
 import { useAppDispatch } from 'app/store';
 import { createPostTitle } from 'features/postTitleSlice';
-import PostOptionI from 'models/postOption.model';
+import CertificateOptionI from 'models/certificateOption.model';
 import PostTitleCreated from 'models/postTitle.model';
 import { FC, useState } from 'react';
 
-interface AddPostTitleModalProps {
+interface AddCertificateModalProps {
     open: boolean,
-    setOpenAddTitleModal: React.Dispatch<React.SetStateAction<boolean>>,
-    fetchPostTitleOption: () => void,
-    data: PostOptionI[],
+    setOpenCertificateModal: React.Dispatch<React.SetStateAction<boolean>>,
+    fetchCertificateOption: () => void,
+    data: CertificateOptionI[]
 }
-const AddPostTitleModal: FC<AddPostTitleModalProps> = ({ open, setOpenAddTitleModal, fetchPostTitleOption, data }) => {
+const AddCertificateModal: FC<AddCertificateModalProps> = ({ open, setOpenCertificateModal, fetchCertificateOption, data }) => {
     console.log('con c', open)
-    const dishpatch = useAppDispatch();
+    const dispatch = useAppDispatch();
     type DataItem = (typeof data)[number];
     const [dataSource, setDataSource] = useState<DataItem[]>(data);
 
+
     const handleCreatePostTitle = async (value: any) => {
+        console.log('postTitleDescription: ', value)
         const payload: PostTitleCreated = {
             PostTitleDescription: value?.postTitleDescription,
             postTitleType: value?.postTitleType
         }
         let result = false;
         try {
-            await dishpatch(createPostTitle(payload)).then((response) => {
+            await dispatch(createPostTitle(payload)).then((response) => {
                 console.log('response111: ', response.meta.requestStatus)
                 const result2 = unwrapResult(response);
                 console.log('first: ', result2)
                 if (result2.status === 200) {
-                    fetchPostTitleOption();
+                    fetchCertificateOption();
                     message.success('Add position title success!');
                     result = true;
                 }
             }
             ).catch((error) => {
                 console.log('error: ', error)
-                message.error('Server internal error');
+                message.error(error);
                 result = false;
             })
         } catch (error) {
@@ -60,14 +62,15 @@ const AddPostTitleModal: FC<AddPostTitleModalProps> = ({ open, setOpenAddTitleMo
                 title="Add more post category"
                 open={open}
                 onFinish={(value) => handleCreatePostTitle(value)}
-                onOpenChange={setOpenAddTitleModal}
+                onOpenChange={setOpenCertificateModal}
                 submitter={{
                     searchConfig: {
                         submitText: 'Submit',
                         resetText: 'Cancel'// Đặt lại văn bản cho nút gửi
                     }
                 }}
-                width={1000}        >
+                width={1000}
+            >
                 <ProList<DataItem>
                     rowKey="id"
                     headerTitle="List Document"
@@ -75,12 +78,12 @@ const AddPostTitleModal: FC<AddPostTitleModalProps> = ({ open, setOpenAddTitleMo
                     // editable={{ onDelete: async (rows) => { handleDeleteDocument(rows) } }}
                     metas={{
                         title: {
-                            dataIndex: 'postCategoryDescription',
+                            dataIndex: 'certificateName',
                             editable: false
                         },
                         description: {
-                            dataIndex: 'postCategoryType',
-                            editable: false,
+                            dataIndex: 'trainingTypeId',
+                            editable: false
                         },
                         content: {
                             dataIndex: 'createAt',
@@ -117,17 +120,17 @@ const AddPostTitleModal: FC<AddPostTitleModalProps> = ({ open, setOpenAddTitleMo
                 <ProForm.Group>
                     <ProFormText
                         width="md"
-                        name="postTitleDescription"
+                        name="certificateName"
                         label="Post category name"
-                        placeholder="Category name"
+                        placeholder="Certificate name"
                         tooltip="Enter name of post title"
                         rules={[{ required: true, message: 'Category name is required!' }]}
 
                     />
                     <ProFormText
                         width="md"
-                        name="postTitleType"
-                        label="Post category ID"
+                        name="certificateId"
+                        label="Certificate ID"
                         placeholder="Post category ID"
                         rules={[{ required: true, message: 'Post category ID is required!' }]}
                     />
@@ -137,4 +140,4 @@ const AddPostTitleModal: FC<AddPostTitleModalProps> = ({ open, setOpenAddTitleMo
     );
 };
 
-export default AddPostTitleModal;
+export default AddCertificateModal;

@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import addressReducer from '../features/addressSlice';
 import authReducer from '../features/authSlice';
 import certificateReducer from '../features/certificateSlice';
+import collabReducer from '../features/collabSlice';
 import documentReducer from '../features/documentSlice';
 import postReducer from '../features/postSlice';
 import postTitleReducer from '../features/postTitleSlice';
@@ -17,7 +18,8 @@ export const store = configureStore({
     postTitle: postTitleReducer,
     address: addressReducer,
     document: documentReducer,
-    certificate: certificateReducer
+    certificate: certificateReducer,
+    collab: collabReducer
   },
 });
 

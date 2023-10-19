@@ -76,7 +76,7 @@ const ProfilePopover: FC<ProfilePopoverProps> = (userInfo) => {
         title={
           <FlexBox alignItems="center">
             <UkoAvatar
-              src={"/static/avatar/001-man.svg"}
+              src={userInfo?.userInfo?.imgUrl ? userInfo?.userInfo?.imgUrl : "/static/avatar/001-man.svg"}
               sx={{ width: 35, height: 35 }}
             />
 

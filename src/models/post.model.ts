@@ -1,5 +1,5 @@
 
-type Post = {
+type PostInfo = {
     accountId: number,
     id: number;
     postCategoryId: number,
@@ -86,4 +86,4 @@ export type PostTitleI = {
     createAt: string,
     updateAt: string
 }
-export default Post
+export default PostInfo

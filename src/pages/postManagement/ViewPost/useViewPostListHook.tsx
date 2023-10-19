@@ -4,7 +4,7 @@ import { FiberManualRecord } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import { green, grey, red } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { Button, Drawer, Image, Popconfirm, Table, TableColumnsType } from 'antd';
+import { Drawer, Image, Popconfirm, Table, TableColumnsType } from 'antd';
 import Link from 'antd/es/typography/Link';
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
@@ -143,8 +143,6 @@ function useViewPostList() {
         }
       },
       render: (value, valueEnum) => {
-        console.log("Rendering value:", value);
-        console.log("Rendering valueEnum:", valueEnum);
         let color = grey[400].toString();
         let statusText = 'Unknown';
         switch (valueEnum?.status) {
@@ -229,11 +227,6 @@ function useViewPostList() {
       { title: 'Document', dataIndex: 'documentId', key: 'documentId' },
       { title: 'Training certificate', dataIndex: 'trainingCertificateId', key: 'trainingCertificateId' },
       { title: 'Salary', dataIndex: 'salary', key: 'salary' },
-      {
-        title: 'Action',
-        key: 'action',
-        render: () => <Button color="primary">Confirm</Button>,
-      }
     ];
 
     const data = rowsExpanded.find((value) => value.key === record?.id);

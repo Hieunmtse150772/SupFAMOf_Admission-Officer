@@ -3,7 +3,7 @@ import { ModalForm, ProCard, ProForm, ProFormCheckbox, ProFormDateRangePicker, P
 import { Grid } from "@mui/material";
 import { Modal, Upload } from "antd";
 import { Small } from "components/Typography";
-import { PostInfo } from "models/postInfo.model";
+import PostInfoDto from "dtos/Post/Post View/postInfo.dto";
 import { FC, useState } from "react";
 import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css'; // Import Quill styles
@@ -13,7 +13,7 @@ interface EditPostModalProps {
     open: boolean,
     setOpenEditPostModal: React.Dispatch<React.SetStateAction<boolean>>,
     postId: string,
-    postInfo: PostInfo | null,
+    postInfo: PostInfoDto | null,
 }
 const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, postId, postInfo }) => {
     const [position, setPosition] = useState<'bottom' | 'top'>('bottom');
@@ -188,7 +188,16 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                         ]}
                         name="positionName"
                     />
-
+                    <ProFormText
+                        label="Position Description"
+                        width="sm"
+                        rules={[
+                            {
+                                required: true,
+                            },
+                        ]}
+                        name="positionDescription"
+                    />
 
                     <ProFormText
                         label="School Name"

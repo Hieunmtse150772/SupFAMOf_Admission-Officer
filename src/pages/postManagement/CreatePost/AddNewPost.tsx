@@ -5,6 +5,8 @@ import { Box, Grid, alpha, styled } from '@mui/material';
 import { Button, Divider, Modal, Spin, Upload } from 'antd';
 import { Small } from 'components/Typography';
 import useTitle from "hooks/useTitle";
+import AddCertificateModal from 'pages/modal/AddCertificateModal';
+import AddDocumentModal from 'pages/modal/AddDocumentModal';
 import AddPostTitleModal from 'pages/modal/AddPostTitleModal';
 import { FC, useState } from "react";
 import ReactQuill from 'react-quill';
@@ -59,6 +61,9 @@ const AddNewPost: FC = () => {
     return (
         <Spin spinning={props.isloading} tip="Loading...">
             <Button color='primary' style={{ float: 'right', margin: '10px 10px 0px 0px' }} onClick={handler.onOpenAddTitleModal}><PlusOutlined rev={undefined} />Add Title</Button>
+            <Button color='primary' style={{ float: 'right', margin: '10px 10px 0px 0px' }} onClick={handler.onOpenAddDocumentModal}><PlusOutlined rev={undefined} />Add Document</Button>
+            <Button color='primary' style={{ float: 'right', margin: '10px 10px 0px 0px' }} onClick={handler.onOpenAddCertificateModal}><PlusOutlined rev={undefined} />Add Certificate</Button>
+
             <Box className='container'>
                 <Box padding={5} style={{ marginBottom: '30px', backgroundColor: 'white', borderRadius: 5 }}>
 
@@ -244,7 +249,16 @@ const AddNewPost: FC = () => {
                                     ]}
                                     name="positionName"
                                 />
-
+                                <ProFormText
+                                    label="Position Description"
+                                    width="sm"
+                                    rules={[
+                                        {
+                                            required: true,
+                                        },
+                                    ]}
+                                    name="positionDescription"
+                                />
 
                                 <ProFormText
                                     label="School Name"
@@ -337,7 +351,7 @@ const AddNewPost: FC = () => {
                             </ProFormGroup>
 
                         </ProFormList>
-                        <Divider style={{ color: '#f09101' }} orientation="center">
+                        {/* <Divider style={{ color: '#f09101' }} orientation="center">
                             TRAINING POSITION
                         </Divider>
                         <ProFormList
@@ -466,10 +480,12 @@ const AddNewPost: FC = () => {
                                     ]}
                                 />
                             </ProFormGroup>
-                        </ProFormList>
+                        </ProFormList> */}
 
                     </ProForm>
-                    {props.openAddTitleModal && <AddPostTitleModal fetchPostTitleOption={handler.fetchPostTitleOption} setOpenAddTitleModal={handler.setOpenAddTitleModal} open={props.openAddTitleModal} />}
+                    {props.openAddTitleModal && <AddPostTitleModal fetchPostTitleOption={handler.fetchPostTitleOption} setOpenAddTitleModal={handler.setOpenAddTitleModal} open={props.openAddTitleModal} data={props.postTitleOptionsAPI} />}
+                    {props.openAddDocumentModal && <AddDocumentModal fetchDocumentOption={handler.fetchDocumentOption} setOpenAddDocumentModal={handler.setOpenAddDocumentModal} open={props.openAddDocumentModal} data={props.documentOptionsAPI} />}
+                    {props.openAddCertificateModal && <AddCertificateModal fetchCertificateOption={handler.fetchCertificateOption} setOpenCertificateModal={handler.setOpenAddCertificateModal} open={props.openAddCertificateModal} data={props.certificateOptionsAPI} />}
 
                 </Box >
             </Box >
