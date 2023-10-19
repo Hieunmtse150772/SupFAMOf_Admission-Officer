@@ -5,7 +5,7 @@ type UserInfo = {
   name: string,
   email: string,
   phone: string,
-  dateOfBirth: string,
+  dateOfBirth: Date,
   imgUrl: string,
   postPermission: boolean,
   isPremium: boolean,

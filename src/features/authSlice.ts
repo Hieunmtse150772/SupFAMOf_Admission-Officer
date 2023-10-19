@@ -29,7 +29,6 @@ const initialState: AuthState = {
     name: '',
     email: '',
     phone: '',
-    dateOfBirth: '',
     imgUrl: '',
     postPermission: false,
     isPremium: false,
@@ -40,7 +39,8 @@ const initialState: AuthState = {
       totalPost: 0,
       totalSalary: 0
     },
-    accountInformations: []
+    accountInformations: [],
+    dateOfBirth: new Date()
   }
 }
 export const loginGoogle = createAsyncThunk(

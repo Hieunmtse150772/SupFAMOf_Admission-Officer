@@ -40,7 +40,7 @@ export const createCertificate = createAsyncThunk(
     },
 );
 export const certificateSlice = createSlice({
-    name: 'post',
+    name: 'certificate',
     initialState,
     reducers: {},
     extraReducers: (builder) => {

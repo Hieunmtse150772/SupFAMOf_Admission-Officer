@@ -22,12 +22,13 @@ const ProfileEditDrawer: FC<ProfileEditDrawerProps> = ({ setOpenSetting, onClose
     }
     const handleUpdateProfile = async (value: any) => {
         const payload: updateAccountDto = {
+            accountId: userInfo?.id ? userInfo?.id : 1,
             dateOfBirth: value?.dateOfBirth,
-            imgUrl: value?.imgUrl,
+            imgUrl: userInfo?.imgUrl ? userInfo?.imgUrl : '',
             name: value?.name,
             phone: value?.phoneNumber
         }
-        dispatch(updateUserProfile(value))
+        await dispatch(updateUserProfile(payload))
         console.log('User Infor: ', userInfo?.id)
         console.log("value: ", value)
     }
@@ -92,6 +93,8 @@ const ProfileEditDrawer: FC<ProfileEditDrawerProps> = ({ setOpenSetting, onClose
                                 message: 'Date of Birth is required!'
                             },
                         ]}
+                        initialValue={userInfo?.dateOfBirth}
+
                     // initialValue={moment(userInfo?.dateOfBirth).format(Formatter)}
                     />
                 </ProForm.Group>

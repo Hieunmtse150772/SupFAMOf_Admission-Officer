@@ -23,7 +23,7 @@ export const authService = {
     return axiosClient.get(url);
   },
   updateUserProfile: (payload: updateAccountDto): Promise<AxiosResponse<GetUserInfo>> => {
-    const url = '/admission/admission-account/update';
+    const url = `/admission/admission-account/update?accountId=${payload.accountId}`;
     return axiosClient.put(url, payload);
   },
 

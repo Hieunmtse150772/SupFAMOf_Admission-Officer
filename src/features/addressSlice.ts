@@ -61,7 +61,19 @@ export const getWard = createAsyncThunk(
         }
     },
 );
-export const addressSlice = createSlice({
+export const getCoordinates = createAsyncThunk(
+    'address/get-coordinates',
+    async (address: string, { rejectWithValue }) => {
+        try {
+            const result = await addressService.getWard(address)
+            console.log('result: ', result)
+            return result.data;
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data);
+        }
+    },
+); export const addressSlice = createSlice({
     name: 'address',
     initialState,
     reducers: {},

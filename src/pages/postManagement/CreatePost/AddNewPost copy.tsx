@@ -24,7 +24,6 @@ import { Small, Tiny } from "components/Typography";
 import { Dayjs } from 'dayjs';
 import useTitle from "hooks/useTitle";
 import DeleteIcon from 'icons/DeleteIcon';
-import AddPostTitleModal from 'pages/modal/AddPostTitleModal';
 import { FC } from "react";
 import { Controller } from "react-hook-form";
 import ReactQuill from 'react-quill';
@@ -530,7 +529,7 @@ const AddNewPost: FC = () => {
                             onClick={() => handler.reset()}>Reset</Button>
                         <Button color='primary' type="submit" variant="contained" onClick={handler.handleSubmit(handler.onSubmit)}>Submit</Button>
                     </FooterToolbar>
-                    {openAddTitleModal && <AddPostTitleModal fetchPostTitleOption={handler.fetchPostTitleOption} setOpenAddTitleModal={handler.setOpenAddTitleModal} open={openAddTitleModal} />}
+                    {/* {openAddTitleModal && <AddPostTitleModal fetchPostTitleOption={handler.fetchPostTitleOption} setOpenAddTitleModal={handler.setOpenAddTitleModal} open={openAddTitleModal} />} */}
 
                 </form >
             </Box >

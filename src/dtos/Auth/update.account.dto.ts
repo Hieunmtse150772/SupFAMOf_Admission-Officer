@@ -1,6 +1,7 @@
 interface updateAccountDto {
-    name: string;
-    phone: string;
+    accountId: number,
+    name: string,
+    phone: string,
     dateOfBirth: Date,
     imgUrl: string
 }

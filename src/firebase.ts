@@ -34,7 +34,7 @@ export function useAuth(): User | null {
 }
 
 // Storage
-export async function upload(file: File, setLoading: React.Dispatch<React.SetStateAction<boolean>>, setPhotoURL: React.Dispatch<React.SetStateAction<string>>): Promise<void> {
+export async function upload(file: File, setLoading: React.Dispatch<React.SetStateAction<boolean>>, setPhotoURL: React.Dispatch<React.SetStateAction<string>>): Promise<string> {
   const fileRef = ref(storage, `images/admission/event${uuidv4()}`);
 
   setLoading(true);
@@ -44,12 +44,21 @@ export async function upload(file: File, setLoading: React.Dispatch<React.SetSta
   const snapshot: UploadTaskSnapshot = await uploadTask;
 
   const photoURL: string = await getDownloadURL(snapshot.ref);
-
+  console.log('photoUrl: ', photoURL)
   setPhotoURL(photoURL);
   // await updateProfile(currentUser, { photoURL });
-
   setLoading(false);
-
+  return photoURL;
+}
+export async function uploadAvatar(file: File, setLoading: React.Dispatch<React.SetStateAction<boolean>>, setPhotoURL: React.Dispatch<React.SetStateAction<string>>): Promise<string> {
+  const fileRef = ref(storage, `images/admission/event${uuidv4()}`);
+  setLoading(true);
+  const uploadTask = uploadBytesResumable(fileRef, file);
+  const snapshot: UploadTaskSnapshot = await uploadTask;
+  const photoURL: string = await getDownloadURL(snapshot.ref);
+  setPhotoURL(photoURL);
+  setLoading(false);
+  return photoURL;
 }
 
 // export async function uploadImgPost(

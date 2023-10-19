@@ -1,8 +1,8 @@
-import Post from "models/post.model";
+import PostInfo from "models/post.model";
 
 
 export default interface PostI {
-    data: Array<Post>;
+    data: Array<PostInfo>;
     metadata?: {
         page?: number;
         size?: number;

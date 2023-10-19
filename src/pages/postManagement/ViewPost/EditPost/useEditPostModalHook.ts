@@ -14,6 +14,7 @@ import { upload } from "../../../../firebase";
 
 interface PostPosition {
     id: number;
+    positionDescription: string,
     positionName: string,
     schoolName: string,
     location: string,
@@ -112,6 +113,7 @@ const useEditPostModal = () => {
                 postPositions: value?.postPositions?.map((postPosition: PostPosition) => {
                     return {
                         id: postPosition?.id,
+                        positionDescription: postPosition.positionDescription,
                         positionName: postPosition?.positionName,
                         schoolName: postPosition?.schoolName,
                         location: postPosition?.location,
