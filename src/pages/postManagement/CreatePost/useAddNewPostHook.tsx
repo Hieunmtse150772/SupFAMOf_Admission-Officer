@@ -307,8 +307,8 @@ const useAddNewPostHook = () => {
                         isBusService: postPosition.isBusService,
                         schoolName: postPosition.schoolName,
                         location: postPosition.location,
-                        latitude: 1.20931,
-                        longitude: 3.418731,
+                        latitude: 10.841444,
+                        longitude: 106.810033,
                     }
                 }),
                 trainingPositions: value?.trainingPosition?.map((postPosition: PostTrainingPosition) => {

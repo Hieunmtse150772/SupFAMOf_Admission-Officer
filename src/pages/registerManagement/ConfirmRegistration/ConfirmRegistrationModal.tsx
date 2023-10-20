@@ -1,6 +1,7 @@
 import { ProCard, ProList, StepsForm } from "@ant-design/pro-components";
 import { Modal, Progress, Space, Tag, message } from "antd";
 import CollabInfo from "models/collab.model";
+import Registrations from "models/registration.model";
 import { FC, Key, useEffect, useState } from "react";
 
 interface ConfirmRegistrationModalProps {
@@ -9,17 +10,19 @@ interface ConfirmRegistrationModalProps {
     listCollab: CollabInfo[],
     total: number,
     handleSubmit: (value: any) => Promise<boolean | void>,
+    registrationList: Registrations[]
 }
-const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = ({ listCollab, open, setOpenConfirmModal, total, handleSubmit }) => {
-    type DataItem = (typeof listCollab)[number];
-    const [dataSource, setDataSource] = useState<DataItem[]>(listCollab);
+const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = ({ listCollab, open, setOpenConfirmModal, total, handleSubmit, registrationList }) => {
+    console.log('registrationList: ', registrationList)
+    type DataItem = (typeof registrationList)[number];
+    const [dataSource, setDataSource] = useState<DataItem[]>(registrationList);
     const [collabPicker, setCollabPicker] = useState<DataItem[]>();
     const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
     const [expandedRowKeys, setExpandedRowKeys] = useState<readonly Key[]>([]);
     const rowSelection = {
         selectedRowKeys,
         onChange: (keys: Key[]) => {
-            if (percent < 100) { setSelectedRowKeys(keys) } else message.error('The number of participants is sufficient!')
+            if (percent <= 100) { setSelectedRowKeys(keys) } else message.error('The number of participants is sufficient!')
         },
     };
     const [percent, setPercent] = useState<number>(0);
@@ -34,7 +37,8 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = ({ listColla
         if (percent < 100) {
             message.error('Please enter full collaborator!')
         } else {
-            setCollabPicker(listCollab.filter((collab) => selectedRowKeys.includes(collab.id)))
+            console.log('rowkey: ', selectedRowKeys)
+            setCollabPicker(registrationList.filter((registration) => selectedRowKeys.includes(registration.id)))
             return true
         }
     }
@@ -95,21 +99,36 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = ({ listColla
                         headerTitle="List Collab Register"
                         dataSource={dataSource}
                         metas={{
+                            id: {
+                                dataIndex: 'id'
+                            },
                             title: {
                                 dataIndex: 'name',
-                                search: false
+                                search: false,
+                                render: (text, row, index, action) => (
+                                    <>{row.account.name}</>
+                                )
                             },
                             avatar: {
                                 dataIndex: 'imgUrl',
                                 editable: false,
-                                search: false
+                                search: false,
+                                render: (text, row, index, action) => (
+                                    <img src={row.account.imgUrl} alt="Avatar" width={50} />),
+                                valueType: 'avatar'
                             },
                             description: {
                                 dataIndex: 'phone',
-                                search: false
+                                search: false,
+                                render: (text, row, index, action) => (
+                                    <>{row.account.email}</>
+                                )
                             },
                             content: {
-                                dataIndex: 'email',
+                                dataIndex: 'account.email',
+                                render: (text, row, index, action) => (
+                                    <>{row.account.phone}</>
+                                )
                             },
                             subTitle: {
                                 render: () => {
@@ -171,19 +190,31 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = ({ listColla
                         metas={{
                             title: {
                                 dataIndex: 'name',
-                                search: false
+                                search: false,
+                                render: (text, row, index, action) => (
+                                    <>{row.account.name}</>
+                                )
                             },
                             avatar: {
                                 dataIndex: 'imgUrl',
                                 editable: false,
-                                search: false
+                                search: false,
+                                render: (text, row, index, action) => (
+                                    <img src={row.account.imgUrl} alt="Avatar" width={50} />),
+                                valueType: 'avatar'
                             },
                             description: {
                                 dataIndex: 'phone',
-                                search: false
+                                search: false,
+                                render: (text, row, index, action) => (
+                                    <>{row.account.phone}</>
+                                )
                             },
                             content: {
-                                dataIndex: 'email',
+                                dataIndex: 'account.email',
+                                render: (text, row, index, action) => (
+                                    <>{row.account.email}</>
+                                )
                             },
                             subTitle: {
                                 render: () => {
@@ -194,7 +225,8 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = ({ listColla
                                     );
                                 },
                                 search: false
-                            }
+                            },
+
                         }}
                         pagination={{
                             pageSize: 5,

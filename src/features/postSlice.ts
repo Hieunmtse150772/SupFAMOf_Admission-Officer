@@ -79,7 +79,7 @@ export const deletePostById = createAsyncThunk('post/delete-post-by-PostId',
 export const confirmColabborator = createAsyncThunk('post/confirm-post-collabList',
     async (id: number[], { rejectWithValue }) => {
         try {
-            const result = await postService.deletePostById(id);
+            const result = await postService.confirmPostByCollabList(id);
             return result
         } catch (error) {
             const axiosError = error as AxiosError;
