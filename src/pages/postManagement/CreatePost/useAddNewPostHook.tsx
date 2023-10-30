@@ -337,10 +337,7 @@ const useAddNewPostHook = () => {
                 // content: 'Some descriptions',
                 onOk() {
                     setLoading(true)
-                    handleAddPost(params).then().catch((error) => {
-                        message.error('Intenal server error!')
-                        setLoading(false)
-                    })
+                    handleAddPost(params)
                 },
                 onCancel() {
                     console.log('Cancel');
@@ -363,11 +360,14 @@ const useAddNewPostHook = () => {
         await dispatch(createPost(params)).then((response) => {
             const result2 = unwrapResult(response);
             if (result2.status === 200) {
-                message.success('Create post success!');
+                setLoading(false)
+                message.success('Create post success!')
                 form.resetFields();
                 setLoading(false);
             }
         }).catch((error) => {
+            message.error('Intenal server error!')
+            setLoading(false)
             console.error(error)
         })
     }
@@ -501,7 +501,8 @@ const useAddNewPostHook = () => {
         setOpenAddDocumentModal,
         setOpenAddCertificateModal,
         fetchDocumentOption,
-        fetchCertificateOption
+        fetchCertificateOption,
+        disabledTime
     }
     const props = {
         open,
@@ -532,6 +533,7 @@ const useAddNewPostHook = () => {
         certificateOptionsAPI,
         documentOptionsAPI,
         postTitleOptionsAPI
+
     }
     return { handler, props }
 

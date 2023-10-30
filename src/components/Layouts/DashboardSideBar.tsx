@@ -9,7 +9,7 @@ import {
   useMediaQuery,
 } from "@mui/material";
 import { FC, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import ScrollBar from "simplebar-react";
 import topMenuList from "./topMenuList";
 
@@ -48,13 +48,13 @@ const DashboardSideBar: FC<SideNavBarProps> = ({
   closeMobileSideBar,
 }) => {
   const navigate = useNavigate();
-
+  const location = useLocation();
+  const [isExpanded, setIsExpanded] = useState(false);
   const [active, setActive] = useState("Dashboard");
   const downMd = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
 
   const handleActiveMainMenu = (menuItem: any) => () => {
     setActive(menuItem.title);
-
     navigate(menuItem.path);
     closeMobileSideBar();
   };
@@ -67,6 +67,7 @@ const DashboardSideBar: FC<SideNavBarProps> = ({
       </StyledListItemButton>
 
       <ScrollBar style={{ maxHeight: "calc(100% - 50px)" }}>
+
         {topMenuList.map((nav, index) => (
           <Tooltip title={nav.title} placement="right" key={index}>
             <StyledListItemButton
@@ -76,13 +77,16 @@ const DashboardSideBar: FC<SideNavBarProps> = ({
               <nav.Icon
                 sx={{
                   color:
-                    active === nav.title ? "black" : "white",
+                    location.pathname === nav.path ? "black" : "white",
                 }}
               />
             </StyledListItemButton>
           </Tooltip>
         ))}
       </ScrollBar>
+      <button onClick={() => setIsExpanded(!isExpanded)}>
+        {isExpanded ? "Thu gọn" : "Mở rộng"}
+      </button>
     </List>
   );
 

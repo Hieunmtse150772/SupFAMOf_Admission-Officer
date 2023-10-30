@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {
+import createAuthRefreshInterceptor, {
     AxiosAuthRefreshRequestConfig,
 } from 'axios-auth-refresh';
 import AppConstants from '../enums/app';
@@ -58,7 +58,7 @@ const refreshAuthLogic = async (failedRequest: {
     }
 };
 
-// createAuthRefreshInterceptor(axiosClient, refreshAuthLogic);
+createAuthRefreshInterceptor(axiosClient, refreshAuthLogic);
 
 // HOW TO CALL EXTERNAL API
 

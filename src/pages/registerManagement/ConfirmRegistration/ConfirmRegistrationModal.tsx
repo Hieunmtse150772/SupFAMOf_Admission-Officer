@@ -1,5 +1,7 @@
 import { ProCard, ProList, StepsForm } from "@ant-design/pro-components";
 import { Modal, Progress, Space, Tag, message } from "antd";
+import { useAppDispatch } from "app/store";
+import { confirmPositionByCollabList } from "features/registrationSlice";
 import CollabInfo from "models/collab.model";
 import Registrations from "models/registration.model";
 import { FC, Key, useEffect, useState } from "react";
@@ -13,7 +15,7 @@ interface ConfirmRegistrationModalProps {
     registrationList: Registrations[]
 }
 const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = ({ listCollab, open, setOpenConfirmModal, total, handleSubmit, registrationList }) => {
-    console.log('registrationList: ', registrationList)
+    const dispatch = useAppDispatch();
     type DataItem = (typeof registrationList)[number];
     const [dataSource, setDataSource] = useState<DataItem[]>(registrationList);
     const [collabPicker, setCollabPicker] = useState<DataItem[]>();
@@ -22,7 +24,11 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = ({ listColla
     const rowSelection = {
         selectedRowKeys,
         onChange: (keys: Key[]) => {
-            if (percent <= 100) { setSelectedRowKeys(keys) } else message.error('The number of participants is sufficient!')
+            console.log("pre: ", selectedRowKeys)
+            console.log("af: ", keys)
+            if ((percent === 100) && (selectedRowKeys.length < keys.length)) { message.error('The number of participants is sufficient!') } else {
+                setSelectedRowKeys(keys)
+            }
         },
     };
     const [percent, setPercent] = useState<number>(0);
@@ -43,7 +49,10 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = ({ listColla
         }
     }
     const handleConfirm = async () => {
-
+        const numbers = selectedRowKeys.map((key) => +key);
+        await dispatch(confirmPositionByCollabList(numbers)).then((result) => { console.log('result'); message.success('Confirm position successfull') }).catch((error) => {
+            message.error('Server internal error')
+        })
     }
     useEffect(() => {
         setPercent((selectedRowKeys.length * 100) / total)
@@ -164,11 +173,10 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = ({ listColla
                 </ProCard>
             </StepsForm.StepForm>
             <StepsForm.StepForm
-                name="confirm"
+                name="Confirm"
                 title="confirm"
                 onFinish={async () => {
-                    await waitTime(2000);
-                    return true;
+                    handleConfirm()
                 }}
             >
                 <ProCard

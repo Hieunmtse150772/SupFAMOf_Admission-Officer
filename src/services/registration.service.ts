@@ -8,5 +8,10 @@ export const registrationService = {
     getRegistrationByPositionId: (id: number): Promise<AxiosResponse<RegistrationsDTO>> => {
         const url = `/admission/admission-post-registration/getAccountByPostPositionId?positionId=${id}`;
         return axiosClient.get(url);
+    },
+    updateRequest: (ids: number[]): Promise<AxiosResponse<RegistrationsDTO>> => {
+        const url = `/admission/admission-post-registration/review-joinRequest?IsApproved=true`;
+        return axiosClient.put(url, ids
+        )
     }
 };
