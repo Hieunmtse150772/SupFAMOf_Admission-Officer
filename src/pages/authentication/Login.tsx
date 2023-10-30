@@ -43,7 +43,7 @@ const Login: FC = () => {
         flexDirection: "column",
         justifyContent: "center",
         height: { sm: "100%" },
-
+        width: '100%'
       }}
       style={{ backgroundImage: `url(${background})`, backgroundRepeat: 'none', backgroundSize: "100%" }}
     >

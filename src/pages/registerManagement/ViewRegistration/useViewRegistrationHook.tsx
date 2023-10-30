@@ -9,6 +9,7 @@ import { useAppDispatch } from "app/store";
 import Status from 'enums/status.enum';
 import { getCollabByPositionId } from 'features/collabSlice';
 import { getPostByAccountId } from "features/postSlice";
+import { getRegistrationByPositionId } from 'features/registrationSlice';
 import { ListPositionI } from 'models/post.model';
 import moment from "moment";
 import { useEffect, useState } from "react";
@@ -48,6 +49,7 @@ function useViewRegistrationHook() {
     const postInfoAPI = useAppSelector(state => state.post.postInfo);
     const isLoading = useAppSelector(state => state.post.loading);
     const { collabs, loading } = useAppSelector(state => state.collab)
+    const { registrationList } = useAppSelector(state => state.registration)
     const collabsList = collabs?.data ? collabs?.data : []
     const [postInfo, setPostInfo] = useState<any>();
     const [page, setPage] = useState<number>(1);
@@ -218,6 +220,7 @@ function useViewRegistrationHook() {
     const handleOpenConfirmModal = async (value: any) => {
         setTotalCollab(value?.amount)
         const result = await dispatch(getCollabByPositionId(value?.id));
+        await dispatch(getRegistrationByPositionId(value?.id))
         if (result) {
             setOpenConfirmModal(true)
         }
@@ -272,7 +275,7 @@ function useViewRegistrationHook() {
     }, [isDeleted])
 
     const handler = { setCurrentRow, setShowDetail, setOpenConfirmModal, onPageChange, setPageSize, onChangePageSize, handleSubmit }
-    const props = { openConFirmModal, total, columns, posts, loading, rows, showDetail, rowsExpanded, postInfo, postInfoAPI, isLoading, page, pageSize, pageSizeOptions, totalCollab, collabs, collabsList }
+    const props = { openConFirmModal, total, columns, posts, loading, rows, showDetail, rowsExpanded, postInfo, postInfoAPI, isLoading, page, pageSize, pageSizeOptions, totalCollab, collabs, collabsList, registrationList }
     return {
         handler,
         props,

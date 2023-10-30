@@ -1,5 +1,6 @@
 import AuthGuard from "components/authentication/AuthGuard";
 import GuestGuard from "components/authentication/GuestGuard";
+import DashboardLayout2 from "components/Layouts/antdesgin";
 import DashboardLayout from "components/Layouts/DashboardLayout";
 import LoadingScreen from "components/LoadingScreen";
 import { FC, lazy, LazyExoticComponent, Suspense } from "react";
@@ -84,6 +85,49 @@ const routes = [
     element: (
       <AuthGuard>
         <DashboardLayout />
+      </AuthGuard>
+    ),
+    children: [
+      {
+        path: "",
+        element: <DashboardSaaS />,
+      },
+      {
+        path: "user-profile",
+        element: <UserProfile />,
+      },
+
+      {
+        path: "user-list",
+        element: <UserList />,
+      },
+      {
+        path: "user-grid",
+        element: <UserGrid />,
+      },
+      {
+        path: "add-user",
+        element: <AddNewUser />,
+      },
+      {
+        path: "post-list",
+        element: <ViewPostList />,
+      },
+      {
+        path: "add-post",
+        element: <AddNewPost />,
+      },
+      {
+        path: "registration-list",
+        element: <ViewRegistration />
+      }
+    ],
+  },
+  {
+    path: "dashboard2",
+    element: (
+      <AuthGuard>
+        <DashboardLayout2 />
       </AuthGuard>
     ),
     children: [

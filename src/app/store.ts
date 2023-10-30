@@ -9,6 +9,7 @@ import collabReducer from '../features/collabSlice';
 import documentReducer from '../features/documentSlice';
 import postReducer from '../features/postSlice';
 import postTitleReducer from '../features/postTitleSlice';
+import registrationReducer from '../features/registrationSlice';
 
 
 export const store = configureStore({
@@ -19,7 +20,8 @@ export const store = configureStore({
     address: addressReducer,
     document: documentReducer,
     certificate: certificateReducer,
-    collab: collabReducer
+    collab: collabReducer,
+    registration: registrationReducer
   },
 });
 

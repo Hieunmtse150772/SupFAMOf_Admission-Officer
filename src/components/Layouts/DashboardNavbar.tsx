@@ -6,14 +6,15 @@ import {
   Toolbar,
   useMediaQuery,
 } from "@mui/material";
+import { Breadcrumb } from "antd";
 import { H2 } from "components/Typography";
 import { TitleContext } from "contexts/TitleContext";
 import UserInfo from "models/userInfor.model";
 import { FC, useContext } from "react";
+import { useLocation } from "react-router";
 import NotificationsPopover from "./popovers/NotificationsPopover";
 import ProfilePopover from "./popovers/ProfilePopover";
 import ServicePopover from "./popovers/ServicePopover";
-
 // root component interface
 interface DashboardNavBarProps {
   setShowMobileSideBar: () => void;
@@ -52,8 +53,37 @@ const DashboardNavbar: FC<DashboardNavBarProps> = ({
   setShowMobileSideBar, userInfo
 }) => {
   const { title } = useContext(TitleContext);
+  const location = useLocation();
   const upSm = useMediaQuery((theme: Theme) => theme.breakpoints.up("sm"));
   const downSm = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
+  const path = location.pathname
+  const items = [
+    {
+      path: '/dashboard',
+      title: 'Dashboard',
+    },
+    {
+      path: '/dashboard/add-post',
+      title: 'Add Post',
+    },
+    {
+      path: '/dashboard/user-profile',
+      title: 'User Profile',
+    },
+    {
+      path: '/dashboard/user-grid',
+      title: 'User Grid',
+    },
+    {
+      path: '/dashboard/post-list',
+      title: 'Post List',
+    },
+    {
+      path: '/dashboard/registration-list',
+      title: 'Registration List',
+    }
+  ];
+  const last = items.find((item) => item.path === location.pathname)?.title
 
   if (downSm) {
     return (
@@ -83,12 +113,9 @@ const DashboardNavbar: FC<DashboardNavBarProps> = ({
   return (
     <DashboardNavbarRoot position="sticky">
       <StyledToolBar>
-        <Box>
-          <ToggleIcon />
-          <ToggleIcon />
-          <ToggleIcon />
-        </Box>
-
+        <Breadcrumb>
+          <Breadcrumb.Item><h2 style={{ color: "#F09101" }}>{last}</h2></Breadcrumb.Item>
+        </Breadcrumb>
         <H2
           fontSize={21}
           lineHeight={0}
