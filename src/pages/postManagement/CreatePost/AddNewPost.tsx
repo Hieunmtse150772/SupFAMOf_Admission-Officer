@@ -2,8 +2,10 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { FooterToolbar, ProCard, ProForm, ProFormCheckbox, ProFormDateRangePicker, ProFormDigit, ProFormGroup, ProFormList, ProFormMoney, ProFormSelect, ProFormSlider, ProFormSwitch, ProFormText, ProFormTimePicker } from '@ant-design/pro-components';
 import { Box, Grid, alpha, styled } from '@mui/material';
-import { Button, Divider, Modal, Spin, Upload } from 'antd';
+import { Button, DatePicker, Divider, Modal, Spin, Upload } from 'antd';
+import { RangePickerProps } from 'antd/es/date-picker';
 import { Small } from 'components/Typography';
+import dayjs from 'dayjs';
 import useTitle from "hooks/useTitle";
 import AddCertificateModal from 'pages/modal/AddCertificateModal';
 import AddDocumentModal from 'pages/modal/AddDocumentModal';
@@ -34,6 +36,40 @@ const ButtonWrapper = styled(Box)(({ theme }) => ({
 
 const AddNewPost: FC = () => {
     const { handler, props } = useAddNewPostHook();
+    const { RangePicker } = DatePicker;
+
+    const range = (start: number, end: number) => {
+        const result = [];
+        for (let i = start; i < end; i++) {
+            result.push(i);
+        }
+        return result;
+    };
+    const disabledDate: RangePickerProps['disabledDate'] = (current) => {
+        // Can not select days before today and today
+        return current && current < dayjs().endOf('day');
+    };
+
+    const disabledDateTime = () => ({
+        disabledHours: () => range(0, 24).splice(4, 20),
+        disabledMinutes: () => range(30, 60),
+        disabledSeconds: () => [55, 56],
+    });
+
+    const disabledRangeTime: RangePickerProps['disabledTime'] = (_, type) => {
+        if (type === 'start') {
+            return {
+                disabledHours: () => range(0, 60).splice(4, 20),
+                disabledMinutes: () => range(30, 60),
+                disabledSeconds: () => [55, 56],
+            };
+        }
+        return {
+            disabledHours: () => range(0, 60).splice(20, 4),
+            disabledMinutes: () => range(0, 31),
+            disabledSeconds: () => [55, 56],
+        };
+    };
     const { options, provinceOptions, districtOptions, wardOptions } = props
 
     const modules = {
@@ -63,10 +99,8 @@ const AddNewPost: FC = () => {
             <Button color='primary' style={{ float: 'right', margin: '10px 10px 0px 0px' }} onClick={handler.onOpenAddTitleModal}><PlusOutlined rev={undefined} />Add Title</Button>
             <Button color='primary' style={{ float: 'right', margin: '10px 10px 0px 0px' }} onClick={handler.onOpenAddDocumentModal}><PlusOutlined rev={undefined} />Add Document</Button>
             <Button color='primary' style={{ float: 'right', margin: '10px 10px 0px 0px' }} onClick={handler.onOpenAddCertificateModal}><PlusOutlined rev={undefined} />Add Certificate</Button>
-
             <Box className='container'>
                 <Box padding={5} style={{ marginBottom: '30px', backgroundColor: 'white', borderRadius: 5 }}>
-
                     <ProForm
                         form={props.form}
                         onFinish={(value) => handler.handleSubmitAnt(value)}
@@ -108,7 +142,12 @@ const AddNewPost: FC = () => {
                                         width='xl'
                                         label="Date From - Date to"
                                         style={{ width: '100%' }}
-                                        rules={[{ required: true, message: 'Chose date from & date to!' }]} />
+                                        rules={[{ required: true, message: 'Chose date from & date to!' }]}
+                                        fieldProps={{
+                                            disabledDate: disabledDate,
+                                            disabledTime: disabledRangeTime
+                                        }}
+                                    />
                                     {/* <ProFormSelect
                                     width="xl"
                                     options={provinceOptions}
@@ -313,6 +352,10 @@ const AddNewPost: FC = () => {
                                     label="Time"
                                     width="sm"
                                     name="timeFrom_timeTo"
+                                    fieldProps={{
+                                        disabledTime: (current, type) => handler.disabledTime(current, type)
+                                    }}
+
                                     rules={[{ required: true, message: 'Chose time from & time to!' }]}
                                 />
 

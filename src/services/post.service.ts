@@ -40,7 +40,7 @@ export const postService = {
     },
     confirmPostByCollabList: (id: number[]): Promise<AxiosResponse<Post>> => {
         const url = 'api/admission/admission-post-registration/review-updateRequest';
-        return axiosClient.delete(url, {
+        return axiosClient.put(url, {
             params: {
                 postId: id,
             },

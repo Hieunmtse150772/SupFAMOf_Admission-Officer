@@ -29,7 +29,18 @@ export const getRegistrationByPositionId = createAsyncThunk(
         }
     },
 );
-
+export const confirmPositionByCollabList = createAsyncThunk(
+    'auth/update-registration',
+    async (id: number[], { rejectWithValue }) => {
+        try {
+            const result = await registrationService.updateRequest(id)
+            return result;
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data);
+        }
+    },
+);
 export const registrationSlice = createSlice({
     name: 'registration',
     initialState,
@@ -45,6 +56,17 @@ export const registrationSlice = createSlice({
                 state.loading = false;
             })
             .addCase(getRegistrationByPositionId.rejected, (state, action) => {
+                state.error = String(action.payload);
+                state.loading = false;
+            })
+            .addCase(confirmPositionByCollabList.pending, (state) => {
+                state.loading = true;
+                state.error = "";
+            })
+            .addCase(confirmPositionByCollabList.fulfilled, (state, action) => {
+                state.loading = false;
+            })
+            .addCase(confirmPositionByCollabList.rejected, (state, action) => {
                 state.error = String(action.payload);
                 state.loading = false;
             })
