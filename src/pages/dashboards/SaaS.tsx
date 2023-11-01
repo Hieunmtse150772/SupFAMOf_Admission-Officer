@@ -1,15 +1,15 @@
 import { Box, Grid, useTheme } from "@mui/material";
-import { message } from "antd";
+import { Avatar, message } from "antd";
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import Analytics from "components/Dashboards/saas/Analytics";
-import SaaSCard from "components/Dashboards/saas/Card";
+import SaaSCard, { StyledCard } from "components/Dashboards/saas/Card";
 import TotalSpent from "components/Dashboards/saas/TotalSpent";
+import { H5 } from "components/Typography";
 import { getCollabOverview } from "features/manageDashboardSlice";
 import useTitle from "hooks/useTitle";
 import BucketIcon from "icons/BucketIcon";
 import EarningIcon from "icons/EarningIcon";
-import PeopleIcon from "icons/PeopleIcon";
 import WindowsLogoIcon from "icons/WindowsLogoIcon";
 import { FC, useEffect } from "react";
 
@@ -47,15 +47,8 @@ const SaaS: FC = () => {
       Icon: WindowsLogoIcon,
       title: "Total registration",
       color: theme.palette.primary.red,
-    },
-    {
-      number: 0,
-      Icon: PeopleIcon,
-      title: "New Clients",
-      color: theme.palette.primary.yellow,
-    },
+    }
   ];
-
   return (
     <Box pt={2} pb={4}>
       <Grid container spacing={{ xs: 2, sm: 3, md: 4 }}>
@@ -64,6 +57,24 @@ const SaaS: FC = () => {
             <SaaSCard card={card} />
           </Grid>
         ))}
+        <Grid item lg={3} xs={6}>
+          <StyledCard style={{ textAlign: 'center', alignItems: 'center', justifyContent: 'center', display: 'flex' }}>
+            <Box style={{ textAlign: 'center' }}>
+              <H5 color="text.disabled">New Clients</H5>
+              <Avatar.Group
+                maxCount={3}
+                maxPopoverTrigger="click"
+                size="large"
+                maxStyle={{ color: '#f56a00', backgroundColor: '#fde3cf', cursor: 'pointer' }}
+              >
+                {collabOverview.data.newCollaborators.map((collabUrl) => (
+                  <Avatar src={collabUrl.imgUrl} />
+
+                ))}
+              </Avatar.Group>
+            </Box>
+          </StyledCard>        </Grid>
+
       </Grid>
 
       <Grid container spacing={4} pt={4}>

@@ -7,7 +7,7 @@ interface SaaSCardProps {
   card: any;
 }
 
-const StyledCard = styled(Card)(({ theme }) => ({
+export const StyledCard = styled(Card)(({ theme }) => ({
   padding: "2rem 1.5rem",
   display: "flex",
   alignItems: "center",
