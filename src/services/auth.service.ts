@@ -11,7 +11,7 @@ import axiosClient from './axiosClient';
 
 export const authService = {
   login: (payload: LoginDto): Promise<AxiosResponse<LoginUserToken>> => {
-    const url = '/auth/admin/login';
+    const url = '/admin/administration-account/login';
     return axiosClient.post(url, { ...payload });
   },
   loginGoogle: (payload: LoginGoogleDto): Promise<AxiosResponse<LoginUser>> => {

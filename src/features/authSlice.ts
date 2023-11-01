@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
+import LoginDto from 'dtos/Auth/loginPayload.dto';
 import updateAccountDto from 'dtos/Auth/update.account.dto';
 import { signInWithPopup } from 'firebase/auth';
 import UserInfo from 'models/userInfor.model';
@@ -52,6 +53,7 @@ export const loginGoogle = createAsyncThunk(
       const accessToken = await response.user.getIdToken(true);
       console.log("accessToken: ", accessToken)
       const result = await authService.loginGoogle({ idToken: accessToken, fcmToken: "" })
+      await getUserProfile();
       localStorage.setItem(AppConstants.ACCESS_TOKEN, result.data.data.access_token);
       localStorage.setItem(AppConstants.USER, JSON.stringify(result.data.data.account));
       console.log("ressult: ", result)
@@ -66,7 +68,6 @@ export const getUserProfile = createAsyncThunk(
   'auth/get-user_profile',
   async (_, { rejectWithValue }) => {
     try {
-
       const result = await authService.getUserProfile()
       return result.data;
     } catch (error) {
@@ -99,6 +100,15 @@ export const logout = createAsyncThunk(
     }
   }
 );
+export const loginAdministrator = createAsyncThunk('auth/login_admin',
+  async (payload: LoginDto, { rejectWithValue }) => {
+    try {
+      const result = await authService.login(payload);
+      return result
+    } catch (error: any) {
+      return rejectWithValue(error.message)
+    }
+  })
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
