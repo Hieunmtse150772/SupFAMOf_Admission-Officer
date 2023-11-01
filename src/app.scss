@@ -1,6 +1,13 @@
 * {
   font-family: "Public Sans", "Roboto", sans-serif;
 }
-.MuiBox-root {
-  max-width: 100%;
+
+.ant-spin-nested-loading {
+  height: 100% !important;
+  .ant-spin-container {
+    height: 100% !important;
+    .MuiBox-root {
+      max-width: 100%;
+    }
+  }
 }

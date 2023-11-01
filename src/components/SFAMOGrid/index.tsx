@@ -1,9 +1,10 @@
+import { PlusOutlined } from "@ant-design/icons";
 import { ProColumns, ProTable } from "@ant-design/pro-components";
-import { PlusOneOutlined } from "@mui/icons-material";
-import { Button } from "@mui/material";
+import { Button } from "antd";
 import { TableLocale } from "antd/es/table/interface";
 import { ListPositionI } from "models/post.model";
 import { useState } from "react";
+import { useNavigate } from "react-router";
 import './style.scss';
 interface SFAMOGridProps {
     isLoading: boolean;
@@ -20,6 +21,8 @@ interface SFAMOGridProps {
 }
 const SFAMOGrid = ({ isLoading, rows, columns, rowsExpanded, page, total, pageSize, onPageChange, onChangePageSize, pageSizeOptions, expandedRowRender }: SFAMOGridProps) => {
     const [selectedRowsState, setSelectedRows] = useState<any[]>([]);
+    let navigate = useNavigate();
+
     console.log('total: ', total)
     const customLocale: TableLocale = {
         filterTitle: 'Custom Filter Title',
@@ -50,8 +53,15 @@ const SFAMOGrid = ({ isLoading, rows, columns, rowsExpanded, page, total, pageSi
 
                 headerTitle={'POST LIST'}
                 toolBarRender={() => [
-                    <Button color='primary' variant="contained" style={{ float: 'right' }}><PlusOneOutlined />New</Button>
-
+                    <Button
+                        type="primary"
+                        key="primary"
+                        onClick={() => {
+                            navigate('/dashboard/add-post');
+                        }}
+                    >
+                        <PlusOutlined rev={undefined} />New
+                    </Button>,
                 ]}
                 onSubmit={value => handleSubmit(value)}
                 dataSource={rows} columns={columns} loading={isLoading}
