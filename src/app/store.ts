@@ -7,6 +7,7 @@ import authReducer from '../features/authSlice';
 import certificateReducer from '../features/certificateSlice';
 import collabReducer from '../features/collabSlice';
 import documentReducer from '../features/documentSlice';
+import dashboardReducer from '../features/manageDashboardSlice';
 import postReducer from '../features/postSlice';
 import postTitleReducer from '../features/postTitleSlice';
 import registrationReducer from '../features/registrationSlice';
@@ -21,7 +22,8 @@ export const store = configureStore({
     document: documentReducer,
     certificate: certificateReducer,
     collab: collabReducer,
-    registration: registrationReducer
+    registration: registrationReducer,
+    dashboard: dashboardReducer
   },
 });
 

@@ -1,8 +1,24 @@
-.button-login {
-  background-color: white;
-}
-.noted-text {
-  align-self: center;
-  justify-content: space-between;
-  align-content: center;
+.ant-pro-form-login-container {
+  width: 100%;
+  .ant-pro-form-login-header {
+    height: 120px !important;
+    .ant-pro-form-login-logo {
+      width: 130px !important;
+      margin-bottom: 80px;
+    }
+  }
+
+  .ant-pro-form-login-main {
+    width: 450px !important;
+    justify-items: center;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    .ant-form {
+      width: 500px !important;
+      .ant-btn-primary {
+        width: 100%;
+      }
+    }
+  }
 }

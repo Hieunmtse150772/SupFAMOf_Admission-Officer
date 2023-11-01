@@ -4,6 +4,8 @@ import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { CssBaseline, IconButton, ThemeProvider } from "@mui/material";
 import { StyledEngineProvider } from "@mui/material/styles";
 import { unwrapResult } from "@reduxjs/toolkit";
+import { Spin } from "antd";
+import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import AppConstants from "enums/app";
 import { getUserProfile } from "features/authSlice";
@@ -23,6 +25,7 @@ const App: FC = () => {
   const dispatch = useAppDispatch();
   // App theme
   const appTheme = ukoTheme();
+  const isLoading = useAppSelector(state => state.auth.loading)
 
   // toaster options
   const toasterOptions = {
@@ -80,17 +83,18 @@ const App: FC = () => {
       )}
       dense
     >
-      <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={appTheme}>
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <Spin spinning={isLoading}>
+        <StyledEngineProvider injectFirst>
+          <ThemeProvider theme={appTheme}>
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <CssBaseline />
+              <Toaster toastOptions={toasterOptions} />
+              {allPages}
+            </LocalizationProvider>
 
-            <CssBaseline />
-            <Toaster toastOptions={toasterOptions} />
-            {allPages}
-          </LocalizationProvider>
-
-        </ThemeProvider>
-      </StyledEngineProvider>
+          </ThemeProvider>
+        </StyledEngineProvider>
+      </Spin>
     </SnackbarProvider>
 
   );

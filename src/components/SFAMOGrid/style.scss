@@ -1,3 +1,19 @@
+@media (max-width: 768px) {
+  .ant-table {
+    width: 100%;
+    overflow-x: auto;
+    &-thead > tr,
+    &-tbody > tr {
+      > th,
+      > td {
+        white-space: pre;
+        > span {
+          display: block;
+        }
+      }
+    }
+  }
+}
 .ant-table-content {
   .ant-table-thead {
     tr {
@@ -6,8 +22,9 @@
       }
       th {
         background-color: #f9a62a;
-        ::after {
-        }
+      }
+      .ant-table-column-sort {
+        background-color: #ffd088 !important;
       }
     }
   }
