@@ -208,8 +208,7 @@ const AddNewPost: FC = () => {
 
                             </Grid>
                             <Grid item sm={0.2}>
-                                <Divider type='vertical' style={{ color: '#f09101', height: 320 }}>
-                                    back
+                                <Divider type='vertical' style={{ color: '#f09101', height: 320 }} >
                                 </Divider>
                             </Grid>
 

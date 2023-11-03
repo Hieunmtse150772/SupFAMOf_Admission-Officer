@@ -84,9 +84,6 @@ const DashboardSideBar: FC<SideNavBarProps> = ({
           </Tooltip>
         ))}
       </ScrollBar>
-      <button onClick={() => setIsExpanded(!isExpanded)}>
-        {isExpanded ? "Thu gọn" : "Mở rộng"}
-      </button>
     </List>
   );
 

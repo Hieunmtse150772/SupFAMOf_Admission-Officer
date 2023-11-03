@@ -81,14 +81,6 @@ const UserProfile: FC = () => {
               justifyContent="space-between"
             >
               <ContentWrapper>
-
-                {/* <AvatarFilePicker
-                handleOpenEditAvatarModal={handleOpenEditAvatarModal}
-                imgUrl={userInfo?.imgUrl}
-                name='imgUrl'
-                onChange={handleFileUpload}
-              // src={userInfo?.imgUrl}
-              /> */}
                 <ImgCrop rotationSlider onModalOk={handler.handleSave}>
                   <Upload style={{ width: '300px' }}
                     customRequest={handler.customRequest}

@@ -49,14 +49,10 @@ export const loginGoogle = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await signInWithPopup(auth, provider);
-      console.log("respone_login_google", response)
       const accessToken = await response.user.getIdToken(true);
-      console.log("accessToken: ", accessToken)
       const result = await authService.loginGoogle({ idToken: accessToken, fcmToken: "" })
-      await getUserProfile();
       localStorage.setItem(AppConstants.ACCESS_TOKEN, result.data.data.access_token);
       localStorage.setItem(AppConstants.USER, JSON.stringify(result.data.data.account));
-      console.log("ressult: ", result)
       return result.data;
     } catch (error) {
       const axiosError = error as AxiosError;
@@ -76,8 +72,21 @@ export const getUserProfile = createAsyncThunk(
     }
   },
 );
+export const updateAvatar = createAsyncThunk(
+  'auth/update-avatar',
+  async (payload: string, { rejectWithValue }) => {
+    try {
+
+      const result = await authService.updateAvatar(payload)
+      return result.data;
+    } catch (error) {
+      const axiosError = error as AxiosError;
+      return rejectWithValue(axiosError.response?.data);
+    }
+  },
+);
 export const updateUserProfile = createAsyncThunk(
-  'auth/get-user_profile',
+  'auth/update-user_profile',
   async (payload: updateAccountDto, { rejectWithValue }) => {
     try {
 
@@ -115,21 +124,13 @@ export const authSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(loginGoogle.pending, (state) => {
-        state.loading = true;
-        state.error = "";
-      })
       .addCase(loginGoogle.fulfilled, (state, action) => {
         state.user = action.payload.data
         state.isAuthenticated = true;
         state.loading = false;
       })
-      .addCase(loginGoogle.rejected, (state, action) => {
-        state.error = String(action.payload);
-        state.loading = false;
-      })
       .addMatcher(
-        isAnyOf(getUserProfile.fulfilled, updateUserProfile.fulfilled),
+        isAnyOf(getUserProfile.fulfilled, updateUserProfile.fulfilled, updateAvatar.fulfilled),
         (state, action) => {
           state.userInfo = action.payload.data;
           console.log("action.payload.data: ", action.payload.data)
@@ -142,6 +143,7 @@ export const authSlice = createSlice({
           loginGoogle.pending,
           getUserProfile.pending,
           updateUserProfile.pending,
+          updateAvatar.pending
         ),
         state => {
           state.loading = true;
@@ -153,6 +155,7 @@ export const authSlice = createSlice({
           loginGoogle.rejected,
           getUserProfile.rejected,
           updateUserProfile.rejected,
+          updateAvatar.rejected
         ),
         (state, action) => {
           state.loading = false;

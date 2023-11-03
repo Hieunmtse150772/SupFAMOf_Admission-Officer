@@ -1,12 +1,12 @@
 import {
   AppBar,
   Box,
+  Breadcrumbs,
   styled,
   Theme,
   Toolbar,
   useMediaQuery,
 } from "@mui/material";
-import { Breadcrumb } from "antd";
 import { H2 } from "components/Typography";
 import { TitleContext } from "contexts/TitleContext";
 import UserInfo from "models/userInfor.model";
@@ -71,8 +71,8 @@ const DashboardNavbar: FC<DashboardNavBarProps> = ({
       title: 'User Profile',
     },
     {
-      path: '/dashboard/user-grid',
-      title: 'User Grid',
+      path: '/dashboard/user-list',
+      title: 'Collab List',
     },
     {
       path: '/dashboard/post-list',
@@ -113,9 +113,9 @@ const DashboardNavbar: FC<DashboardNavBarProps> = ({
   return (
     <DashboardNavbarRoot position="sticky">
       <StyledToolBar>
-        <Breadcrumb>
-          <Breadcrumb.Item><h2 style={{ color: "#F09101" }}>{last}</h2></Breadcrumb.Item>
-        </Breadcrumb>
+        <Breadcrumbs aria-label="breadcrumb">
+          <h2 style={{ color: "#F09101" }}>{last}</h2>
+        </Breadcrumbs>
         <H2
           fontSize={21}
           lineHeight={0}

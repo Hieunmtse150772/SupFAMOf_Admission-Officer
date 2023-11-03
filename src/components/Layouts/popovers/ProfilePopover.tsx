@@ -34,7 +34,7 @@ const ProfilePopover: FC<ProfilePopoverProps> = (userInfo) => {
     navigate(path);
     setOpen(false);
   };
-  const logout = () => {
+  const logout = async () => {
     if (isLogin) {
       localStorage.removeItem(AppConstants.ACCESS_TOKEN);
       localStorage.removeItem(AppConstants.USER);

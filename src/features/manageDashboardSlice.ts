@@ -24,7 +24,7 @@ const initialState: DashboardState = {
     }
 }
 export const getCollabOverview = createAsyncThunk(
-    'auth/get-document',
+    'auth/get-collab-overview',
     async (_, { rejectWithValue }) => {
         try {
             const result = await dashboardService.getCollabOverview()

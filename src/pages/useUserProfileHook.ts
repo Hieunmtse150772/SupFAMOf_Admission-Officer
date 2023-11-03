@@ -3,9 +3,8 @@ import { RcFile } from 'antd/es/upload';
 import { UploadFile } from 'antd/lib/upload';
 import { useAppSelector } from 'app/hooks';
 import { useAppDispatch } from 'app/store';
-import updateAccountDto from 'dtos/Auth/update.account.dto';
 import AppConstants from 'enums/app';
-import { updateUserProfile } from 'features/authSlice';
+import { updateAvatar } from 'features/authSlice';
 import UserInfo from 'models/userInfor.model';
 import { SyntheticEvent, useEffect, useState } from 'react';
 import { uploadAvatar } from '../firebase';
@@ -13,7 +12,6 @@ const useUserProfileHook = () => {
     const [openSetting, setOpenSetting] = useState(false);
     const dispatch = useAppDispatch()
     const userInfo = useAppSelector(state => state.auth.userInfo)
-    const [imageUrl, setImageUrl] = useState<any>()
     const [openModal, setOpenModal] = useState<boolean>(false)
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
@@ -21,20 +19,6 @@ const useUserProfileHook = () => {
     const [isloading, setLoading] = useState<boolean>(false);
     const [fileImage, setFileImage] = useState<any>('');
     const [isSave, setIsSave] = useState<boolean>(false);
-    const handleOpenEditAvatarModal = () => {
-        setOpenModal(true)
-    }
-
-    const handleFileUpload = async (
-        event: React.ChangeEvent<HTMLInputElement>,
-    ) => {
-        // if (event.target.files) {
-        //   await setImageUrl(event.target.files[0]);
-        // }
-    };
-
-
-    // const [userInfo, setUserInfo] = useState<UserInfo>()
     const [photoUrl, setPhotoUrl] = useState<string>('');
     const [fileList, setFileList] = useState<UploadFile[]>([
         {
@@ -42,7 +26,7 @@ const useUserProfileHook = () => {
             size: 200,
             name: 'avatar',
             status: 'done',
-            url: userInfo.imgUrl,
+            url: userInfo?.imgUrl,
         },
     ]);
     const getBase64 = (file: RcFile): Promise<string> =>
@@ -66,8 +50,6 @@ const useUserProfileHook = () => {
         setPreviewTitle(file.name || file.url!.substring(file.url!.lastIndexOf('/') + 1));
     };
 
-
-
     useEffect(() => {
     }, [userInfo])
     const customRequest = async ({ file, onSuccess, onError }: any) => {
@@ -86,7 +68,6 @@ const useUserProfileHook = () => {
     const storedValue = localStorage.getItem(AppConstants.USER);
     if (storedValue !== null) {
         const useInfo: UserInfo = JSON.parse(storedValue);
-        // setUserInfo(useInfo);
     } else {
         console.error("item is not found in local storage");
     }
@@ -94,8 +75,6 @@ const useUserProfileHook = () => {
         setValue(newValue);
     };
 
-    useEffect(() => {
-    }, [userInfo])
 
     const handleOpenSetting = () => {
         setOpenSetting(true)
@@ -104,20 +83,15 @@ const useUserProfileHook = () => {
         setOpenSetting(false);
     };
     const handleSaveAvatar = async () => {
-        const params: updateAccountDto = {
-            accountId: userInfo.id ? userInfo.id : 1,
-            name: userInfo?.name,
-            phone: userInfo?.phone,
-            dateOfBirth: userInfo?.dateOfBirth,
-            imgUrl: photoUrl
-        }
-        await dispatch(updateUserProfile(params)).then((response) => {
-            if (response.meta.requestStatus === 'fulfilled') {
-                message.success('Save avatar successful')
-            }
-        }).catch((error) => {
-            message.error('Save avatar fail!')
-        });
+        if (photoUrl !== '') {
+            await dispatch(updateAvatar(photoUrl)).then((response) => {
+                if (response.meta.requestStatus === 'fulfilled') {
+                    message.success('Save avatar successful')
+                }
+            }).catch((error) => {
+                message.error('Save avatar fail!')
+            });
+        } else { message.warning('Avatar is required!') }
     }
     const handleSave = () => {
         setIsSave(true);
