@@ -30,7 +30,7 @@ const UserProfile = Loadable(lazy(() => import("./pages/UserProfile")));
 
 // user management
 const UserList = Loadable(
-  lazy(() => import("./pages/userManagement/UserList"))
+  lazy(() => import("./pages/collabManagement/ViewCollabList/viewCollabList"))
 );
 const UserGrid = Loadable(
   lazy(() => import("./pages/userManagement/UserGrid"))

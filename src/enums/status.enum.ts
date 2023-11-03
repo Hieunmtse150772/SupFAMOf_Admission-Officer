@@ -1,8 +1,11 @@
 enum Status {
-    pending = 1,
-    running = 2,
-    ending = 3,
+    opening = 1,
+    closed = 2,
+    ended = 3,
+    canceled = 4,
     deleted = 5,
+    reopen = 6,
+
 }
 
 export default Status;

@@ -2,7 +2,7 @@ import { EditOutlined, QuestionCircleFilled, SafetyCertificateOutlined } from '@
 import { ProColumns } from "@ant-design/pro-components";
 import { FiberManualRecord } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
-import { green, grey, red } from '@mui/material/colors';
+import { green, grey, red, yellow } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { Drawer, Image, Popconfirm, Table, TableColumnsType } from 'antd';
 import Link from 'antd/es/typography/Link';
@@ -146,23 +146,31 @@ function useViewPostList() {
         let color = grey[400].toString();
         let statusText = 'Unknown';
         switch (valueEnum?.status) {
-          case Status.pending:
+          case Status.opening:
             color = '#1890ff';
             statusText = 'Pending';
             break;
 
-          case Status.running:
+          case Status.closed:
             color = green[500];
             statusText = 'Running';
             break;
 
-          case Status.ending:
+          case Status.ended:
             color = red[500];
             statusText = 'Ending';
+            break;
+          case Status.canceled:
+            color = yellow[500];
+            statusText = 'Re-open';
             break;
           case Status.deleted:
             color = red[500];
             statusText = 'Deleted';
+            break;
+          case Status.reopen:
+            color = green[500];
+            statusText = 'Re-open';
             break;
           default:
             break;

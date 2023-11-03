@@ -10,14 +10,14 @@ interface SFAMOGridProps {
     isLoading: boolean;
     rows: any[];
     columns: ProColumns[];
-    rowsExpanded: ListPositionI[];
+    rowsExpanded?: ListPositionI[];
     page: number;
     total?: number;
     pageSize: number;
     onPageChange: (page: number) => void;
     onChangePageSize: (size: number) => void;
     pageSizeOptions: number[];
-    expandedRowRender: (record: any) => JSX.Element | null;
+    expandedRowRender?: (record: any) => JSX.Element | null;
 }
 const SFAMOGrid = ({ isLoading, rows, columns, rowsExpanded, page, total, pageSize, onPageChange, onChangePageSize, pageSizeOptions, expandedRowRender }: SFAMOGridProps) => {
     const [selectedRowsState, setSelectedRows] = useState<any[]>([]);
@@ -50,8 +50,6 @@ const SFAMOGrid = ({ isLoading, rows, columns, rowsExpanded, page, total, pageSi
         <>
             <ProTable
                 expandable={{ expandedRowRender }}
-
-                headerTitle={'POST LIST'}
                 toolBarRender={() => [
                     <Button
                         type="primary"
