@@ -67,7 +67,7 @@ const SaaS: FC = () => {
                 size="large"
                 maxStyle={{ color: '#f56a00', backgroundColor: '#fde3cf', cursor: 'pointer' }}
               >
-                {collabOverview.data.newCollaborators.map((collabUrl) => (
+                {collabOverview?.data?.newCollaborators?.map((collabUrl) => (
                   <Avatar src={collabUrl.imgUrl} />
 
                 ))}

@@ -26,6 +26,10 @@ export const authService = {
     const url = `/admission/admission-account/update?accountId=${payload.accountId}`;
     return axiosClient.put(url, payload);
   },
+  updateAvatar: (imgUrl: string): Promise<AxiosResponse<GetUserInfo>> => {
+    const url = `/admission/admission-account/updateAvatar`;
+    return axiosClient.put(url, { imgUrl });
+  },
 
   logout: () => {
     // Xử lý đăng xuất ở đây (nếu cần)

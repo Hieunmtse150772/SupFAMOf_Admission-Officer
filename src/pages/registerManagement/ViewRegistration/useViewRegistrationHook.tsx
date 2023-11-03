@@ -2,7 +2,7 @@ import { EditOutlined } from '@ant-design/icons'; // Import the icon from the li
 import { ProColumns } from "@ant-design/pro-components";
 import { FiberManualRecord } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
-import { green, grey, red } from '@mui/material/colors';
+import { green, grey, red, yellow } from '@mui/material/colors';
 import { Button, Image, Table, TableColumnsType } from 'antd';
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
@@ -23,28 +23,12 @@ interface ExpandedDataType {
     amount: number,
     salary: number
 }
-type RuleListItem = {
-    key?: number;
-    disabled?: boolean;
-    href?: string;
-    avatar?: string;
-    name?: string;
-    owner?: string;
-    desc?: string;
-    callNo?: number;
-    status?: number;
-    updatedAt?: string;
-    createdAt?: string;
-    progress?: number;
-};
 function useViewRegistrationHook() {
     const Formatter = 'DD/MM/YYYY'
     const [currentRow, setCurrentRow] = useState<any>();
     // const [selectedRowsState, setSelectedRows] = useState<boolean>([]);
     const [showDetail, setShowDetail] = useState<boolean>(false);
-    const [openEditPostModal, setOpenEditPostModal] = useState<boolean>(false);
     const [openConFirmModal, setOpenConfirmModal] = useState<boolean>(false);
-    const [editPostModalId, setEditPostModalId] = useState<string>('');
     const { posts, isDeleted } = useAppSelector(state => state.post);
     const postInfoAPI = useAppSelector(state => state.post.postInfo);
     const isLoading = useAppSelector(state => state.post.loading);
@@ -153,23 +137,31 @@ function useViewRegistrationHook() {
                 let color = grey[400].toString();
                 let statusText = 'Unknown';
                 switch (valueEnum?.status) {
-                    case Status.pending:
+                    case Status.opening:
                         color = '#1890ff';
                         statusText = 'Pending';
                         break;
 
-                    case Status.running:
+                    case Status.closed:
                         color = green[500];
                         statusText = 'Running';
                         break;
 
-                    case Status.ending:
+                    case Status.ended:
                         color = red[500];
                         statusText = 'Ending';
+                        break;
+                    case Status.canceled:
+                        color = yellow[500];
+                        statusText = 'Re-open';
                         break;
                     case Status.deleted:
                         color = red[500];
                         statusText = 'Deleted';
+                        break;
+                    case Status.reopen:
+                        color = green[500];
+                        statusText = 'Re-open';
                         break;
                     default:
                         break;
@@ -240,9 +232,6 @@ function useViewRegistrationHook() {
     }
 
     const rows = posts.data.map(post => ({
-        // Map the properties from PostI to AnyObject as needed
-        // For example:
-        // ...post,
         key: post?.id,
         id: post?.postCode,
         title: post?.postCategory?.postCategoryDescription,

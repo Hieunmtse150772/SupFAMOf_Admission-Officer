@@ -12,21 +12,10 @@ const index = [
     path: "/dashboard/user-profile",
   },
   {
-    title: "User Grid",
-    Icon: Icons.UserGridIcon,
-    path: "/dashboard/user-grid",
-  },
-  {
     title: "User List",
     Icon: Icons.UserManagementIcon,
     path: "/dashboard/user-list",
   },
-  {
-    title: "Add User",
-    Icon: Icons.AddUserIcon,
-    path: "/dashboard/add-user",
-  }
-  ,
   {
     title: "Post List",
     Icon: Icons.PostList,

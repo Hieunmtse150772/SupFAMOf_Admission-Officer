@@ -1,6 +1,6 @@
 import { FiberManualRecord } from '@mui/icons-material';
 import { Box } from '@mui/material';
-import { green, grey, red } from '@mui/material/colors';
+import { green, grey, red, yellow } from '@mui/material/colors';
 import { Col, Drawer, Image, Row, Typography } from 'antd';
 import SFAMOGrid from 'components/SFAMOGrid';
 import Status from 'enums/status.enum';
@@ -54,26 +54,32 @@ const ViewPostList = () => {
                         let statusText = 'Unknown';
 
                         switch (props.currentRow.status) {
-                            case Status.pending:
+                            case Status.opening:
                                 color = '#1890ff';
                                 statusText = 'Pending';
                                 break;
 
-                            case Status.running:
+                            case Status.closed:
                                 color = green[500];
                                 statusText = 'Running';
                                 break;
 
-                            case Status.ending:
+                            case Status.ended:
                                 color = red[500];
                                 statusText = 'Ending';
                                 break;
-
+                            case Status.canceled:
+                                color = yellow[500];
+                                statusText = 'Re-open';
+                                break;
                             case Status.deleted:
                                 color = red[500];
                                 statusText = 'Deleted';
                                 break;
-
+                            case Status.reopen:
+                                color = green[500];
+                                statusText = 'Re-open';
+                                break;
                             default:
                                 break;
                         }

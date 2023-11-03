@@ -26,6 +26,7 @@ const App: FC = () => {
   // App theme
   const appTheme = ukoTheme();
   const isLoading = useAppSelector(state => state.auth.loading)
+  const accessToken = localStorage.getItem(AppConstants.ACCESS_TOKEN);
 
   // toaster options
   const toasterOptions = {
@@ -53,14 +54,15 @@ const App: FC = () => {
     }
   }
   useEffect(() => {
-    const accessToken = localStorage.getItem(AppConstants.ACCESS_TOKEN);
+    console.log('hello profile')
     if (accessToken) {
+      console.log('accessToken: ', accessToken)
       handleGetProfile().catch(() => {
         navigate('/login');
       });
-    }
+    } else console.log('no token')
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [accessToken]);
   useEffect(() => {
     // Req user for notification permission
     requestPermission();
