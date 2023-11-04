@@ -10,7 +10,14 @@ type CollabListInfo = {
     identityNumber: string,
     taxNumber: string,
     bankName: string,
-    branch: string
+    branch: string,
+    certificates: Certificate[]
 }
+type Certificate = {
+    id: number,
+    certificateName: string,
+    trainingCertificateId: number
+}
+
 
 export default CollabListInfo;

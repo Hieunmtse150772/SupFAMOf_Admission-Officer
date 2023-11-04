@@ -1,6 +1,6 @@
 import { useAppSelector } from "app/hooks";
 import AppConstants from "enums/app";
-import Login from "pages/authentication/Login";
+import Login from "pages/Authentication/Login";
 import { Fragment, ReactNode, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 

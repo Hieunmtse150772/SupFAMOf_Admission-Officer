@@ -2,12 +2,12 @@
 import { AxiosResponse } from 'axios';
 
 import { CollabDto } from 'dtos/collab.dto';
-import { CollabListDto } from 'dtos/collabList.dto';
+import { ContractDto } from 'dtos/contract.dto';
 import axiosClient from './axiosClient';
 
-export const collabService = {
-    getCollabList: (): Promise<AxiosResponse<CollabListDto>> => {
-        const url = '/admission/admission-manage-collaborator/get-all-collab-accounts';
+export const contractService = {
+    getContractList: (): Promise<AxiosResponse<ContractDto>> => {
+        const url = '/admin/admission-contract/getAll';
         return axiosClient.get(url)
     },
     getCollabByPositionId: (id: string): Promise<AxiosResponse<CollabDto>> => {

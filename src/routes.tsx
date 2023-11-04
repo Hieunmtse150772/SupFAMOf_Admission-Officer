@@ -1,5 +1,5 @@
-import AuthGuard from "components/authentication/AuthGuard";
-import GuestGuard from "components/authentication/GuestGuard";
+import AuthGuard from "components/Authentication/AuthGuard";
+import GuestGuard from "components/Authentication/GuestGuard";
 import DashboardLayout2 from "components/Layouts/antdesgin";
 import DashboardLayout from "components/Layouts/DashboardLayout";
 import LoadingScreen from "components/LoadingScreen";
@@ -14,38 +14,41 @@ const Loadable = (Component: LazyExoticComponent<FC>) => (props: any) =>
 );
 
 // authentication pages
-const Login = Loadable(lazy(() => import("./pages/authentication/Login")));
+const Login = Loadable(lazy(() => import("./pages/Authentication/Login")));
 const Register = Loadable(
-  lazy(() => import("./pages/authentication/Register"))
+  lazy(() => import("./pages/Authentication/Register"))
 );
 const ForgetPassword = Loadable(
-  lazy(() => import("./pages/authentication/ForgetPassword"))
+  lazy(() => import("./pages/Authentication/ForgetPassword"))
 );
 
 // Dashboard pages
-const DashboardSaaS = Loadable(lazy(() => import("./pages/dashboards/SaaS")));
+const DashboardSaaS = Loadable(lazy(() => import("./pages/Dashboards/SaaS")));
 
 // user profile
 const UserProfile = Loadable(lazy(() => import("./pages/UserProfile")));
 
 // user management
 const UserList = Loadable(
-  lazy(() => import("./pages/collabManagement/ViewCollabList/viewCollabList"))
+  lazy(() => import("./pages/CollabManagement/ViewListCollab"))
 );
 const UserGrid = Loadable(
-  lazy(() => import("./pages/userManagement/UserGrid"))
+  lazy(() => import("./pages/UserManagement/UserGrid"))
 );
 const AddNewUser = Loadable(
-  lazy(() => import("./pages/userManagement/AddNewUser"))
+  lazy(() => import("./pages/UserManagement/AddNewUser"))
 );
 const AddNewPost = Loadable(
-  lazy(() => import("./pages/postManagement/CreatePost/AddNewPost"))
+  lazy(() => import("./pages/PostManagement/CreatePost"))
 );
 const ViewPostList = Loadable(
-  lazy(() => import("./pages/postManagement/ViewPost/ViewPostList"))
+  lazy(() => import("./pages/PostManagement/ViewPost"))
 );
 const ViewRegistration = Loadable(
-  lazy(() => import("./pages/registerManagement/ViewRegistration/ViewRegistration"))
+  lazy(() => import("./pages/RegistrationManagement/ViewRegistration"))
+);
+const ViewContract = Loadable(
+  lazy(() => import("./pages/ContractManagement/ViewContractList"))
 );
 // error
 const Error = Loadable(lazy(() => import("./pages/404")));
@@ -120,6 +123,10 @@ const routes = [
       {
         path: "registration-list",
         element: <ViewRegistration />
+      },
+      {
+        path: "contract-list",
+        element: <ViewContract />
       }
     ],
   },

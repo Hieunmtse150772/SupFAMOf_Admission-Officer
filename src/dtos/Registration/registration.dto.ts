@@ -1,5 +1,5 @@
 import Registrations from "models/registration.model";
 
-export default interface RegistrationsDTO {
+export default interface RegistrationsDto {
     data: Array<Registrations>;
 }

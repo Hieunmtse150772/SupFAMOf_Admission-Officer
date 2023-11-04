@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
-import { Collab } from 'dtos/collab.dto';
-import { CollabList } from 'dtos/collabList.dto';
+import { CollabDto } from 'dtos/collab.dto';
+import { CollabListDto } from 'dtos/collabList.dto';
 import CollabInfo from 'models/collab.model';
 import CollabListInfo from 'models/collabListInfo.model';
 import { collabService } from 'services/collab.service';
@@ -9,8 +9,8 @@ import { collabService } from 'services/collab.service';
 interface CollabState {
     loading: boolean,
     error: string | null,
-    collabs: Collab | null,
-    collabList: CollabList,
+    collabs: CollabDto | null,
+    collabList: CollabListDto,
     isDeleted: boolean,
 }
 

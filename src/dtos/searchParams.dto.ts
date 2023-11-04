@@ -1,4 +1,4 @@
-export default interface SearchParams {
+export default interface SearchParamsDto {
     page?: number;
     PageSize?: number;
     sort?: string;

@@ -14,6 +14,7 @@ import { ListPositionI } from 'models/post.model';
 import moment from "moment";
 import { useEffect, useState } from "react";
 import ReactHtmlParser from 'react-html-parser';
+import { useNavigate } from 'react-router';
 
 
 interface ExpandedDataType {
@@ -52,6 +53,7 @@ function useViewPostList() {
   const pageSizeOptions = [10, 20, 30]; // Các tùy chọn cho pageSize
   const total = posts?.metadata?.total
   const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
+  let navigate = useNavigate();
 
   const columns: ProColumns[] = [
     {
@@ -319,6 +321,9 @@ function useViewPostList() {
   const fetchPostList = async () => {
     await dispatch(getPostByAccountId({ page: page, PageSize: pageSize }))
   }
+  const handleAddPost = () => {
+    navigate('/dashboard/add-post')
+  }
   useEffect(() => {
     fetchPostList()
   }, [page, pageSize])
@@ -329,8 +334,33 @@ function useViewPostList() {
     const reusult = await dispatch(getPostByPostId(postId))
     return unwrapResult(reusult);
   }
-  const handler = { setCurrentRow, setShowDetail, setOpenEditPostModal, onPageChange, setPageSize, onChangePageSize }
-  const props = { total, columns, posts, loading, rows, showDetail, currentRow, rowsExpanded, openEditPostModal, editPostModalId, postInfo, postInfoAPI, isLoading, page, pageSize, pageSizeOptions }
+  const handler = {
+    setCurrentRow,
+    setShowDetail,
+    setOpenEditPostModal,
+    onPageChange,
+    setPageSize,
+    onChangePageSize,
+    handleAddPost
+  }
+  const props = {
+    total,
+    columns,
+    posts,
+    loading,
+    rows,
+    showDetail,
+    currentRow,
+    rowsExpanded,
+    openEditPostModal,
+    editPostModalId,
+    postInfo,
+    postInfoAPI,
+    isLoading,
+    page,
+    pageSize,
+    pageSizeOptions
+  }
   return {
     handler,
     props,
