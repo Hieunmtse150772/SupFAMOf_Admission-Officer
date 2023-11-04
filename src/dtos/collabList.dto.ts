@@ -1,6 +1,6 @@
 import CollabListInfo from "models/collabListInfo.model";
 
-export interface CollabList {
+export interface CollabListDto {
     data: CollabListInfo[]
     metadata?: {
         page?: number;

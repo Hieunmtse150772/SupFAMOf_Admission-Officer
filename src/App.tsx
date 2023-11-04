@@ -54,13 +54,11 @@ const App: FC = () => {
     }
   }
   useEffect(() => {
-    console.log('hello profile')
     if (accessToken) {
-      console.log('accessToken: ', accessToken)
       handleGetProfile().catch(() => {
         navigate('/login');
       });
-    } else console.log('no token')
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accessToken]);
   useEffect(() => {

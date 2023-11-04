@@ -7,11 +7,11 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import { Button, Tabs, message, theme } from "antd";
 import { useAppDispatch } from "app/store";
 import background from "assets/background/dai-hoc-fpt-tp-hcm-2.jpg";
-import FlexBox from "components/FlexBox";
-import { Small } from "components/Typography";
 import {
   SocialIconButton
-} from "components/authentication/StyledComponents";
+} from "components/Authentication/StyledComponents";
+import FlexBox from "components/FlexBox";
+import { Small } from "components/Typography";
 import { loginAdministrator, loginGoogle } from "features/authSlice";
 import GoogleIcon from "icons/GoogleIcon";
 import { FC, useState } from "react";

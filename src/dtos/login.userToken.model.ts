@@ -1,4 +1,4 @@
-export default interface LoginUserToken {
+export default interface LoginUserTokenDto {
     accessToken: string,
     refreshToken: string
 }

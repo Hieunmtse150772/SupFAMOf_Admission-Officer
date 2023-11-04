@@ -1,5 +1,5 @@
 import PostInfo from "../models/post.model";
 
-export interface Post {
+export interface PostDto {
     data: PostInfo
 }

@@ -1,20 +1,20 @@
 // AuthService.ts
 import { AxiosResponse } from 'axios';
 
-import PostI from 'dtos/Post/Post View/post.dto';
+import PostIDto from 'dtos/Post/Post View/post.dto';
 import PostInfoDto from 'dtos/Post/Post View/postInfo.dto';
 import SearchPostParams from 'dtos/Post/Post View/searchPost.dto';
-import { Post } from 'dtos/postInfo.dto';
+import { PostDto } from 'dtos/postInfo.dto';
 import { PostCreatedV2, PostUpdated } from 'models/postCreated.model';
-import LoginUserToken from '../dtos/login.userToken.model';
+import LoginUserTokenDto from '../dtos/login.userToken.model';
 import axiosClient from './axiosClient';
 
 export const postService = {
-    createPost: (payload: PostCreatedV2): Promise<AxiosResponse<LoginUserToken>> => {
+    createPost: (payload: PostCreatedV2): Promise<AxiosResponse<LoginUserTokenDto>> => {
         const url = '/admission/admission-post/create';
         return axiosClient.post(url, { ...payload });
     },
-    getPostByAccountId: (params: SearchPostParams): Promise<AxiosResponse<PostI>> => {
+    getPostByAccountId: (params: SearchPostParams): Promise<AxiosResponse<PostIDto>> => {
         const url = '/admission/admission-post/getByAccountId';
         return axiosClient.get(url, { params })
     },
@@ -26,11 +26,11 @@ export const postService = {
             },
         })
     },
-    updatePostById: (params: PostUpdated): Promise<AxiosResponse<Post>> => {
+    updatePostById: (params: PostUpdated): Promise<AxiosResponse<PostDto>> => {
         const url = `/admission/admission-post/update?postId=${params.postId}`;
         return axiosClient.put(url, params)
     },
-    deletePostById: (id: string): Promise<AxiosResponse<Post>> => {
+    deletePostById: (id: string): Promise<AxiosResponse<PostDto>> => {
         const url = '/admission/admission-post/post/delete';
         return axiosClient.delete(url, {
             params: {
@@ -38,7 +38,7 @@ export const postService = {
             },
         })
     },
-    confirmPostByCollabList: (id: number[]): Promise<AxiosResponse<Post>> => {
+    confirmPostByCollabList: (id: number[]): Promise<AxiosResponse<PostDto>> => {
         const url = 'api/admission/admission-post-registration/review-updateRequest';
         return axiosClient.put(url, {
             params: {

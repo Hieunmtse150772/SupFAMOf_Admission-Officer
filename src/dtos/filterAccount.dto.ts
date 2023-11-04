@@ -1,5 +1,5 @@
-interface filterAccount{
+interface filterAccountDto {
     page_size: number;
     page: number;
 }
-export default filterAccount;
+export default filterAccountDto;

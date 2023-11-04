@@ -1,6 +1,7 @@
 import {
   PostAdd as AddPostIcon,
   PersonAdd as AddUserIcon,
+  DocumentScannerOutlined as DocumentIcon,
   Login as LoginIcon,
   LocalPostOffice as PostList,
   AppRegistration as RegistrationList,
@@ -23,5 +24,6 @@ export default {
   DashboardIcon,
   UserProfileIcon,
   UserManagementIcon,
-  RegistrationList
+  RegistrationList,
+  DocumentIcon
 };

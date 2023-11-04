@@ -6,7 +6,7 @@ import SFAMOGrid from 'components/SFAMOGrid';
 import Status from 'enums/status.enum';
 import ReactHtmlParser from 'react-html-parser';
 import EditPostModal from './EditPost/EditPostModal';
-import useViewPostListHook from './useViewPostListHook';
+import useViewPostHook from './useViewPostHook';
 interface DescriptionItemProps {
     title: string;
     content: React.ReactNode;
@@ -26,7 +26,7 @@ type RuleListItem = {
     progress?: number;
 };
 const ViewPostList = () => {
-    const { handler, props, expandedRowRender } = useViewPostListHook();
+    const { handler, props, expandedRowRender } = useViewPostHook();
     const DescriptionItem = ({ title, content }: DescriptionItemProps) => (
         <div className="site-description-item-profile-wrapper">
             <p className="site-description-item-profile-p-label">{title}:</p>
@@ -36,7 +36,18 @@ const ViewPostList = () => {
     console.log('post: ', props.posts)
     return (
         <>{
-            props?.posts && (<SFAMOGrid pageSizeOptions={props.pageSizeOptions} total={props.total} onPageChange={handler.onPageChange} onChangePageSize={handler.onChangePageSize} page={props.page} pageSize={props.pageSize} rows={props.rows} columns={props?.columns} isLoading={props.loading} rowsExpanded={props.rowsExpanded} expandedRowRender={expandedRowRender} />
+            props?.posts && (
+                <SFAMOGrid
+                    pageSizeOptions={props.pageSizeOptions}
+                    total={props.total} onPageChange={handler.onPageChange}
+                    onChangePageSize={handler.onChangePageSize}
+                    page={props.page}
+                    pageSize={props.pageSize}
+                    rows={props.rows}
+                    columns={props?.columns}
+                    isLoading={props.loading} rowsExpanded={props.rowsExpanded}
+                    expandedRowRender={expandedRowRender}
+                    action={handler.handleAddPost} />
             )
         }
             <Drawer
@@ -134,7 +145,12 @@ const ViewPostList = () => {
                 )}
 
             </Drawer >
-            {(props.openEditPostModal && props.postInfoAPI !== null && props.isLoading !== true) && <EditPostModal postInfo={props.postInfoAPI} postId={props.editPostModalId} open={props.openEditPostModal} setOpenEditPostModal={handler.setOpenEditPostModal} ></EditPostModal>
+            {(props.openEditPostModal && props.postInfoAPI !== null && props.isLoading !== true) &&
+                <EditPostModal
+                    postInfo={props.postInfoAPI}
+                    postId={props.editPostModalId}
+                    open={props.openEditPostModal}
+                    setOpenEditPostModal={handler.setOpenEditPostModal} />
             }
         </>
     )

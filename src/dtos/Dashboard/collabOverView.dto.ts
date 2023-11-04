@@ -1,4 +1,4 @@
-export default interface CollabOverView {
+export default interface CollabOverViewDto {
     data: {
         totalCollaborator: number,
         newCollaborators: [

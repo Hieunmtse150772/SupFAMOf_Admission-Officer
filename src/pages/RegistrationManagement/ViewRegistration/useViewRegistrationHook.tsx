@@ -126,12 +126,24 @@ function useViewRegistrationHook() {
                 },
                 2: {
                     text: 'Running',
-                    status: 'Processing',
+                    status: 'Running',
                 },
                 3: {
                     text: 'Ending',
                     status: 'Success',
-                }
+                },
+                4: {
+                    text: 'Re-open',
+                    status: 'Re-open',
+                },
+                5: {
+                    text: 'Deleted',
+                    status: 'Deleted',
+                },
+                6: {
+                    text: 'Re-open',
+                    status: 'Re-open',
+                },
             },
             render: (value, valueEnum) => {
                 let color = grey[400].toString();
@@ -178,11 +190,75 @@ function useViewRegistrationHook() {
             title: 'Confirm',
             width: 10,
             hideInSearch: true,
-            render: (value) => (
-                <Box>
-                    <Button onClick={() => handleEndingEvent(value)} icon={<EditOutlined rev={undefined} />}>Confirm End</Button>
+            dataIndex: 'status',
+            valueEnum: {
+                1: {
+                    text: 'Pending',
+                    status: 'Pending',
+                },
+                2: {
+                    text: 'Running',
+                    status: 'Running',
+                },
+                3: {
+                    text: 'Ending',
+                    status: 'Success',
+                },
+                4: {
+                    text: 'Re-open',
+                    status: 'Re-open',
+                },
+                5: {
+                    text: 'Deleted',
+                    status: 'Deleted',
+                },
+                6: {
+                    text: 'Re-open',
+                    status: 'Re-open',
+                },
+            },
+            render: (value, valueEnum) => {
+                let color = grey[400].toString();
+                let statusText = 'Unknown';
+                let disable = false;
+                switch (valueEnum?.status) {
+                    case Status.opening:
+                        color = '#1890ff';
+                        statusText = 'Close';
+                        break;
+
+                    case Status.closed:
+                        color = green[500];
+                        statusText = 'End';
+                        break;
+
+                    case Status.ended:
+                        color = red[500];
+                        statusText = 'End';
+                        disable = true;
+                        break;
+                    case Status.canceled:
+                        color = yellow[500];
+                        statusText = 'End';
+                        disable = true;
+                        break;
+                    case Status.deleted:
+                        color = red[500];
+                        statusText = 'End';
+                        disable = true;
+                        break;
+                    case Status.reopen:
+                        color = green[500];
+                        statusText = 'Close';
+                        disable = false;
+                        break;
+                    default:
+                        break;
+                }
+                return <Box>
+                    <Button onClick={() => handleAction(value, valueEnum.status)} type='default' color={color} style={{ color: color }} disabled={disable} icon={<EditOutlined rev={undefined} />}>{statusText}</Button>
                 </Box>
-            )
+            },
         },
     ];
     const rowsExpanded: ListPositionI[] = posts.data.map(post => ({
@@ -217,8 +293,24 @@ function useViewRegistrationHook() {
             setOpenConfirmModal(true)
         }
     }
-    const handleEndingEvent = (value: any) => {
-        console.log('value: ', value)
+    const handleAction = (value: any, status: number) => {
+        console.log('value: ', value);
+        switch (status) {
+            case Status.opening: {
+                console.log('status: ', status);
+                break;
+            }
+            case Status.closed: {
+                console.log('status: ', status);
+                break;
+            }
+            case Status.reopen: {
+                console.log('status: ', status);
+                break;
+            }
+            default:
+                break;
+        }
     }
     const handleSubmit = async (value: any) => {
         console.log('list: ', value)

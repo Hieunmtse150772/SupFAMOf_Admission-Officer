@@ -10,10 +10,10 @@ type IconType = typeof ChromeFilled | typeof CrownFilled | typeof SmileFilled | 
 
 const menu = {
     route: {
-        path: '/',
+        path: '/dashboard2',
         routes: [
             {
-                path: '/welcome',
+                path: '/dashboard',
                 name: '欢迎',
                 //   icon: <SmileFilled rev />,
                 component: './Welcome',
@@ -42,7 +42,7 @@ const menu = {
                         name: '三级页面',
                         //   icon: <CrownFilled />,
                         component: './Welcome',
-                    }, 
+                    },
                 ],
             },
         ]

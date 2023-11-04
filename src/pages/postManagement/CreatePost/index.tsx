@@ -7,9 +7,9 @@ import { RangePickerProps } from 'antd/es/date-picker';
 import { Small } from 'components/Typography';
 import dayjs from 'dayjs';
 import useTitle from "hooks/useTitle";
-import AddCertificateModal from 'pages/modal/AddCertificateModal';
-import AddDocumentModal from 'pages/modal/AddDocumentModal';
-import AddPostTitleModal from 'pages/modal/AddPostTitleModal';
+import AddCertificateModal from 'pages/Modal/AddCertificateModal';
+import AddDocumentModal from 'pages/Modal/AddDocumentModal';
+import AddPostTitleModal from 'pages/Modal/AddPostTitleModal';
 import { FC, useState } from "react";
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'; // Import Quill styles
