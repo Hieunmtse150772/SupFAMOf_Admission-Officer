@@ -1,5 +1,5 @@
 import UserInfoLogin from "models/userInforLogin.model";
 
-export default interface LoginUser {
+export default interface LoginUserDto {
     data: UserInfoLogin;
 }

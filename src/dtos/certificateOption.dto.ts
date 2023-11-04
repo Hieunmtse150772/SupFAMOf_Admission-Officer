@@ -1,6 +1,6 @@
 import CertificateOptionI from "models/certificateOption.model";
 
 
-export default interface CertificateOption {
+export default interface CertificateOptionDto {
     data: CertificateOptionI[];
 }

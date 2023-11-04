@@ -13,7 +13,7 @@ import Gallery from "components/userProfile/Gallery";
 import Profile from "components/userProfile/Profile";
 import useTitle from "hooks/useTitle";
 import { FC } from "react";
-import ProfileEditDrawer from './drawer/profileEditDrawer';
+import ProfileEditDrawer from './Drawer/profileEditDrawer';
 import useUserProfileHook from './useUserProfileHook';
 
 // styled components

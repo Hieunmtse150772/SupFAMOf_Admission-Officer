@@ -1,5 +1,5 @@
 import CollabInfo from "models/collab.model";
 
-export interface Collab {
+export interface CollabDto {
     data: CollabInfo[]
 }

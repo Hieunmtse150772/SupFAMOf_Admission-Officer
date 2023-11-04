@@ -18,8 +18,9 @@ interface SFAMOGridProps {
     onChangePageSize: (size: number) => void;
     pageSizeOptions: number[];
     expandedRowRender?: (record: any) => JSX.Element | null;
+    action?: () => void;
 }
-const SFAMOGrid = ({ isLoading, rows, columns, rowsExpanded, page, total, pageSize, onPageChange, onChangePageSize, pageSizeOptions, expandedRowRender }: SFAMOGridProps) => {
+const SFAMOGrid = ({ isLoading, rows, columns, rowsExpanded, page, total, pageSize, onPageChange, onChangePageSize, pageSizeOptions, expandedRowRender, action }: SFAMOGridProps) => {
     const [selectedRowsState, setSelectedRows] = useState<any[]>([]);
     let navigate = useNavigate();
 
@@ -54,9 +55,7 @@ const SFAMOGrid = ({ isLoading, rows, columns, rowsExpanded, page, total, pageSi
                     <Button
                         type="primary"
                         key="primary"
-                        onClick={() => {
-                            navigate('/dashboard/add-post');
-                        }}
+                        onClick={action}
                     >
                         <PlusOutlined rev={undefined} />New
                     </Button>,

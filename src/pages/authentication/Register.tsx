@@ -11,7 +11,7 @@ import {
 import {
   SocialIconButton,
   TextFieldWrapper,
-} from "components/authentication/StyledComponents";
+} from "components/Authentication/StyledComponents";
 import FlexBox from "components/FlexBox";
 import LightTextField from "components/LightTextField";
 import { H1, H3, Small } from "components/Typography";
