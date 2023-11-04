@@ -33,7 +33,6 @@ const ViewPostList = () => {
             {content}
         </div>
     );
-    console.log('post: ', props.posts)
     return (
         <>{
             props?.posts && (
