@@ -1,5 +1,5 @@
-import AuthGuard from "components/Authentication/AuthGuard";
-import GuestGuard from "components/Authentication/GuestGuard";
+import AuthGuard from "components/authentication/AuthGuard";
+import GuestGuard from "components/authentication/GuestGuard";
 import DashboardLayout2 from "components/Layouts/antdesgin";
 import DashboardLayout from "components/Layouts/DashboardLayout";
 import LoadingScreen from "components/LoadingScreen";
@@ -39,10 +39,10 @@ const AddNewUser = Loadable(
   lazy(() => import("./pages/UserManagement/AddNewUser"))
 );
 const AddNewPost = Loadable(
-  lazy(() => import("./pages/PostManagement/CreatePost"))
+  lazy(() => import("./pages/Post Management/CreatePost"))
 );
 const ViewPostList = Loadable(
-  lazy(() => import("./pages/PostManagement/ViewPost"))
+  lazy(() => import("./pages/Post Management/ViewPost"))
 );
 const ViewRegistration = Loadable(
   lazy(() => import("./pages/RegistrationManagement/ViewRegistration"))

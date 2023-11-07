@@ -1,4 +1,5 @@
 import { ProColumns } from "@ant-design/pro-components";
+import { Avatar, Space, Tag } from "antd";
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import { getCollabList } from "features/collabSlice";
@@ -18,13 +19,33 @@ const useViewCollablistHook = () => {
     const total = collabAPI?.metadata?.total;
     const [totalCollab, setTotalCollab] = useState<number>(0);
     const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
-
+    const option = [{ label: 'true', value: true }, { label: 'false', value: false }]
     const columns: ProColumns[] = [
         {
+
+            title: 'Avatar',
+            dataIndex: 'imgUrl',
+            key: 'imgUrl',
+            hideInSearch: true,
+            render: (dom, entity) => {
+                return (
+                    <Avatar
+                        onClick={() => {
+                            console.log('dom', dom)
+                            console.log('entity', entity)
+                            setCurrentRow(entity);
+                            setShowDetail(true);
+                        }}
+                        src={dom}
+                        style={{ width: 50, height: 50 }} />
+                );
+            },
+        },
+        {
+
             title: 'Full name',
             dataIndex: 'name',
             key: 'name',
-            width: 5,
             render: (dom, entity) => {
                 return (
                     // eslint-disable-next-line jsx-a11y/anchor-is-valid
@@ -45,14 +66,12 @@ const useViewCollablistHook = () => {
             title: 'Email',
             dataIndex: 'email',
             key: 'email',
-            width: 15,
             hideInSearch: true,
         },
         {
             title: 'Phone',
             dataIndex: 'phone',
             key: 'phone',
-            width: 30,
             sorter: true,
             hideInSearch: true,
         },
@@ -60,21 +79,45 @@ const useViewCollablistHook = () => {
             title: 'Is Premium',
             dataIndex: 'isPremium',
             key: 'isPremium',
-            width: 30,
             sorter: true,
+            filterDropdown: { filters: option },
+            render: (isPremium) => {
+
+                return <Space size={0}>
+                    {isPremium ? <Tag color="yellow">Premium</Tag> : <Tag color="blue">Normal</Tag>}
+                </Space>
+            }
         },
         {
             title: 'Student ID',
             dataIndex: 'idStudent',
             key: 'idStudent',
             hideInSearch: true,
-            width: 20,
         },
         {
-            title: 'Tax Number',
-            dataIndex: 'taxNumber',
-            key: 'taxNumber',
-            width: 20,
+            title: 'Certificates',
+            dataIndex: 'certificates',
+            key: 'certificates',
+            render: (certificates) => {
+                console.log('Certificate: ', certificates)
+                if (Array.isArray(certificates)) {
+                    if (certificates.length !== 0) {
+                        return certificates.map((certificate) => (
+                            <Space size={0} key={certificate.id}>
+                                <Tag color="blue">{certificate?.certificateName}</Tag>
+                            </Space>
+                        ));
+                    } else return <Space size={0}>
+                        <Tag color="red">No certificate</Tag>
+                    </Space>
+
+                } else {
+                    <Tag color="red">No certificate</Tag>
+                    // Handle the case when certificates is not an array
+                    return null; // or you can return an appropriate message or component
+                }
+            }
+
         },
     ];
     const dispatch = useAppDispatch();
@@ -97,7 +140,8 @@ const useViewCollablistHook = () => {
         identityNumber: collab?.identityNumber,
         taxNumber: collab?.taxNumber,
         bankName: collab?.bankName,
-        branch: collab?.branch
+        branch: collab?.branch,
+        certificates: collab?.certificates
         // ...
     }));
     const fetchCollabList = async () => {
