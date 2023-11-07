@@ -50,15 +50,28 @@ export async function upload(file: File, setLoading: React.Dispatch<React.SetSta
   setLoading(false);
   return photoURL;
 }
-export async function uploadAvatar(file: File, setLoading: React.Dispatch<React.SetStateAction<boolean>>, setPhotoURL: React.Dispatch<React.SetStateAction<string>>): Promise<string> {
-  const fileRef = ref(storage, `images/admission/event${uuidv4()}`);
-  setLoading(true);
-  const uploadTask = uploadBytesResumable(fileRef, file);
-  const snapshot: UploadTaskSnapshot = await uploadTask;
-  const photoURL: string = await getDownloadURL(snapshot.ref);
-  setPhotoURL(photoURL);
-  setLoading(false);
-  return photoURL;
+export async function uploadAvatar(file: File, setLoading: React.Dispatch<React.SetStateAction<boolean>>, setPhotoURL: React.Dispatch<React.SetStateAction<string>>): Promise<boolean> {
+  try{
+    const fileRef = ref(storage, `images/admission/event${uuidv4()}`);
+    let result = false;
+    setLoading(true);
+    const uploadTask = uploadBytesResumable(fileRef, file);
+    const snapshot: UploadTaskSnapshot = await uploadTask;
+    await getDownloadURL(snapshot.ref).then((response)=>{
+      console.log(result)
+      result= true;
+      setPhotoURL(response);
+      setLoading(false);
+    }).catch((error)=>{
+      setLoading(false);
+      return '';
+    });
+    return result;
+  } catch(error){
+    console.log('error: ', error);
+    setLoading(false);
+    return false;
+  }
 }
 
 // export async function uploadImgPost(
