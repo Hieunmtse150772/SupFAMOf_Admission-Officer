@@ -13,7 +13,7 @@ type CollabListInfo = {
     branch: string,
     certificates: Certificate[]
 }
-type Certificate = {
+export type Certificate = {
     id: number,
     certificateName: string,
     trainingCertificateId: number
