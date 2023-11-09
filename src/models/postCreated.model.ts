@@ -10,7 +10,6 @@ type PostCreated = {
     isPremium: boolean, // false
     location: string,
     postPositions: PositionCreatedI[],
-    trainingPositions: TrainingPositionsCreatedI[]
 }
 export type PostUpdated = {
     postId: number,
@@ -49,7 +48,6 @@ export type PostCreatedV2 = {
     dateTo: Date,
     isPremium: true,
     postPositions: PositionCreatedV2I[],
-    trainingPositions: TrainingPositionsCreatedV2I[]
 }
 export type PositionCreatedV2I = {
     trainingCertificateId: number,
@@ -59,24 +57,6 @@ export type PositionCreatedV2I = {
     location: string,
     latitude: string,
     longitude: string,
-    timeFrom: {
-        ticks: number
-    },
-    timeTo: {
-        ticks: number
-    },
-    isBusService: true,
-    amount: number,
-    salary: number
-}
-export type TrainingPositionsCreatedV2I = {
-    trainingCertificateId: number,
-    documentId: number,
-    positionName: string,
-    schoolName: string,
-    location: string,
-    latitude: number,
-    longitude: number,
     timeFrom: {
         ticks: number
     },

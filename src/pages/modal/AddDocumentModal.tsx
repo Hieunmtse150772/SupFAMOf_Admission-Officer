@@ -22,7 +22,6 @@ interface AddDocumentModalProps {
 }
 
 const AddDocumentModal: FC<AddDocumentModalProps> = ({ open, setOpenAddDocumentModal, fetchDocumentOption, data }) => {
-    console.log('con c', open)
     type DataItem = (typeof data)[number];
 
     const [dataSource, setDataSource] = useState<DataItem[]>(data);
@@ -30,7 +29,6 @@ const AddDocumentModal: FC<AddDocumentModalProps> = ({ open, setOpenAddDocumentM
     const [url, setUrl] = useState<string>('');
     const dispatch = useAppDispatch();
     const handleDeleteDocument = async (id: any) => {
-        console.log('id: ', id)
         const result = await dispatch(deleteDocument(id)).then((response) => {
             const result2 = unwrapResult(response);
             if (result2.status === 200) {
