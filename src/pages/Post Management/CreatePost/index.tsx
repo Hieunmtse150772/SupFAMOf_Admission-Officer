@@ -1,6 +1,6 @@
 
 import { PlusOutlined } from '@ant-design/icons';
-import { FooterToolbar, ProCard, ProForm, ProFormCheckbox, ProFormDatePicker, ProFormDateRangePicker, ProFormDigit, ProFormGroup, ProFormList, ProFormMoney, ProFormSelect, ProFormSlider, ProFormSwitch, ProFormText, ProFormTimePicker } from '@ant-design/pro-components';
+import { FooterToolbar, ProCard, ProForm, ProFormCheckbox, ProFormDateRangePicker, ProFormDigit, ProFormGroup, ProFormList, ProFormMoney, ProFormSelect, ProFormSlider, ProFormSwitch, ProFormText, ProFormTimePicker } from '@ant-design/pro-components';
 import { Box, Grid, alpha, styled } from '@mui/material';
 import { Button, DatePicker, Divider, Modal, Spin, Upload } from 'antd';
 import { RangePickerProps } from 'antd/es/date-picker';
@@ -70,7 +70,7 @@ const AddNewPost: FC = () => {
             disabledSeconds: () => [55, 56],
         };
     };
-    const { options, provinceOptions, districtOptions, wardOptions } = props
+    const { options, provinceOptions, districtOptions, wardOptions, optionDate } = props
 
     const modules = {
         toolbar: [
@@ -120,7 +120,8 @@ const AddNewPost: FC = () => {
                                 }}
                                 >Submit</Button>
                             </FooterToolbar>)
-                        }}>
+                        }}
+                    >
                         <Divider orientation="center" style={{ color: '#f09101' }}>
                             POST INFORMATION
                         </Divider>
@@ -145,9 +146,10 @@ const AddNewPost: FC = () => {
                                         rules={[{ required: true, message: 'Chose date from & date to!' }]}
                                         fieldProps={{
                                             disabledDate: disabledDate,
-                                            disabledTime: disabledRangeTime
+                                            disabledTime: disabledRangeTime,
+                                            onChange: (event) => { handler.handleChangeDateRangePicker(event) },
                                         }}
-                                    />
+                                    ></ProFormDateRangePicker>
                                     {/* <ProFormSelect
                                     width="xl"
                                     options={provinceOptions}
@@ -297,7 +299,6 @@ const AddNewPost: FC = () => {
                                     ]}
                                     name="positionDescription"
                                 />
-
                                 <ProFormText
                                     label="School Name"
                                     width="sm"
@@ -318,7 +319,24 @@ const AddNewPost: FC = () => {
                                     ]}
                                     name="location"
                                 />
+                                <ProFormSelect
+                                    width="sm"
+                                    options={optionDate}
+                                    name="date"
+                                    label="Date Option"
+                                    tooltip="Chose one options of Date"
+                                    rules={[{ required: true, message: 'Chose one options of Date!' }]}
+                                />
+                                <ProFormTimePicker.RangePicker
+                                    label="Time"
+                                    width="sm"
+                                    name="timeFrom_timeTo"
+                                    fieldProps={{
+                                        disabledTime: (current, type) => handler.disabledTime(current, type)
+                                    }}
 
+                                    rules={[{ required: true, message: 'Chose time from & time to!' }]}
+                                />
 
                                 <ProFormSelect
                                     label="Document"
@@ -345,24 +363,6 @@ const AddNewPost: FC = () => {
                                     debounceTime={5}
                                     tooltip="That field optional"
                                 />
-
-                                <ProFormDatePicker
-                                    label="Date"
-                                    width="sm"
-                                    name="date"
-                                    rules={[{ required: true, message: 'Chose Date!' }]}
-                                />
-                                <ProFormTimePicker.RangePicker
-                                    label="Time"
-                                    width="sm"
-                                    name="timeFrom_timeTo"
-                                    fieldProps={{
-                                        disabledTime: (current, type) => handler.disabledTime(current, type)
-                                    }}
-
-                                    rules={[{ required: true, message: 'Chose time from & time to!' }]}
-                                />
-
 
                                 <ProFormDigit
                                     label="Amount"

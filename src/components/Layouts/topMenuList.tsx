@@ -39,6 +39,12 @@ const index = [
     Icon: Icons.DocumentIcon,
     path: "/dashboard/contract-list",
   }
+  ,
+  {
+    title: "Map",
+    Icon: Icons.DocumentIcon,
+    path: "/dashboard/map",
+  }
 ];
 
 export default index;

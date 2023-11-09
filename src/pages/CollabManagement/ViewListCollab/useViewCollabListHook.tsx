@@ -151,8 +151,8 @@ const useViewCollablistHook = () => {
     useEffect(() => {
         fetchCollabList()
     }, [page, pageSize])
-    const handler = { onPageChange, onChangePageSize }
-    const props = { columns, collabAPI, pageSizeOptions, total, page, pageSize, rows, isLoading }
+    const handler = { onPageChange, onChangePageSize, setCurrentRow, setShowDetail }
+    const props = { columns, collabAPI, pageSizeOptions, total, page, pageSize, rows, isLoading, showDetail, currentRow }
     return {
         handler,
         props,

@@ -27,8 +27,8 @@ const AddCertificateModal: FC<AddCertificateModalProps> = ({ open, setOpenCertif
 
     const handleCreatePostTitle = async (value: any) => {
         const payload: CertificateCreated = {
-            trainingTypeId: value?.postTitleDescription,
-            certificateName: value?.postTitleType
+            trainingTypeId: value?.trainingTypeId,
+            certificateName: value?.certificateName
         }
         let result = false;
         try {

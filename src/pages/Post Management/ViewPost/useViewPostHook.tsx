@@ -315,6 +315,7 @@ function useViewPostList() {
     timeTo: post?.timeTo,
     postImg: post?.postImg,
     priority: post?.priority,
+    position: post?.postPositions
     // ...
   }));
   console.log('trainingposition: ', rowsExpanded)
