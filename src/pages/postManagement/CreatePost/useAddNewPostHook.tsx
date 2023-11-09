@@ -13,7 +13,7 @@ import { getDocument } from 'features/documentSlice';
 import { createPost } from 'features/postSlice';
 import { getPostTitle } from 'features/postTitleSlice';
 import useTitle from 'hooks/useTitle';
-import PostCreated, { PositionCreatedI, PostCreatedV2, TrainingPositionsCreatedI } from 'models/postCreated.model';
+import PostCreated, { PostCreatedV2 } from 'models/postCreated.model';
 import PostOptionI from 'models/postOption.model';
 import { Moment } from 'moment';
 import { useEffect, useState } from 'react';
@@ -212,56 +212,6 @@ const useAddNewPostHook = () => {
     const onChangeSliderPiority = (newValue: number | null) => {
         setPiority(newValue);
     };
-    const onSubmit = async (data: any) => {
-        const timeRange: Moment[] = getValues('TimeFrom-TimeTo')
-        const dateRange: Date[] = getValues('DateFrom-DateTo')
-
-        const formattedTimeRange = timeRange?.map((time) => time.format(FormatTime));
-        const formattedDateRange = dateRange?.map((time) => time);
-        const position: PositionCreatedI[] = (additionalPositions || [])?.map((_, index) => {
-            const positionValue = getValues(`postPosition${index}`);
-            const numberStudentValue = getValues(`numberStudent${index}`);
-            const salaryValue = getValues(`Salary${index}`);
-            return {
-                positionName: positionValue,
-                amount: numberStudentValue,
-                salary: salaryValue,
-            };
-        });
-        const trainingPosition: TrainingPositionsCreatedI[] = (additionalTrainingPositions || []).map((_, index) => {
-            const positionValue = getValues(`postPositionTraining${index}`);
-            const numberStudentValue = getValues(`numberStudentTraining${index}`);
-            const salaryValue = getValues(`SalaryTraining${index}`);
-            return {
-                positionName: positionValue,
-                amount: numberStudentValue,
-                salary: salaryValue,
-            };
-        });
-        const params: PostCreated = {
-            postTitleId: getValues('postTitle'), //completetext box     
-            postDescription: getValues('postDescription'),
-            dateFrom: formattedDateRange[0],
-            dateTo: formattedDateRange[1],
-            timeFrom: formattedTimeRange[0], //00:00:00 
-            timeTo: formattedTimeRange[1],
-            priority: piority, //độ ưu tiên 1-5, defaultvalue: 0
-            isPremium: isPremium, // false
-            location: getValues('location'),
-            postPositions: position,
-            trainingPositions: trainingPosition ? trainingPosition : []
-        }
-        // await dispatch(createPost(params)).then((response) => {
-        //     const result2 = unwrapResult(response);
-        //     if (result2.status === 200) {
-        //         message.success('Create post success!');
-        //         reset()
-        //     }
-        // }).catch((error) => {
-        //     console.error(error)
-        // })
-        // You can perform your submission logic here
-    };
     const handleChangeProvince = (value: any) => {
         setProvinceId(value)
         fetchDistrictOption(value)
@@ -285,6 +235,7 @@ const useAddNewPostHook = () => {
             setError('');
             const dateFrom = new Date(value?.dateFrom_dateTo[0]);
             const dateTo = new Date(value?.dateFrom_dateTo[1]);
+
             const params: PostCreatedV2 = {
                 postCategoryId: value?.postCategory,
                 postDescription: description,
@@ -293,8 +244,6 @@ const useAddNewPostHook = () => {
                 priority: value?.piority,
                 isPremium: value?.isPremium,
                 postPositions: value?.postPositions?.map((postPosition: PostPosition) => {
-                    // const timeRange: Moment[] = postPosition.timeFrom_timeTo;
-                    // const formattedTimeRange = timeRange?.map((time) => time.format(FormatTime));
                     return {
                         trainingCertificateId: postPosition.certificateOption,
                         positionDescription: postPosition.positionDescription,
@@ -309,24 +258,6 @@ const useAddNewPostHook = () => {
                         location: postPosition.location,
                         latitude: 10.841444,
                         longitude: 106.810033,
-                    }
-                }),
-                trainingPositions: value?.trainingPosition?.map((postPosition: PostTrainingPosition) => {
-                    // const timeRange: Moment[] = postPosition.trainingTimeFrom_timeTo;
-                    // const formattedTimeRange = timeRange?.map((time) => time.format(FormatTime));
-                    return {
-                        trainingCertificateId: postPosition.certificateTrainingOption,
-                        documentId: postPosition.documentTrainingOption,
-                        positionName: postPosition.trainingPositionName,
-                        amount: postPosition.traingAmount,
-                        salary: postPosition.trainingSalary,
-                        timeFrom: postPosition.trainingTimeFrom_timeTo[0],
-                        timeTo: postPosition.trainingTimeFrom_timeTo[1],
-                        isBusService: postPosition.isBusServiceTraining,
-                        schoolName: postPosition.schoolNameTraining,
-                        location: postPosition.locationTraining,
-                        latitude: 1.20931,
-                        longitude: 3.418731,
                     }
                 }),
                 postImg: photoUrl
@@ -477,7 +408,6 @@ const useAddNewPostHook = () => {
         handleSubmit,
         onPremiumChange,
         onChangeSliderPiority,
-        onSubmit,
         setOpen,
         reset,
         setOpenAddTitleModal,

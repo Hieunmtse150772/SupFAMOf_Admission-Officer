@@ -26,7 +26,7 @@ const AddPostTitleModal: FC<AddPostTitleModalProps> = ({ open, setOpenAddTitleMo
 
     const handleCreatePostTitle = async (value: any) => {
         const payload: PostTitleCreated = {
-            PostTitleDescription: value?.postTitleDescription,
+            postTitleDescription: value?.postTitleDescription,
             postTitleType: value?.postTitleType
         }
         let result = false;

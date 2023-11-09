@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
-import PostI from 'dtos/Post/Post View/post.dto';
+import PostIDto from 'dtos/Post/Post View/post.dto';
 import PostInfoDto from 'dtos/Post/Post View/postInfo.dto';
 import SearchPostParams from 'dtos/Post/Post View/searchPost.dto';
 import PostInfo from 'models/post.model';
@@ -10,7 +10,7 @@ import { postService } from 'services/post.service';
 interface PostState {
     loading: boolean,
     error: string | null,
-    posts: PostI;
+    posts: PostIDto;
     postInfo: PostInfoDto | null,
     isDeleted: boolean,
 }

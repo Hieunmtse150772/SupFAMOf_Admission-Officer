@@ -73,7 +73,8 @@ export const getCoordinates = createAsyncThunk(
             return rejectWithValue(axiosError.response?.data);
         }
     },
-); export const addressSlice = createSlice({
+);
+export const addressSlice = createSlice({
     name: 'address',
     initialState,
     reducers: {},
