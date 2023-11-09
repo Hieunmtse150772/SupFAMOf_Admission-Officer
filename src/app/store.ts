@@ -9,6 +9,7 @@ import collabReducer from '../features/collabSlice';
 import contractReducer from '../features/contractSlice';
 import documentReducer from '../features/documentSlice';
 import rgoogleApiReducer from '../features/googleAPISlice';
+import leafLetReducer from '../features/leafLetAPISlice';
 import dashboardReducer from '../features/manageDashboardSlice';
 import postReducer from '../features/postSlice';
 import postTitleReducer from '../features/postTitleSlice';
@@ -27,7 +28,9 @@ export const store = configureStore({
     registration: registrationReducer,
     dashboard: dashboardReducer,
     contract: contractReducer,
-    location: rgoogleApiReducer
+    location: rgoogleApiReducer,
+    locationLeafLet: leafLetReducer
+
   },
 });
 

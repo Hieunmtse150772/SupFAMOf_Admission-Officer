@@ -8,17 +8,17 @@ import { useAppSelector } from 'app/hooks';
 import { useAppDispatch } from 'app/store';
 import { AxiosResponse } from 'axios';
 import { Dayjs } from 'dayjs';
-import { geocodingDto } from 'dtos/GoogleAPI/geocoding.dto';
 import { getCertificate } from 'features/certificateSlice';
 import { getDocument } from 'features/documentSlice';
-import { geocodingApi } from 'features/googleAPISlice';
+import { geocodingLeafLetApi } from 'features/leafLetAPISlice';
 import { createPost } from 'features/postSlice';
 import { getPostTitle } from 'features/postTitleSlice';
 import useTitle from 'hooks/useTitle';
-import { paramI } from 'models/geocodingParam.model';
+import geocodingLeafLetI from 'models/geocodingLeafLet.model';
+import { paramLeafLetI } from 'models/geocodingParam.model';
 import { PostCreatedV2 } from 'models/postCreated.model';
 import PostOptionI from 'models/postOption.model';
-import { Moment } from 'moment';
+import moment, { Moment } from 'moment';
 import { useEffect, useState } from 'react';
 import { useForm } from "react-hook-form";
 import { uploadImage } from '../../../firebase';
@@ -44,7 +44,7 @@ interface PostPosition {
     amount: number;
     salary: number;
     isBusService: boolean;
-    date: Date;
+    date: string;
 }
 type RangeType = 'start' | 'end';
 
@@ -61,7 +61,7 @@ const useAddNewPostHook = () => {
         handleSubmit,
         control,
         formState: { errors },
-        setValue, reset
+        setValue, reset, getValues
     } = useForm();
     const Formater = 'DD/MM/YYYY';
     const dispatch = useAppDispatch();
@@ -82,16 +82,6 @@ const useAddNewPostHook = () => {
     const [piority, setPiority] = useState<number | null>(0);
     const [isPremium, setIsPremium] = useState<boolean>(false);
     const [messageApi, contextHolder] = message.useMessage();
-    const [additionalPositions, setAdditionalPositions] = useState<AdditionalPosition[]>([{
-        positionName: '',
-        amount: 0,
-        salary: 0,
-    }]);
-    const [additionalTrainingPositions, setAdditionalTrainingPositions] = useState<AdditionalTrainingPosition[]>([{
-        namePosition: '',
-        number: null,
-        salary: null,
-    }]);
     const [open, setOpen] = useState(false);
     const options = postTitleOptionsAPI?.map((title) => ({
         value: title.id,
@@ -134,6 +124,8 @@ const useAddNewPostHook = () => {
     const [errorUrl, setErrorUrl] = useState<string>('');
     const [fileImage, setFileImage] = useState<any>('');
     const [paramsCreatePost, setParamsCreatePost] = useState<PostCreatedV2>()
+    const [optionDate, setOptionDate] = useState<any[]>([])
+
     const disabledTime: RangeDisabledTime = (now, defaultType) => {
         if (defaultType === 'start') {
             // Vô hiệu hóa giờ từ 0-3 và từ 21-24 cho lựa chọn bắt đầu
@@ -200,12 +192,14 @@ const useAddNewPostHook = () => {
         setPiority(newValue);
     };
     const handlePostPosition = async (postPosition: PostPosition) => {
-        const geocodingParams: paramI = {
-            address: postPosition.location,
-            key: 'AIzaSyDSEKbLICxkqgw7vIuEbK9-f2oHiuKw-XY'
+        const geocodingParams: paramLeafLetI = {
+            q: postPosition.location,
+            format: 'json',
+            limit: 1
         }
-        const response = await dispatch(geocodingApi(geocodingParams))
-        const result: AxiosResponse<geocodingDto, any> = unwrapResult(response)
+        const response = await dispatch(geocodingLeafLetApi(geocodingParams))
+        const result: AxiosResponse<geocodingLeafLetI[], any> = unwrapResult(response)
+        console.log('result: ', result)
         const repsonse = {
             trainingCertificateId: postPosition.certificateOption,
             positionDescription: postPosition.positionDescription,
@@ -218,9 +212,9 @@ const useAddNewPostHook = () => {
             isBusService: postPosition.isBusService,
             schoolName: postPosition.schoolName,
             location: postPosition.location,
-            latitude: result.data.results[0].geometry.location.lat,
-            longitude: result.data.results[0].geometry.location.lng,
-            date: postPosition.date
+            latitude: result.data[0].lat,
+            longitude: result.data[0].lon,
+            date: new Date(postPosition.date)
         }
         console.log('respone position: ', repsonse)
         return repsonse;
@@ -271,8 +265,6 @@ const useAddNewPostHook = () => {
                         console.error('Error in handlePostPosition:', error);
                         // Handle error appropriately
                     }
-
-
                 },
                 onCancel() {
                     console.log('Cancel');
@@ -305,22 +297,32 @@ const useAddNewPostHook = () => {
         })
     }
 
-    const handleDeleteTrainingPosition = (indexToDelete: number) => {
-        const updatedPositions = additionalTrainingPositions.filter((_, index) => index !== indexToDelete);
-        setAdditionalTrainingPositions(updatedPositions);
-    };
-    const handleDeletePosition = (indexToDelete: number) => {
-        if (additionalPositions.length === 1) {
-            messageApi.open({
-                type: 'warning',
-                content: 'Need at least 1 position to create a post!',
-            });
-        } else {
-            setError('')
-            const updatedPositions = additionalPositions.filter((_, index) => index !== indexToDelete);
-            setAdditionalPositions(updatedPositions);
-        }
-    };
+    const handleChangeDateRangePicker = (event: any) => {
+        console.log('event: ', event)
+        if (event !== null) {
+            const dateFrom = new Date(event[0]);
+            const dateTo = new Date(event[1]);
+            console.log('dateFrom: ', dateFrom)
+            console.log('dateTo: ', dateTo)
+
+            let dateArray = [];
+            let currentDate = new Date(dateFrom);
+
+            while (currentDate <= dateTo) {
+                dateArray.push(new Date(currentDate));
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            const optionDatePicker: any[] = dateArray?.map((date) => ({
+                value: String(date),
+                label: moment(date).format(Formater)
+            }));
+            console.log('date array: ', dateArray)
+            setOptionDate(optionDatePicker)
+        } else setOptionDate([])
+    }
+    useEffect(() => {
+        console.log('optionDate: ', optionDate)
+    }, [optionDate])
     const fetchPostTitleOption = async () => {
         await dispatch(getPostTitle());
     }
@@ -354,7 +356,6 @@ const useAddNewPostHook = () => {
 
     const handler = {
         handleChangePosition,
-        handleDeletePosition,
         handleSubmit,
         onPremiumChange,
         onChangeSliderPiority,
@@ -364,7 +365,6 @@ const useAddNewPostHook = () => {
         onCloseAddTitleModal,
         onOpenAddTitleModal,
         fetchPostTitleOption,
-        handleDeleteTrainingPosition,
         handlePreview,
         handleChange,
         handleCancel,
@@ -380,7 +380,8 @@ const useAddNewPostHook = () => {
         setOpenAddCertificateModal,
         fetchDocumentOption,
         fetchCertificateOption,
-        disabledTime
+        disabledTime,
+        handleChangeDateRangePicker,
     }
     const props = {
         open,
@@ -389,9 +390,7 @@ const useAddNewPostHook = () => {
         control,
         errors,
         piority,
-        additionalPositions,
         error,
-        additionalTrainingPositions,
         contextHolder,
         openAddTitleModal,
         provinceOptions,
@@ -410,7 +409,8 @@ const useAddNewPostHook = () => {
         openAddCertificateModal,
         certificateOptionsAPI,
         documentOptionsAPI,
-        postTitleOptionsAPI
+        postTitleOptionsAPI,
+        optionDate
 
     }
     return { handler, props }

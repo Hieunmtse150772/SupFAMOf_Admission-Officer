@@ -96,7 +96,7 @@ const ViewPostList = () => {
 
                         return (
                             <>
-                                <Typography itemType="danger">{props.currentRow.title}</Typography>
+                                <Typography style={{ color: 'red', fontSize: 500 }} itemType="danger">{props.currentRow.title}</Typography>
                                 <Image src={props.currentRow.postImg} />
                                 <Box display="flex" alignItems="center">
                                     <FiberManualRecord sx={{ fontSize: 14, marginRight: 1, color }} />
