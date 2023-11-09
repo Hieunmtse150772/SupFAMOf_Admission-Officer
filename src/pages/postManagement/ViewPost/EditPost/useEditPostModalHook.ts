@@ -101,7 +101,6 @@ const useEditPostModal = () => {
         setIsEdited(true);
     }
     const handleUpdatePost = async (value: any) => {
-        console.log('value: ', value)
         if (!isEdited) {
             message.warning('Nothing was change!')
         } else {
