@@ -1,6 +1,6 @@
 
 import { PlusOutlined } from '@ant-design/icons';
-import { FooterToolbar, ProCard, ProForm, ProFormCheckbox, ProFormDateRangePicker, ProFormDigit, ProFormGroup, ProFormList, ProFormMoney, ProFormSelect, ProFormSlider, ProFormSwitch, ProFormText, ProFormTimePicker } from '@ant-design/pro-components';
+import { FooterToolbar, ProCard, ProForm, ProFormCheckbox, ProFormDatePicker, ProFormDateRangePicker, ProFormDigit, ProFormGroup, ProFormList, ProFormMoney, ProFormSelect, ProFormSlider, ProFormSwitch, ProFormText, ProFormTimePicker } from '@ant-design/pro-components';
 import { Box, Grid, alpha, styled } from '@mui/material';
 import { Button, DatePicker, Divider, Modal, Spin, Upload } from 'antd';
 import { RangePickerProps } from 'antd/es/date-picker';
@@ -346,7 +346,12 @@ const AddNewPost: FC = () => {
                                     tooltip="That field optional"
                                 />
 
-
+                                <ProFormDatePicker
+                                    label="Date"
+                                    width="sm"
+                                    name="date"
+                                    rules={[{ required: true, message: 'Chose Date!' }]}
+                                />
                                 <ProFormTimePicker.RangePicker
                                     label="Time"
                                     width="sm"

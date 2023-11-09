@@ -7,9 +7,9 @@ import {
 import { unwrapResult } from '@reduxjs/toolkit';
 import { Space, Tag, message } from 'antd';
 import { useAppDispatch } from 'app/store';
-import { createPostTitle } from 'features/postTitleSlice';
+import { createCertificate } from 'features/certificateSlice';
+import CertificateCreated from 'models/certificate.model';
 import CertificateOptionI from 'models/certificateOption.model';
-import PostTitleCreated from 'models/postTitle.model';
 import { FC, useState } from 'react';
 
 interface AddCertificateModalProps {
@@ -26,20 +26,19 @@ const AddCertificateModal: FC<AddCertificateModalProps> = ({ open, setOpenCertif
 
 
     const handleCreatePostTitle = async (value: any) => {
-        console.log('postTitleDescription: ', value)
-        const payload: PostTitleCreated = {
-            PostTitleDescription: value?.postTitleDescription,
-            postTitleType: value?.postTitleType
+        const payload: CertificateCreated = {
+            trainingTypeId: value?.postTitleDescription,
+            certificateName: value?.postTitleType
         }
         let result = false;
         try {
-            await dispatch(createPostTitle(payload)).then((response) => {
+            await dispatch(createCertificate(payload)).then((response) => {
                 console.log('response111: ', response.meta.requestStatus)
                 const result2 = unwrapResult(response);
                 console.log('first: ', result2)
                 if (result2.status === 200) {
                     fetchCertificateOption();
-                    message.success('Add position title success!');
+                    message.success('Add certificate success!');
                     result = true;
                 }
             }
@@ -49,7 +48,7 @@ const AddCertificateModal: FC<AddCertificateModalProps> = ({ open, setOpenCertif
                 result = false;
             })
         } catch (error) {
-            message.error('Add position title fail!');
+            message.error('Add certificate fail!');
             result = false;
         }
 
@@ -121,7 +120,7 @@ const AddCertificateModal: FC<AddCertificateModalProps> = ({ open, setOpenCertif
                     <ProFormText
                         width="md"
                         name="certificateName"
-                        label="Post category name"
+                        label="Certificate Name"
                         placeholder="Certificate name"
                         tooltip="Enter name of post title"
                         rules={[{ required: true, message: 'Category name is required!' }]}
@@ -129,7 +128,7 @@ const AddCertificateModal: FC<AddCertificateModalProps> = ({ open, setOpenCertif
                     />
                     <ProFormText
                         width="md"
-                        name="certificateId"
+                        name="trainingTypeId"
                         label="Certificate ID"
                         placeholder="Post category ID"
                         rules={[{ required: true, message: 'Post category ID is required!' }]}

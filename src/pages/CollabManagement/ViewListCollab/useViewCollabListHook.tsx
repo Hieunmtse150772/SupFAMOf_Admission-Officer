@@ -104,7 +104,7 @@ const useViewCollablistHook = () => {
                     if (certificates.length !== 0) {
                         return certificates.map((certificate) => (
                             <Space size={0} key={certificate.id}>
-                                <Tag color="blue">{certificate?.certificateName}</Tag>
+                                <Tag color="green">{certificate?.certificateName}</Tag>
                             </Space>
                         ));
                     } else return <Space size={0}>

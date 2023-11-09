@@ -34,6 +34,21 @@ export function useAuth(): User | null {
 }
 
 // Storage
+export async function uploadImage(file: File, setLoading: React.Dispatch<React.SetStateAction<boolean>>): Promise<string> {
+  try{
+    const fileRef = ref(storage, `images/admission/event${uuidv4()}`);
+    setLoading(true);
+    const uploadTask = uploadBytesResumable(fileRef, file);
+    const snapshot: UploadTaskSnapshot = await uploadTask;
+    const photoURL: string = await getDownloadURL(snapshot.ref);
+     setLoading(false);
+    return photoURL;
+  } catch(error){
+    console.log('error: ', error);
+    setLoading(false);
+    return ''
+  }
+}
 export async function upload(file: File, setLoading: React.Dispatch<React.SetStateAction<boolean>>, setPhotoURL: React.Dispatch<React.SetStateAction<string>>): Promise<string> {
   const fileRef = ref(storage, `images/admission/event${uuidv4()}`);
 

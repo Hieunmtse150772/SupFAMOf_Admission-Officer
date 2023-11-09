@@ -6,19 +6,22 @@ import { RcFile, UploadProps } from 'antd/es/upload';
 import { UploadFile } from 'antd/lib/upload';
 import { useAppSelector } from 'app/hooks';
 import { useAppDispatch } from 'app/store';
+import { AxiosResponse } from 'axios';
 import { Dayjs } from 'dayjs';
-import { getDistrict, getProvince, getWard } from 'features/addressSlice';
+import { geocodingDto } from 'dtos/GoogleAPI/geocoding.dto';
 import { getCertificate } from 'features/certificateSlice';
 import { getDocument } from 'features/documentSlice';
+import { geocodingApi } from 'features/googleAPISlice';
 import { createPost } from 'features/postSlice';
 import { getPostTitle } from 'features/postTitleSlice';
 import useTitle from 'hooks/useTitle';
-import PostCreated, { PositionCreatedI, PostCreatedV2, TrainingPositionsCreatedI } from 'models/postCreated.model';
+import { paramI } from 'models/geocodingParam.model';
+import { PostCreatedV2 } from 'models/postCreated.model';
 import PostOptionI from 'models/postOption.model';
 import { Moment } from 'moment';
 import { useEffect, useState } from 'react';
 import { useForm } from "react-hook-form";
-import { upload } from '../../../firebase';
+import { uploadImage } from '../../../firebase';
 
 interface AdditionalPosition {
     positionName: string;
@@ -41,17 +44,7 @@ interface PostPosition {
     amount: number;
     salary: number;
     isBusService: boolean;
-}
-interface PostTrainingPosition {
-    trainingPositionName: string;
-    documentTrainingOption: number;
-    certificateTrainingOption: number;
-    schoolNameTraining: string;
-    locationTraining: string;
-    trainingTimeFrom_timeTo: Moment[];
-    traingAmount: number;
-    trainingSalary: number;
-    isBusServiceTraining: boolean;
+    date: Date;
 }
 type RangeType = 'start' | 'end';
 
@@ -68,7 +61,7 @@ const useAddNewPostHook = () => {
         handleSubmit,
         control,
         formState: { errors },
-        setValue, getValues, reset
+        setValue, reset
     } = useForm();
     const Formater = 'DD/MM/YYYY';
     const dispatch = useAppDispatch();
@@ -86,11 +79,8 @@ const useAddNewPostHook = () => {
     const ward = useAppSelector(state => state.address.ward)
 
     const [error, setError] = useState<string>('');
-    const [errorTraining, setErrorTraining] = useState<String>('');
-    const [modalVisit, setModalVisit] = useState(false);
     const [piority, setPiority] = useState<number | null>(0);
     const [isPremium, setIsPremium] = useState<boolean>(false);
-    const [createParams, setCreateParams] = useState<PostCreated>()
     const [messageApi, contextHolder] = message.useMessage();
     const [additionalPositions, setAdditionalPositions] = useState<AdditionalPosition[]>([{
         positionName: '',
@@ -103,7 +93,6 @@ const useAddNewPostHook = () => {
         salary: null,
     }]);
     const [open, setOpen] = useState(false);
-    const [optionsAPI, setOptionsAPI] = useState<readonly PostOptionI[]>([]);
     const options = postTitleOptionsAPI?.map((title) => ({
         value: title.id,
         label: title.postCategoryDescription
@@ -131,22 +120,20 @@ const useAddNewPostHook = () => {
     }));
 
     const FormatTime = 'HH:mm:ss'
-    const loading = useAppSelector(state => state.postTitle.loading)
-    const [openAddTitleModal, setOpenAddTitleModal] = useState(false)
-    const [openAddCertificateModal, setOpenAddCertificateModal] = useState(false)
-    const [openAddDocumentModal, setOpenAddDocumentModal] = useState(false)
-
-
+    const loading = useAppSelector(state => state.postTitle.loading);
+    const [openAddTitleModal, setOpenAddTitleModal] = useState(false);
+    const [openAddCertificateModal, setOpenAddCertificateModal] = useState(false);
+    const [openAddDocumentModal, setOpenAddDocumentModal] = useState(false);
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
     const [previewTitle, setPreviewTitle] = useState('');
     const [fileList, setFileList] = useState<UploadFile[]>([]);
-    const [provinceId, setProvinceId] = useState<number>(0);
-    const [districId, setDistricId] = useState<number>(0);
     const [description, setDescription] = useState<string>('');
     const [isloading, setLoading] = useState<boolean>(false);
     const [photoUrl, setPhotoUrl] = useState<string>('');
     const [errorUrl, setErrorUrl] = useState<string>('');
+    const [fileImage, setFileImage] = useState<any>('');
+    const [paramsCreatePost, setParamsCreatePost] = useState<PostCreatedV2>()
     const disabledTime: RangeDisabledTime = (now, defaultType) => {
         if (defaultType === 'start') {
             // Vô hiệu hóa giờ từ 0-3 và từ 21-24 cho lựa chọn bắt đầu
@@ -212,139 +199,85 @@ const useAddNewPostHook = () => {
     const onChangeSliderPiority = (newValue: number | null) => {
         setPiority(newValue);
     };
-    const onSubmit = async (data: any) => {
-        const timeRange: Moment[] = getValues('TimeFrom-TimeTo')
-        const dateRange: Date[] = getValues('DateFrom-DateTo')
-
-        const formattedTimeRange = timeRange?.map((time) => time.format(FormatTime));
-        const formattedDateRange = dateRange?.map((time) => time);
-        const position: PositionCreatedI[] = (additionalPositions || [])?.map((_, index) => {
-            const positionValue = getValues(`postPosition${index}`);
-            const numberStudentValue = getValues(`numberStudent${index}`);
-            const salaryValue = getValues(`Salary${index}`);
-            return {
-                positionName: positionValue,
-                amount: numberStudentValue,
-                salary: salaryValue,
-            };
-        });
-        const trainingPosition: TrainingPositionsCreatedI[] = (additionalTrainingPositions || []).map((_, index) => {
-            const positionValue = getValues(`postPositionTraining${index}`);
-            const numberStudentValue = getValues(`numberStudentTraining${index}`);
-            const salaryValue = getValues(`SalaryTraining${index}`);
-            return {
-                positionName: positionValue,
-                amount: numberStudentValue,
-                salary: salaryValue,
-            };
-        });
-        const params: PostCreated = {
-            postTitleId: getValues('postTitle'), //completetext box     
-            postDescription: getValues('postDescription'),
-            dateFrom: formattedDateRange[0],
-            dateTo: formattedDateRange[1],
-            timeFrom: formattedTimeRange[0], //00:00:00 
-            timeTo: formattedTimeRange[1],
-            priority: piority, //độ ưu tiên 1-5, defaultvalue: 0
-            isPremium: isPremium, // false
-            location: getValues('location'),
-            postPositions: position,
-            trainingPositions: trainingPosition ? trainingPosition : []
+    const handlePostPosition = async (postPosition: PostPosition) => {
+        const geocodingParams: paramI = {
+            address: postPosition.location,
+            key: 'AIzaSyDSEKbLICxkqgw7vIuEbK9-f2oHiuKw-XY'
         }
-        // await dispatch(createPost(params)).then((response) => {
-        //     const result2 = unwrapResult(response);
-        //     if (result2.status === 200) {
-        //         message.success('Create post success!');
-        //         reset()
-        //     }
-        // }).catch((error) => {
-        //     console.error(error)
-        // })
-        // You can perform your submission logic here
-    };
-    const handleChangeProvince = (value: any) => {
-        setProvinceId(value)
-        fetchDistrictOption(value)
+        const response = await dispatch(geocodingApi(geocodingParams))
+        const result: AxiosResponse<geocodingDto, any> = unwrapResult(response)
+        const repsonse = {
+            trainingCertificateId: postPosition.certificateOption,
+            positionDescription: postPosition.positionDescription,
+            documentId: postPosition.documentOption,
+            positionName: postPosition.positionName,
+            amount: postPosition.amount,
+            salary: postPosition.salary,
+            timeFrom: postPosition.timeFrom_timeTo[0],
+            timeTo: postPosition.timeFrom_timeTo[1],
+            isBusService: postPosition.isBusService,
+            schoolName: postPosition.schoolName,
+            location: postPosition.location,
+            latitude: result.data.results[0].geometry.location.lat,
+            longitude: result.data.results[0].geometry.location.lng,
+            date: postPosition.date
+        }
+        console.log('respone position: ', repsonse)
+        return repsonse;
     }
-    const handleChangeDistrict = (value: any) => {
-        setDistricId(value)
-        fetchWardOption(value)
-    }
+
     const customRequest = async ({ file, onSuccess, onError }: any) => {
         try {
-            await upload(file, setLoading, setPhotoUrl); // Gọi hàm upload của bạn
+            setTimeout(() => {
+                setFileImage(file);
+                onSuccess();
+            }, 2000);
             onSuccess();
         } catch (error) {
             console.error('Lỗi khi tải lên tệp:', error);
             onError(error);
         }
     };
+
     const handleSubmitAnt = async (value: any) => {
         console.log('description: ', description)
-        if (photoUrl !== '' && description !== '') {
+        if (fileImage !== '' && description !== '') {
             setError('');
             const dateFrom = new Date(value?.dateFrom_dateTo[0]);
             const dateTo = new Date(value?.dateFrom_dateTo[1]);
-            const params: PostCreatedV2 = {
-                postCategoryId: value?.postCategory,
-                postDescription: description,
-                dateFrom: dateFrom,
-                dateTo: dateTo,
-                priority: value?.piority,
-                isPremium: value?.isPremium,
-                postPositions: value?.postPositions?.map((postPosition: PostPosition) => {
-                    // const timeRange: Moment[] = postPosition.timeFrom_timeTo;
-                    // const formattedTimeRange = timeRange?.map((time) => time.format(FormatTime));
-                    return {
-                        trainingCertificateId: postPosition.certificateOption,
-                        positionDescription: postPosition.positionDescription,
-                        documentId: postPosition.documentOption,
-                        positionName: postPosition.positionName,
-                        amount: postPosition.amount,
-                        salary: postPosition.salary,
-                        timeFrom: postPosition.timeFrom_timeTo[0],
-                        timeTo: postPosition.timeFrom_timeTo[1],
-                        isBusService: postPosition.isBusService,
-                        schoolName: postPosition.schoolName,
-                        location: postPosition.location,
-                        latitude: 10.841444,
-                        longitude: 106.810033,
-                    }
-                }),
-                trainingPositions: value?.trainingPosition?.map((postPosition: PostTrainingPosition) => {
-                    // const timeRange: Moment[] = postPosition.trainingTimeFrom_timeTo;
-                    // const formattedTimeRange = timeRange?.map((time) => time.format(FormatTime));
-                    return {
-                        trainingCertificateId: postPosition.certificateTrainingOption,
-                        documentId: postPosition.documentTrainingOption,
-                        positionName: postPosition.trainingPositionName,
-                        amount: postPosition.traingAmount,
-                        salary: postPosition.trainingSalary,
-                        timeFrom: postPosition.trainingTimeFrom_timeTo[0],
-                        timeTo: postPosition.trainingTimeFrom_timeTo[1],
-                        isBusService: postPosition.isBusServiceTraining,
-                        schoolName: postPosition.schoolNameTraining,
-                        location: postPosition.locationTraining,
-                        latitude: 1.20931,
-                        longitude: 3.418731,
-                    }
-                }),
-                postImg: photoUrl
-            }
             confirm({
                 title: 'Do you want to create post?',
                 icon: <ExclamationCircleFilled rev={undefined} />,
                 // content: 'Some descriptions',
-                onOk() {
+                onOk: async () => {
                     setLoading(true)
-                    handleAddPost(params)
+                    const postPositionPromises = value?.postPositions?.map(async (postPosition: PostPosition) => handlePostPosition(postPosition));
+                    try {
+                        const postPositionsResults = await Promise.all(postPositionPromises);
+                        const photoUrl = await uploadImage(fileImage, setLoading); // Gọi hàm upload của bạn
+                        const params: PostCreatedV2 = {
+                            postCategoryId: value?.postCategory,
+                            postDescription: description,
+                            dateFrom: dateFrom,
+                            dateTo: dateTo,
+                            priority: value?.piority,
+                            isPremium: value?.isPremium,
+                            postPositions: postPositionsResults,
+                            postImg: photoUrl
+                        }
+                        console.log('params: ', params);
+                        setParamsCreatePost(params);
+                    } catch (error) {
+                        console.error('Error in handlePostPosition:', error);
+                        // Handle error appropriately
+                    }
+
+
                 },
                 onCancel() {
                     console.log('Cancel');
                 },
             });
-
-            console.log("value: ", params);
         } else {
             if (description === '') {
                 setError('Description is required!')
@@ -371,24 +304,6 @@ const useAddNewPostHook = () => {
             console.error(error)
         })
     }
-    const handleAddPosition = () => {
-        const newPosition = {
-            positionName: '',
-            amount: null,
-            salary: null,
-        };
-        setError('');
-        setAdditionalPositions([...additionalPositions, newPosition]);
-    };
-    const handleAddTrainingPosition = () => {
-        const newPosition = {
-            namePosition: '',
-            number: null,
-            salary: null,
-        };
-        setErrorTraining('');
-        setAdditionalTrainingPositions([...additionalTrainingPositions, newPosition]);
-    };
 
     const handleDeleteTrainingPosition = (indexToDelete: number) => {
         const updatedPositions = additionalTrainingPositions.filter((_, index) => index !== indexToDelete);
@@ -405,33 +320,20 @@ const useAddNewPostHook = () => {
             const updatedPositions = additionalPositions.filter((_, index) => index !== indexToDelete);
             setAdditionalPositions(updatedPositions);
         }
-
     };
     const fetchPostTitleOption = async () => {
-        const result = await dispatch(getPostTitle());
+        await dispatch(getPostTitle());
     }
     const fetchDocumentOption = async () => {
-        const result = await dispatch(getDocument());
+        await dispatch(getDocument());
     }
     const fetchCertificateOption = async () => {
-        const result = await dispatch(getCertificate());
-    }
-    const fetchProvinceOption = async () => {
-        const result = await dispatch(getProvince());
-        console.log('first: ', province)
-    }
-    const fetchDistrictOption = async (value: string) => {
-        const result = await dispatch(getDistrict(value));
-        console.log('first: ', province)
-    }
-    const fetchWardOption = async (value: string) => {
-        const result = await dispatch(getWard(value));
+        await dispatch(getCertificate());
     }
     const handleChangePosition = (value: PostOptionI | null) => {
         setValue('postTitle', value?.id)
     }
     useEffect(() => {
-        fetchProvinceOption();
         fetchPostTitleOption();
         fetchDocumentOption();
         fetchCertificateOption();
@@ -445,39 +347,17 @@ const useAddNewPostHook = () => {
         });
     }
     useEffect(() => {
-        let active = true;
-
-        if (!loading) {
-            return undefined;
+        if (paramsCreatePost) {
+            handleAddPost(paramsCreatePost)
         }
+    }, [paramsCreatePost])
 
-        (async () => {
-            await sleep(1e1); // For demo purposes.
-
-            if (active) {
-                setOptionsAPI([...postTitleOptionsAPI]);
-            }
-        })();
-
-        return () => {
-            active = false;
-        };
-    }, [loading]);
-
-    useEffect(() => {
-        if (!open) {
-            setOptionsAPI([]);
-        }
-    }, [open]);
     const handler = {
-        handleAddPosition,
-        handleAddTrainingPosition,
         handleChangePosition,
         handleDeletePosition,
         handleSubmit,
         onPremiumChange,
         onChangeSliderPiority,
-        onSubmit,
         setOpen,
         reset,
         setOpenAddTitleModal,
@@ -489,8 +369,6 @@ const useAddNewPostHook = () => {
         handleChange,
         handleCancel,
         handleSubmitAnt,
-        handleChangeProvince,
-        handleChangeDistrict,
         setDescription,
         customRequest,
         removeImage,
