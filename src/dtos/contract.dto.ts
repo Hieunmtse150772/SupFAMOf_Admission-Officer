@@ -6,5 +6,10 @@ export interface ContractDto {
         page?: number;
         size?: number;
         total?: number
+    };
+    status?: {
+        success: boolean,
+        message: string,
+        errorCode: number
     }
 }

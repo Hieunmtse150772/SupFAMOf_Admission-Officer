@@ -1,6 +1,6 @@
 
 type PostTitleCreated = {
-    postTitleDescription: string,
-    postTitleType: string
+    PostCategoryDescription: string,
+    PostCategoryType: string
 }
 export default PostTitleCreated

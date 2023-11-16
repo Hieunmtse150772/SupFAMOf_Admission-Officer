@@ -1,4 +1,6 @@
-import React, { Fragment, ReactNode } from "react";
+import AppConstants from "enums/app";
+import { Fragment, ReactNode } from "react";
+import { Navigate } from "react-router";
 
 // component props interface
 interface GuestGuardProps {
@@ -7,11 +9,11 @@ interface GuestGuardProps {
 const GuestGuard = ({ children }: GuestGuardProps) => {
   //// UNCOMMNET BELOW CODE IF YOU WANT TO HIDE AUTH PAGES TO AUTHENTICATED USERS
 
-  //   const { isAuthenticated } = useAuth();
+  const isAuthenticated = Boolean(localStorage.getItem(AppConstants.ACCESS_TOKEN));
 
-  //   if (isAuthenticated) {
-  //     return <Navigate to="/dashboard" />;
-  //   }
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" />;
+  }
 
   return <Fragment>{children}</Fragment>;
 };

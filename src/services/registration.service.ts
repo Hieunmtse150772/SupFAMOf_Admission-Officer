@@ -3,15 +3,23 @@ import { AxiosResponse } from 'axios';
 
 import RegistrationsDTO from 'dtos/Registration/registration.dto';
 import axiosClient from './axiosClient';
-
+type paramI = {
+    positionId: string,
+    searchEmail?: string,
+    Status?: number
+}
+type paramUpdate = {
+    ids: number[],
+    IsApproved: boolean
+}
 export const registrationService = {
-    getRegistrationByPositionId: (id: number): Promise<AxiosResponse<RegistrationsDTO>> => {
-        const url = `/admission/admission-post-registration/getAccountByPostPositionId?positionId=${id}`;
-        return axiosClient.get(url);
+    getRegistrationByPositionId: (params: paramI): Promise<AxiosResponse<RegistrationsDTO>> => {
+        const url = '/admission/admission-post-registration/getAccountByPostPositionId';
+        return axiosClient.get(url, { params });
     },
-    updateRequest: (ids: number[]): Promise<AxiosResponse<RegistrationsDTO>> => {
-        const url = `/admission/admission-post-registration/review-joinRequest?IsApproved=true`;
-        return axiosClient.put(url, ids
+    updateRequest: (params: paramUpdate): Promise<AxiosResponse<RegistrationsDTO>> => {
+        const url = `/admission/admission-post-registration/review-joinRequest?IsApproved=${params.IsApproved}`;
+        return axiosClient.put(url, params.ids
         )
     }
 };

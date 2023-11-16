@@ -119,6 +119,7 @@ function useViewPostList() {
       title: 'Post Image',
       dataIndex: 'postImg',
       key: 'postImg',
+      hideInSearch: true,
       width: 20,
       render: (value) => {
         return (<Image src={String(value)}></Image>);
@@ -136,13 +137,25 @@ function useViewPostList() {
           status: 'Pending',
         },
         2: {
-          text: 'Running',
-          status: 'Processing',
+          text: 'Closed',
+          status: 'Closed',
         },
         3: {
           text: 'Ending',
           status: 'Success',
-        }
+        },
+        4: {
+          text: 'Canceled',
+          status: 'Canceled',
+        },
+        5: {
+          text: 'Deleted',
+          status: 'Deleted',
+        },
+        6: {
+          text: 'Re-open',
+          status: 'Re-open',
+        },
       },
       render: (value, valueEnum) => {
         let color = grey[400].toString();
@@ -150,12 +163,12 @@ function useViewPostList() {
         switch (valueEnum?.status) {
           case Status.opening:
             color = '#1890ff';
-            statusText = 'Pending';
+            statusText = 'Opening';
             break;
 
           case Status.closed:
             color = green[500];
-            statusText = 'Running';
+            statusText = 'Closed';
             break;
 
           case Status.ended:
@@ -230,6 +243,7 @@ function useViewPostList() {
       { title: 'Position Name', dataIndex: 'positionName', key: 'positionName' },
       { title: 'Amount', dataIndex: 'amount', key: 'amount' },
       { title: 'Register Amount', dataIndex: 'registerAmount', key: 'registerAmount' },
+      { title: 'Date', dataIndex: 'date', key: 'date', render: (value) => <span>{moment(value).format(Formatter)}</span> },
       { title: 'Time From', dataIndex: 'timeFrom', key: 'timeFrom' },
       { title: 'Time To', dataIndex: 'timeTo', key: 'timeTo' },
       { title: 'Address', dataIndex: 'location', key: 'location' },
@@ -286,6 +300,10 @@ function useViewPostList() {
     setEditPostModalId(value?.id)
   }
   const handleDeletePost = async (value: any) => {
+    console.log('value', value)
+    await dispatch(deletePostById(value?.key))
+  }
+  const handleDeletePosition = async (value: any) => {
     console.log('value', value)
     await dispatch(deletePostById(value?.key))
   }

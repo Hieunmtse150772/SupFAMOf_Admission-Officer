@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import PostIDto from 'dtos/Post/Post View/post.dto';
 import PostInfoDto from 'dtos/Post/Post View/postInfo.dto';
@@ -86,6 +86,26 @@ export const confirmColabborator = createAsyncThunk('post/confirm-post-collabLis
             return rejectWithValue(axiosError.response?.data)
         }
     })
+export const confirmRunningPost = createAsyncThunk('post/confirm-running-post',
+    async (id: number, { rejectWithValue }) => {
+        try {
+            const result = await postService.confirmRunningPost(id);
+            return result
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data)
+        }
+    })
+export const confirmEndPost = createAsyncThunk('post/confirm-end-post',
+    async (id: number, { rejectWithValue }) => {
+        try {
+            const result = await postService.confirmEndPost(id);
+            return result
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data)
+        }
+    })
 export const postSlice = createSlice({
     name: 'post',
     initialState,
@@ -139,7 +159,17 @@ export const postSlice = createSlice({
             .addCase(deletePostById.rejected, (state, action) => {
                 state.error = String(action.payload);
                 state.loading = false;
-                state.isDeleted = false;
+            })
+            .addMatcher(isAnyOf(confirmRunningPost.pending, confirmEndPost.pending), (state) => {
+                state.loading = true;
+                state.error = "";
+            })
+            .addMatcher(isAnyOf(confirmRunningPost.fulfilled, confirmEndPost.fulfilled), (state, action) => {
+                state.loading = false;
+            })
+            .addMatcher(isAnyOf(confirmRunningPost.rejected, confirmEndPost.rejected), (state, action) => {
+                state.error = String(action.payload);
+                state.loading = false;
             })
     },
 });

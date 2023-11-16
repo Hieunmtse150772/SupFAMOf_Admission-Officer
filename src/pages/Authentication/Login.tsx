@@ -12,6 +12,7 @@ import { Small } from "components/Typography";
 import {
   SocialIconButton
 } from "components/authentication/StyledComponents";
+import AppConstants from "enums/app";
 import { loginAdministrator, loginGoogle } from "features/authSlice";
 import GoogleIcon from "icons/GoogleIcon";
 import { FC, useState } from "react";
@@ -25,7 +26,7 @@ const Login: FC = () => {
   const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
   let navigate = useNavigate();
-  const isAuthenticated = localStorage.getItem('user') ? true : false
+  const isAuthenticated = Boolean(localStorage.getItem(AppConstants.USER))
   const { token } = theme.useToken();
   const [loginType, setLoginType] = useState<LoginType>('admissionOfficer');
   const loginWithGoogle = async () => {

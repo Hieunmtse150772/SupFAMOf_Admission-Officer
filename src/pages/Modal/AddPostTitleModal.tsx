@@ -10,6 +10,7 @@ import { useAppDispatch } from 'app/store';
 import { createPostTitle } from 'features/postTitleSlice';
 import PostOptionI from 'models/postOption.model';
 import PostTitleCreated from 'models/postTitle.model';
+import moment from 'moment';
 import { FC, useState } from 'react';
 
 interface AddPostTitleModalProps {
@@ -20,14 +21,15 @@ interface AddPostTitleModalProps {
 }
 const AddPostTitleModal: FC<AddPostTitleModalProps> = ({ open, setOpenAddTitleModal, fetchPostTitleOption, data }) => {
     console.log('con c', open)
+    const Formatter = 'DD/MM/YYYY';
     const dishpatch = useAppDispatch();
     type DataItem = (typeof data)[number];
     const [dataSource, setDataSource] = useState<DataItem[]>(data);
 
     const handleCreatePostTitle = async (value: any) => {
         const payload: PostTitleCreated = {
-            postTitleDescription: value?.postTitleDescription,
-            postTitleType: value?.postTitleType
+            PostCategoryDescription: value?.postTitleDescription,
+            PostCategoryType: value?.postTitleType
         }
         let result = false;
         try {
@@ -84,13 +86,14 @@ const AddPostTitleModal: FC<AddPostTitleModalProps> = ({ open, setOpenAddTitleMo
                         },
                         content: {
                             dataIndex: 'createAt',
+                            render: (rows, row) => (<span>{moment(row.creatAt).format(Formatter)}</span>),
                             editable: false
                         },
                         subTitle: {
                             render: (rows, row) => {
                                 return (
                                     <Space size={0}>
-                                        {row?.isActive ? <Tag color="blue">isActive</Tag> : <Tag color="red">unActive</Tag>}
+                                        {row?.isActive ? <Tag color="blue">isActive</Tag> : <Tag color="red">inActive</Tag>}
                                     </Space>
                                 );
                             },
