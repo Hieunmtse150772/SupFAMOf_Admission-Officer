@@ -3,6 +3,7 @@ import {
   PersonAdd as AddUserIcon,
   DocumentScannerOutlined as DocumentIcon,
   Login as LoginIcon,
+  Map as MapIcon,
   LocalPostOffice as PostList,
   AppRegistration as RegistrationList,
   GridView as UserGridIcon
@@ -25,5 +26,6 @@ export default {
   UserProfileIcon,
   UserManagementIcon,
   RegistrationList,
-  DocumentIcon
+  DocumentIcon,
+  MapIcon
 };

@@ -56,6 +56,9 @@ const useViewContractHook = () => {
             key: 'sampleFile',
             width: 30,
             sorter: true,
+            render: (value) => {
+                return <a href={String(value)}>Link</a>
+            },
             hideInSearch: true,
         },
         {
@@ -75,7 +78,7 @@ const useViewContractHook = () => {
                 console.log('value: ', value)
                 return (
                     <Space size={0}>
-                        {value ? <Tag color="blue">isActive</Tag> : <Tag color="red">unActive</Tag>}
+                        {value ? <Tag color="blue">isActive</Tag> : <Tag color="red">inActive</Tag>}
                     </Space>
                 );
             }

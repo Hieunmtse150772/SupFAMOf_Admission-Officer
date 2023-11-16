@@ -191,6 +191,25 @@ const useAddNewPostHook = () => {
     const onChangeSliderPiority = (newValue: number | null) => {
         setPiority(newValue);
     };
+    const validateAddress = async (rule: any, value: string) => {
+        const geocodingParams: paramLeafLetI = {
+            q: value,
+            format: 'json',
+            limit: 1
+        }
+        try {
+            const response = await dispatch(geocodingLeafLetApi(geocodingParams));
+            const result: AxiosResponse<geocodingLeafLetI[], any> = unwrapResult(response)
+            // Kiểm tra kết quả từ API
+            if (result.data.length === 0) {
+                return Promise.reject('Địa chỉ không hợp lệ');
+            }
+        } catch (error) {
+            console.error('Lỗi khi gọi API Leaflet:', error);
+            return Promise.reject('Có lỗi xảy ra khi kiểm tra địa chỉ');
+        }
+        return Promise.resolve();
+    }
     const handlePostPosition = async (postPosition: PostPosition) => {
         const geocodingParams: paramLeafLetI = {
             q: postPosition.location,
@@ -200,24 +219,31 @@ const useAddNewPostHook = () => {
         const response = await dispatch(geocodingLeafLetApi(geocodingParams))
         const result: AxiosResponse<geocodingLeafLetI[], any> = unwrapResult(response)
         console.log('result: ', result)
-        const repsonse = {
-            trainingCertificateId: postPosition.certificateOption,
-            positionDescription: postPosition.positionDescription,
-            documentId: postPosition.documentOption,
-            positionName: postPosition.positionName,
-            amount: postPosition.amount,
-            salary: postPosition.salary,
-            timeFrom: postPosition.timeFrom_timeTo[0],
-            timeTo: postPosition.timeFrom_timeTo[1],
-            isBusService: postPosition.isBusService,
-            schoolName: postPosition.schoolName,
-            location: postPosition.location,
-            latitude: result.data[0].lat,
-            longitude: result.data[0].lon,
-            date: new Date(postPosition.date)
+
+        if (result.data.length !== 0) {
+            const repsonse = {
+                trainingCertificateId: postPosition.certificateOption,
+                positionDescription: postPosition.positionDescription,
+                documentId: postPosition.documentOption,
+                positionName: postPosition.positionName,
+                amount: postPosition.amount,
+                salary: postPosition.salary,
+                timeFrom: postPosition.timeFrom_timeTo[0],
+                timeTo: postPosition.timeFrom_timeTo[1],
+                isBusService: postPosition.isBusService,
+                schoolName: postPosition.schoolName,
+                location: postPosition.location,
+                latitude: result.data[0].lat,
+                longitude: result.data[0].lon,
+                date: new Date(postPosition.date)
+            }
+            console.log('respone position: ', repsonse)
+            return repsonse;
+        } else {
+            message.warning('Your address enter was not found, please enter the right address!');
+            setLoading(false);
+            return false;
         }
-        console.log('respone position: ', repsonse)
-        return repsonse;
     }
 
     const customRequest = async ({ file, onSuccess, onError }: any) => {
@@ -382,6 +408,7 @@ const useAddNewPostHook = () => {
         fetchCertificateOption,
         disabledTime,
         handleChangeDateRangePicker,
+        validateAddress
     }
     const props = {
         open,

@@ -1,8 +1,9 @@
 import { ProColumns } from "@ant-design/pro-components";
-import { Avatar, Space, Tag } from "antd";
+import { Avatar, Button, Space, Tag } from "antd";
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import { getCollabList } from "features/collabSlice";
+import CertificateOptionI from "models/certificateOption.model";
 import { useEffect, useState } from "react";
 
 const useViewCollablistHook = () => {
@@ -10,8 +11,8 @@ const useViewCollablistHook = () => {
     const [currentRow, setCurrentRow] = useState<any>();
     // const [selectedRowsState, setSelectedRows] = useState<boolean>([]);
     const [showDetail, setShowDetail] = useState<boolean>(false);
-    const [openConFirmModal, setOpenConfirmModal] = useState<boolean>(false);
-
+    const [openCertificateModal, setOpenCertificateModal] = useState<boolean>(false)
+    const [certificateList, setCertificateList] = useState<CertificateOptionI[]>([])
     const collabAPI = useAppSelector(state => state.collab.collabList);
     const isLoading = useAppSelector(state => state.post.loading);
     const [page, setPage] = useState<number>(1);
@@ -99,7 +100,6 @@ const useViewCollablistHook = () => {
             dataIndex: 'certificates',
             key: 'certificates',
             render: (certificates) => {
-                console.log('Certificate: ', certificates)
                 if (Array.isArray(certificates)) {
                     if (certificates.length !== 0) {
                         return certificates.map((certificate) => (
@@ -117,8 +117,15 @@ const useViewCollablistHook = () => {
                     return null; // or you can return an appropriate message or component
                 }
             }
-
         },
+        {
+            title: 'Action',
+            hideInSearch: true,
+            key: 'action',
+            render: (value) => (<Button onClick={() => handleOpenCertificateModal(value)} color="primary">View certificate</Button>
+            )
+
+        }
     ];
     const dispatch = useAppDispatch();
     const onPageChange = (value: any) => {
@@ -128,7 +135,11 @@ const useViewCollablistHook = () => {
         console.log('pagesize: ', value)
         setPageSize(value)
     }
-
+    const handleOpenCertificateModal = (value: any) => {
+        console.log('value: ', value)
+        setCertificateList(value?.certificates)
+        setOpenCertificateModal(true)
+    }
     const rows = collabAPI?.data.map(collab => ({
         key: collab?.id,
         name: collab?.name,
@@ -151,8 +162,8 @@ const useViewCollablistHook = () => {
     useEffect(() => {
         fetchCollabList()
     }, [page, pageSize])
-    const handler = { onPageChange, onChangePageSize, setCurrentRow, setShowDetail }
-    const props = { columns, collabAPI, pageSizeOptions, total, page, pageSize, rows, isLoading, showDetail, currentRow }
+    const handler = { onPageChange, onChangePageSize, setCurrentRow, setShowDetail, setOpenCertificateModal }
+    const props = { columns, collabAPI, pageSizeOptions, total, page, pageSize, rows, isLoading, showDetail, currentRow, openCertificateModal, certificateList }
     return {
         handler,
         props,

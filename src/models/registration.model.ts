@@ -10,7 +10,6 @@ type Registrations = {
     postRegistrationDetails: PostRegistrationDetailsI[]
 }
 export type PostRegistrationDetailsI = {
-
     id: number,
     postRegistrationId: number,
     postId: number,

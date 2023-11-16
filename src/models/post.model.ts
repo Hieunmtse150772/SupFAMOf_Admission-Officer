@@ -53,6 +53,7 @@ export type TrainingPositionsI = {
     isBusService: boolean;
     latitude: string;
     longtitude: string;
+    date: Date;
     timeFrom: Date;
     timeTo: Date;
     registerAmount: number;
@@ -67,6 +68,7 @@ export type PositionI = {
     documentId: number;
     isBusService: boolean;
     latitude: string;
+    date: Date;
     longtitude: string;
     timeFrom: Date;
     timeTo: Date;

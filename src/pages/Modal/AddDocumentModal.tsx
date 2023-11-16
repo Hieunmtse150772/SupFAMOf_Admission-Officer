@@ -11,6 +11,7 @@ import { useAppDispatch } from 'app/store';
 import { createDocument, deleteDocument } from 'features/documentSlice';
 import DocumentCreated from 'models/document.model';
 import DocumentOptionI from 'models/documentOption.model';
+import moment from 'moment';
 import { FC, useState } from 'react';
 import { upload } from '../../firebase';
 
@@ -23,7 +24,7 @@ interface AddDocumentModalProps {
 
 const AddDocumentModal: FC<AddDocumentModalProps> = ({ open, setOpenAddDocumentModal, fetchDocumentOption, data }) => {
     type DataItem = (typeof data)[number];
-
+    const Formatter = 'DD/MM/YYYY'
     const [dataSource, setDataSource] = useState<DataItem[]>(data);
     const [isLoading, setLoading] = useState<boolean>(false);
     const [url, setUrl] = useState<string>('');
@@ -110,18 +111,19 @@ const AddDocumentModal: FC<AddDocumentModalProps> = ({ open, setOpenAddDocumentM
                                 dataIndex: 'docUrl',
                                 editable: false,
                                 render: (value, doc) => (<a href={doc.docUrl}>
-                                    {value}
+                                    Document link
                                 </a>)
                             },
                             content: {
                                 dataIndex: 'createAt',
+                                render: (rows, row) => (<span>{moment(row.createAt).format(Formatter)}</span>),
                                 editable: false
                             },
                             subTitle: {
                                 render: (rows, row) => {
                                     return (
                                         <Space size={0}>
-                                            {row?.isActive ? <Tag color="blue">isActive</Tag> : <Tag color="red">unActive</Tag>}
+                                            {row?.isActive ? <Tag color="blue">isActive</Tag> : <Tag color="red">inActive</Tag>}
                                         </Space>
                                     );
                                 },

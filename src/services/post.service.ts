@@ -45,5 +45,14 @@ export const postService = {
                 postId: id,
             },
         })
+    },
+    confirmRunningPost: (postId: number): Promise<AxiosResponse<PostDto>> => {
+        const url = `/admission/admission-post/confirmRunningPost?postId=${postId}`;
+        return axiosClient.put(url)
+    }
+    ,
+    confirmEndPost: (postId: number): Promise<AxiosResponse<PostDto>> => {
+        const url = `/admission/admission-post/confirmEndPost?postId=${postId}`;
+        return axiosClient.put(url)
     }
 };

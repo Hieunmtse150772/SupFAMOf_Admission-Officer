@@ -1,7 +1,7 @@
 import { PlusOutlined } from "@ant-design/icons";
-import { ModalForm, ProCard, ProForm, ProFormCheckbox, ProFormDateRangePicker, ProFormDigit, ProFormGroup, ProFormList, ProFormMoney, ProFormSelect, ProFormSlider, ProFormSwitch, ProFormText, ProFormTimePicker } from "@ant-design/pro-components";
+import { ModalForm, ProCard, ProForm, ProFormCheckbox, ProFormDatePicker, ProFormDateRangePicker, ProFormDigit, ProFormGroup, ProFormList, ProFormMoney, ProFormSelect, ProFormSlider, ProFormSwitch, ProFormText, ProFormTimePicker } from "@ant-design/pro-components";
 import { Grid } from "@mui/material";
-import { Modal, Upload } from "antd";
+import { Button, Modal, Upload } from "antd";
 import { Small } from "components/Typography";
 import PostInfoDto from "dtos/Post/Post View/postInfo.dto";
 import { FC, useState } from "react";
@@ -43,9 +43,10 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
     return (
         <ModalForm
             width={1190}
+            loading={props.isloading}
             title={`Edit post ${postInfo?.data?.postCode}`}
             open={open}
-            onFinish={(value) => handler.handleUpdatePost(value)}
+            onFinish={(value) => handler.handleUpdatePost(value, setOpenEditPostModal)}
             onOpenChange={setOpenEditPostModal}
             submitter={{
                 searchConfig: {
@@ -157,6 +158,7 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                         },
                     },
                 ]}
+
                 creatorButtonProps={{
                     position,
                 }}
@@ -166,10 +168,12 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                 initialValue={postInfo?.data?.postPositions}
                 itemRender={({ listDom, action }, { index }) => (
                     <ProCard
+                        extra={<>{action} <Button onClick={handler.handleDeltePosition} danger>
+                            Delete
+                        </Button></>}
                         bordered
                         style={{ marginBlockEnd: 8 }}
                         title={`Position${index + 1}`}
-                        extra={action}
                         bodyStyle={{ paddingBlockEnd: 0, boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px' }}
                     >
                         {listDom}
@@ -219,8 +223,6 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                         ]}
                         name="location"
                     />
-
-
                     <ProFormSelect
                         label="Document"
                         width="sm"
@@ -246,14 +248,21 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                         debounceTime={5}
                         tooltip="That field optional"
                     />
+                    <ProFormDatePicker
+                        label="Date"
+                        width="sm"
+                        disabled
+                        name="date"
+                        rules={[{ required: true, message: 'Chose Date!' }]} />
                     <ProFormTimePicker
                         label="Time From"
                         width="xs"
-                        disabled
                         name="timeFrom"
+                        disabled
                         // initialValue={['timeFrom', 'timeTo']}
                         rules={[{ required: true, message: 'Chose time from & time to!' }]}
                     />
+
                     <ProFormTimePicker
                         label="Time To"
                         width="xs"

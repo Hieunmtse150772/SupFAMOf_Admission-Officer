@@ -1,5 +1,6 @@
 import { Descriptions, DescriptionsProps, Drawer, Image, Space, Tag } from "antd";
 import SFAMOGrid from "components/SFAMOGrid";
+import CertificateModal from "../CertificateModal/CertificateModal";
 import useViewCollabListHook from "./useViewCollabListHook";
 
 const ViewCollabList = () => {
@@ -106,6 +107,7 @@ const ViewCollabList = () => {
                 )}
 
             </Drawer >
+            <CertificateModal open={props.openCertificateModal} setOpenCertificateModal={handler.setOpenCertificateModal} certificateList={props.certificateList}></CertificateModal>
         </>
     )
 }

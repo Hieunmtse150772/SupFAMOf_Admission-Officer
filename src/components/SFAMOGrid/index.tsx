@@ -1,5 +1,5 @@
-import { PlusOutlined } from "@ant-design/icons";
-import { ProColumns, ProTable } from "@ant-design/pro-components";
+import { FilterOutlined, PlusOutlined } from "@ant-design/icons";
+import { LightFilter, ProColumns, ProFormRadio, ProTable } from "@ant-design/pro-components";
 import { Button } from "antd";
 import { TableLocale } from "antd/es/table/interface";
 import { ListPositionI } from "models/post.model";
@@ -52,6 +52,38 @@ const SFAMOGrid = ({ isLoading, rows, columns, rowsExpanded, page, total, pageSi
             <ProTable
                 expandable={{ expandedRowRender }}
                 toolBarRender={() => [
+                    <LightFilter
+                        key="light-filter"
+                        initialValues={{
+                            sex: 'man',
+                        }}
+                        bordered
+                        collapseLabel={<FilterOutlined rev={undefined} />}
+                        onFinish={async (values) => console.log(values)}
+                    >
+                        <ProFormRadio.Group
+                            name="radio"
+                            radioType="button"
+                            options={[
+                                {
+                                    value: 'Opening',
+                                    label: 'Opening',
+                                },
+                                {
+                                    value: 'Closed',
+                                    label: 'Closed',
+                                },
+                                {
+                                    value: 'Ended',
+                                    label: 'Ended',
+                                },
+                                {
+                                    value: 'Re-open',
+                                    label: 'Re-open',
+                                },
+                            ]}
+                        />
+                    </LightFilter>,
                     <Button
                         type="primary"
                         key="primary"

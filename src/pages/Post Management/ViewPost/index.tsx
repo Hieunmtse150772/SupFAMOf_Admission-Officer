@@ -2,6 +2,7 @@ import { green, grey, red, yellow } from '@mui/material/colors';
 import { Badge, Descriptions, DescriptionsProps, Drawer, Image, Rate, Space, Tag } from 'antd';
 import SFAMOGrid from 'components/SFAMOGrid';
 import Status from 'enums/status.enum';
+import Map from 'pages/Map/map';
 import ReactHtmlParser from 'react-html-parser';
 import EditPostModal from './EditPost/EditPostModal';
 import useViewPostHook from './useViewPostHook';
@@ -144,7 +145,7 @@ const ViewPostList = () => {
                         return (
                             <>
                                 <Descriptions style={{ marginTop: 20 }} title={props.currentRow?.title} bordered items={items} />
-                                {props.currentRow?.position.map((value: any) => {
+                                {props.currentRow?.position.map((value: any, index: number) => {
                                     const items: DescriptionsProps['items'] = [
                                         {
                                             key: '1',
@@ -154,7 +155,7 @@ const ViewPostList = () => {
                                         {
                                             key: '2',
                                             label: 'Address',
-                                            children: value?.location,
+                                            children: <Map address={value?.location} id={`map${index}`}></Map>,
                                         },
                                         {
                                             key: '3',

@@ -6,7 +6,7 @@ import axiosClient from './axiosClient';
 
 export const dashboardService = {
     getCollabOverview: (): Promise<AxiosResponse<CollabOverView>> => {
-        const url = '/admission/admission-manage-collaborator';
+        const url = '/admission/admission-manage-collaborator/viewNumber';
         return axiosClient.get(url);
     }
 };

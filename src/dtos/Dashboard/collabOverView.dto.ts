@@ -6,6 +6,11 @@ export default interface CollabOverViewDto {
                 imgUrl: string
             }
         ]
+    };
+    status?: {
+        success: boolean,
+        message: string,
+        errorCode: number
     }
 
 }
