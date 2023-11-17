@@ -15,6 +15,8 @@
   }
 }
 .ant-table-content {
+  background-color: white;
+
   .ant-table-thead {
     tr {
       td {
@@ -23,8 +25,19 @@
       th {
         background-color: #f9a62a;
       }
+
       .ant-table-column-sort {
         background-color: #ffd088 !important;
+      }
+    }
+  }
+  .ant-table-expanded-row {
+    .ant-table-cell {
+      background-color: white;
+    }
+    .ant-table-thead {
+      .ant-table-cell {
+        background-color: rgb(0, 255, 238);
       }
     }
   }

@@ -4,6 +4,10 @@
 
 .ant-spin-nested-loading {
   height: 100% !important;
+  .ant-spin {
+    height: 100% !important;
+    max-height: 100% !important;
+  }
   .ant-spin-container {
     height: 100% !important;
     .MuiBox-root {

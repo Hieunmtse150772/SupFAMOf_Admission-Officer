@@ -19,9 +19,10 @@ interface PostPosition {
     schoolName: string,
     location: string,
     latitude: number,
-    longtitude: number,
+    longitude: number,
     amount: number,
-    salary: number
+    salary: number,
+    date: Date
 }
 const useEditPostModal = () => {
     const dispatch = useAppDispatch();
@@ -100,8 +101,12 @@ const useEditPostModal = () => {
     const handleEdit = () => {
         setIsEdited(true);
     }
-    const handleUpdatePost = async (value: any) => {
+    const handleDeltePosition = () => {
+
+    }
+    const handleUpdatePost = async (value: any, setOpenEditPostModal: (value: boolean) => void) => {
         console.log('value: ', value)
+        setLoading(true);
         if (!isEdited) {
             message.warning('Nothing was change!')
         } else {
@@ -117,10 +122,11 @@ const useEditPostModal = () => {
                         positionName: postPosition?.positionName,
                         schoolName: postPosition?.schoolName,
                         location: postPosition?.location,
-                        latitude: 0,
-                        longtitude: 0,
+                        latitude: postPosition?.latitude,
+                        longitude: postPosition?.longitude,
                         amount: postPosition?.amount,
-                        salary: postPosition?.salary
+                        salary: postPosition?.salary,
+                        date: postPosition?.date
                     }
                 }),
             }
@@ -129,12 +135,13 @@ const useEditPostModal = () => {
                 if (result2.status === 200) {
                     message.success('Create post success!');
                     setLoading(false);
+                    setOpenEditPostModal(false);
                 }
             }).catch((error) => {
                 console.error(error)
+                message.error('Create post Fail!');
+
             })
-            console.log('params: ', params)
-            message.success('Post is updated!')
         }
         console.log(value)
     }
@@ -162,7 +169,8 @@ const useEditPostModal = () => {
         handleCancel,
         handleEdit,
         handleUpdatePost,
-        setDescription
+        setDescription,
+        handleDeltePosition
     }
     const props = {
         options,
@@ -172,7 +180,8 @@ const useEditPostModal = () => {
         fileList,
         previewOpen,
         previewTitle,
-        previewImage
+        previewImage,
+        isloading
     }
     return { handler, props }
 }

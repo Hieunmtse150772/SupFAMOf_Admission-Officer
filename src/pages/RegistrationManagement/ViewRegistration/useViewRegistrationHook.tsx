@@ -1,14 +1,14 @@
-import { EditOutlined } from '@ant-design/icons'; // Import the icon from the library
+import { CheckCircleOutlined, EditOutlined, ExclamationCircleFilled, FolderViewOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons'; // Import the icon from the library
 import { ProColumns } from "@ant-design/pro-components";
 import { FiberManualRecord } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import { green, grey, red, yellow } from '@mui/material/colors';
-import { Button, Image, Table, TableColumnsType } from 'antd';
+import { unwrapResult } from '@reduxjs/toolkit';
+import { Button, Image, Modal, Popover, Progress, StepsProps, Table, TableColumnsType } from 'antd';
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import Status from 'enums/status.enum';
-import { getCollabByPositionId } from 'features/collabSlice';
-import { getPostByAccountId } from "features/postSlice";
+import { confirmEndPost, confirmRunningPost, getPostByAccountId } from "features/postSlice";
 import { getRegistrationByPositionId } from 'features/registrationSlice';
 import { ListPositionI } from 'models/post.model';
 import moment from "moment";
@@ -21,7 +21,12 @@ interface ExpandedDataType {
     postId: number,
     positionName: string,
     amount: number,
-    salary: number
+    salary: number,
+    registerAmount: number,
+    date: Date,
+    timeFrom: Date,
+    timeTo: Date,
+    percent: number,
 }
 function useViewRegistrationHook() {
     const Formatter = 'DD/MM/YYYY'
@@ -40,7 +45,23 @@ function useViewRegistrationHook() {
     const pageSizeOptions = [10, 20, 30]; // Các tùy chọn cho pageSize
     const total = posts?.metadata?.total;
     const [totalCollab, setTotalCollab] = useState<number>(0);
+    const [amountUnConfirmed, setAmountUnConfirmed] = useState<number>(0);
+    const [registerAmount, setAmountConfirmed] = useState<number>(0);
+    const [positionId, setPositionId] = useState<string>('')
     const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
+    const [searchByEmail, setSearchByEmail] = useState<string>('')
+    const [status, setStatus] = useState<number>(1)
+    const customDot: StepsProps['progressDot'] = (dot, { status, index }) => (
+        <Popover
+            content={
+                <span>
+                    step {index} status: {status}
+                </span>
+            }
+        >
+            {dot}
+        </Popover>
+    );
 
     const columns: ProColumns[] = [
         {
@@ -125,16 +146,16 @@ function useViewRegistrationHook() {
                     status: 'Pending',
                 },
                 2: {
-                    text: 'Running',
-                    status: 'Running',
+                    text: 'Closed',
+                    status: 'Closed',
                 },
                 3: {
                     text: 'Ending',
                     status: 'Success',
                 },
                 4: {
-                    text: 'Re-open',
-                    status: 'Re-open',
+                    text: 'Canceled',
+                    status: 'Canceled',
                 },
                 5: {
                     text: 'Deleted',
@@ -151,12 +172,12 @@ function useViewRegistrationHook() {
                 switch (valueEnum?.status) {
                     case Status.opening:
                         color = '#1890ff';
-                        statusText = 'Pending';
+                        statusText = 'Opening';
                         break;
 
                     case Status.closed:
                         color = green[500];
-                        statusText = 'Running';
+                        statusText = 'Closed';
                         break;
 
                     case Status.ended:
@@ -187,7 +208,7 @@ function useViewRegistrationHook() {
             },
         },
         {
-            title: 'Confirm',
+            title: 'Action',
             width: 10,
             hideInSearch: true,
             dataIndex: 'status',
@@ -197,16 +218,16 @@ function useViewRegistrationHook() {
                     status: 'Pending',
                 },
                 2: {
-                    text: 'Running',
-                    status: 'Running',
+                    text: 'Closed',
+                    status: 'Closed',
                 },
                 3: {
                     text: 'Ending',
                     status: 'Success',
                 },
                 4: {
-                    text: 'Re-open',
-                    status: 'Re-open',
+                    text: 'Canceled',
+                    status: 'Canceled',
                 },
                 5: {
                     text: 'Deleted',
@@ -221,15 +242,19 @@ function useViewRegistrationHook() {
                 let color = grey[400].toString();
                 let statusText = 'Unknown';
                 let disable = false;
+                let icon = <EditOutlined rev={undefined} />
                 switch (valueEnum?.status) {
                     case Status.opening:
                         color = '#1890ff';
+
+                        icon = <LockOutlined rev={undefined} />;
                         statusText = 'Close';
                         break;
 
                     case Status.closed:
                         color = green[500];
                         statusText = 'End';
+                        icon = <CheckCircleOutlined rev={undefined} />;
                         break;
 
                     case Status.ended:
@@ -250,13 +275,15 @@ function useViewRegistrationHook() {
                     case Status.reopen:
                         color = green[500];
                         statusText = 'Close';
+                        icon = <CheckCircleOutlined rev={undefined} />;
                         disable = false;
                         break;
                     default:
                         break;
                 }
                 return <Box>
-                    <Button onClick={() => handleAction(value, valueEnum.status)} type='default' color={color} style={{ color: color }} disabled={disable} icon={<EditOutlined rev={undefined} />}>{statusText}</Button>
+                    {valueEnum?.status === 2 && (<><Button onClick={() => handleReopen(value)} type='default' color={color} style={{ color: color, width: '100px' }} disabled={disable} icon={<UnlockOutlined rev={undefined} />}>Re-open</Button> | </>)}
+                    <Button onClick={() => handleAction(value, valueEnum.status)} type='default' color={color} style={{ color: color, width: '100px' }} disabled={disable} icon={icon}>{statusText}</Button>
                 </Box>
             },
         },
@@ -268,40 +295,98 @@ function useViewRegistrationHook() {
 
     const expandedRowRender = (record: any) => {
         const columnsExpanded: TableColumnsType<ExpandedDataType> = [
-            { title: 'Position Name', dataIndex: 'positionName', key: 'positionName' },
+            { title: 'Position Name', dataIndex: 'positionName', key: 'positionName', width: 200 },
             { title: 'Amount', dataIndex: 'amount', key: 'amount' },
-            { title: 'Register Amount', dataIndex: 'registerAmount', key: 'registerAmount' },
-            { title: 'Time From', dataIndex: 'timeFrom', key: 'timeFrom' },
-            { title: 'Time To', dataIndex: 'timeTo', key: 'timeTo' },
-            { title: 'Salary', dataIndex: 'salary', key: 'salary' },
+            { title: 'Amount Confirmed', dataIndex: 'registerAmount', key: 'registerAmount', width: 200 },
+            {
+                title: 'Progress', dataIndex: 'percent', render: (value) => <Progress style={{ maxWidth: '90%' }} percent={Number(value)} size="small" />, width: 200
+            },
+            { title: 'Date', dataIndex: 'date', key: 'date', render: (value) => <span>{moment(value).format(Formatter)}</span>, width: 200 },
+            { title: 'Time From', dataIndex: 'timeFrom', key: 'timeFrom', width: 200 },
+            { title: 'Time To', dataIndex: 'timeTo', key: 'timeTo', width: 200 },
+            { title: 'Salary', dataIndex: 'salary', key: 'salary', width: 200 },
             {
                 title: 'Action',
                 key: 'action',
-                render: (value) => <Button icon={<EditOutlined rev={undefined} />} onClick={() => handleOpenConfirmModal(value)} color="primary">Confirm</Button>,
+                width: 200,
+                render: (value) => <Button icon={<FolderViewOutlined rev={undefined} />} onClick={() => handleOpenConfirmModal(value)} color="primary">View registration</Button>,
             }
         ];
-
         const data = rowsExpanded.find((value) => value.key === record?.id);
-        return <Table columns={columnsExpanded} dataSource={data?.position} pagination={false} />;
+        const dataCustom = data?.position.map((value) => {
+            return {
+                postId: value.postId,
+                id: value.id,
+                positionName: value.positionName,
+                amount: value.amount,
+                registerAmount: value.registerAmount,
+                date: value.date,
+                timeFrom: value.timeFrom,
+                timeTo: value.timeTo,
+                salary: value.salary,
+                percent: Number((value.registerAmount * 100 / value.amount).toFixed(1)),
+            }
+        })
+        return <Table
+            columns={columnsExpanded}
+            dataSource={dataCustom}
+            pagination={false}
+        />;
     };
     const dispatch = useAppDispatch();
+    const { confirm } = Modal;
+
     const handleOpenConfirmModal = async (value: any) => {
         setTotalCollab(value?.amount)
-        const result = await dispatch(getCollabByPositionId(value?.id));
-        await dispatch(getRegistrationByPositionId(value?.id))
-        if (result) {
+        setAmountConfirmed(value?.registerAmount)
+        setPositionId(value.id)
+        const result = await dispatch(getRegistrationByPositionId(
+            {
+                positionId: value.id,
+                Status: 1
+            }))
+        unwrapResult(result)
+        if (getRegistrationByPositionId.fulfilled.match(result)) {
+            console.log('result', result.payload.data);  // Access the 'data' property
+            console.log('setAmountUnConfirmed', result.payload.data.length);  // Access the 'data' property
+            setAmountUnConfirmed(result.payload.data.length)
             setOpenConfirmModal(true)
         }
     }
+    const handleConfirmRunningPost = async (value: number) => {
+        console.log('key: ', value)
+        const result = await dispatch(confirmRunningPost(value))
+    }
+    const handleConfirmEndPost = async (value: number) => {
+        console.log('key: ', value)
+        const result = await dispatch(confirmEndPost(value))
+    }
     const handleAction = (value: any, status: number) => {
-        console.log('value: ', value);
+        console.log('value: ', value.props.record);
+        console.log('status', status)
         switch (status) {
             case Status.opening: {
-                console.log('status: ', status);
+                confirm({
+                    title: 'Do you want to close the post?',
+                    icon: <ExclamationCircleFilled rev={undefined} />,
+                    onOk() {
+                        handleConfirmRunningPost(Number(value?.props.record.key))
+                    },
+                    onCancel() {
+                    },
+                });
                 break;
             }
             case Status.closed: {
-                console.log('status: ', status);
+                confirm({
+                    title: 'Do you want to end the post?',
+                    icon: <ExclamationCircleFilled rev={undefined} />,
+                    onOk() {
+                        handleConfirmEndPost(Number(value?.props.record.key))
+                    },
+                    onCancel() {
+                    },
+                });
                 break;
             }
             case Status.reopen: {
@@ -312,6 +397,10 @@ function useViewRegistrationHook() {
                 break;
         }
     }
+    const handleReopen = (value: any) => {
+
+    }
+
     const handleSubmit = async (value: any) => {
         console.log('list: ', value)
     }
@@ -338,7 +427,7 @@ function useViewRegistrationHook() {
         timeTo: post?.timeTo,
         postImg: post?.postImg,
         priority: post?.priority,
-        numberOfPosition: post.postPositions.length
+        numberOfPosition: post.postPositions.length,
         // ...
     }));
     console.log('trainingposition: ', rowsExpanded)
@@ -351,12 +440,39 @@ function useViewRegistrationHook() {
         fetchPostList()
     }, [page, pageSize])
 
-    useEffect(() => {
-        fetchPostList()
-    }, [isDeleted])
 
-    const handler = { setCurrentRow, setShowDetail, setOpenConfirmModal, onPageChange, setPageSize, onChangePageSize, handleSubmit }
-    const props = { openConFirmModal, total, columns, posts, loading, rows, showDetail, rowsExpanded, postInfo, postInfoAPI, isLoading, page, pageSize, pageSizeOptions, totalCollab, collabs, collabsList, registrationList }
+    const handler = {
+        setCurrentRow,
+        setShowDetail,
+        setOpenConfirmModal,
+        onPageChange,
+        setPageSize,
+        onChangePageSize,
+        handleSubmit,
+    }
+    const props = {
+        openConFirmModal,
+        total,
+        columns,
+        posts,
+        loading,
+        rows,
+        showDetail,
+        rowsExpanded,
+        postInfo,
+        postInfoAPI,
+        isLoading,
+        page,
+        pageSize,
+        pageSizeOptions,
+        totalCollab,
+        collabs,
+        collabsList,
+        registrationList,
+        registerAmount,
+        amountUnConfirmed,
+        positionId
+    }
     return {
         handler,
         props,

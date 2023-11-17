@@ -21,12 +21,14 @@ const ViewPostList = () => {
         }
             {(props.openConFirmModal && props.loading !== true && props.collabs !== null) &&
                 <ConfirmRegistrationModal
-                    handleSubmit={handler.handleSubmit}
                     total={props.totalCollab}
-                    listCollab={props.collabsList}
                     open={props.openConFirmModal}
                     setOpenConfirmModal={handler.setOpenConfirmModal}
-                    registrationList={props.registrationList.data} />
+                    registerAmount={props.registerAmount}
+                    collabList={props.registrationList.data}
+                    amountUnConfirmed={props.amountUnConfirmed}
+                    positionId={props.positionId}
+                />
             }
         </>
     )

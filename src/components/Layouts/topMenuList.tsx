@@ -42,7 +42,7 @@ const index = [
   ,
   {
     title: "Map",
-    Icon: Icons.DocumentIcon,
+    Icon: Icons.MapIcon,
     path: "/dashboard/map",
   }
 ];

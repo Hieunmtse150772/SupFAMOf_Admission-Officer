@@ -10,6 +10,7 @@ import { useAppDispatch } from 'app/store';
 import { createCertificate } from 'features/certificateSlice';
 import CertificateCreated from 'models/certificate.model';
 import CertificateOptionI from 'models/certificateOption.model';
+import moment from 'moment';
 import { FC, useState } from 'react';
 
 interface AddCertificateModalProps {
@@ -20,6 +21,7 @@ interface AddCertificateModalProps {
 }
 const AddCertificateModal: FC<AddCertificateModalProps> = ({ open, setOpenCertificateModal, fetchCertificateOption, data }) => {
     console.log('con c', open)
+    const Formatter = 'DD/MM/YYYY';
     const dispatch = useAppDispatch();
     type DataItem = (typeof data)[number];
     const [dataSource, setDataSource] = useState<DataItem[]>(data);
@@ -86,13 +88,14 @@ const AddCertificateModal: FC<AddCertificateModalProps> = ({ open, setOpenCertif
                         },
                         content: {
                             dataIndex: 'createAt',
+                            render: (rows, row) => (<span>{moment(row.createAt).format(Formatter)}</span>),
                             editable: false
                         },
                         subTitle: {
                             render: (rows, row) => {
                                 return (
                                     <Space size={0}>
-                                        {row?.isActive ? <Tag color="blue">isActive</Tag> : <Tag color="red">unActive</Tag>}
+                                        {row?.isActive ? <Tag color="blue">isActive</Tag> : <Tag color="red">inActive</Tag>}
                                     </Space>
                                 );
                             },

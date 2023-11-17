@@ -315,8 +315,11 @@ const AddNewPost: FC = () => {
                                     rules={[
                                         {
                                             required: true,
+                                            message: 'Please enter the address!',
+                                            // validator: handler.validateAddress
                                         },
                                     ]}
+                                    validateFirst
                                     name="location"
                                 />
                                 <ProFormSelect
