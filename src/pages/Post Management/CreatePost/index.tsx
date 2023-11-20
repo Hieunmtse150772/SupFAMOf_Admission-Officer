@@ -180,6 +180,7 @@ const AddNewPost: FC = () => {
                                     placeholder={'Select ward'}
                                     rules={[{ required: true, message: 'Chose one options of ward!' }]}
                                 /> */}
+
                                     <ProFormSlider
                                         name="piority"
                                         label="Piority 1-5"
@@ -236,9 +237,6 @@ const AddNewPost: FC = () => {
                                     )}
                                 </ProForm.Item>
                                 <span className="error">{props.error}</span>
-
-
-
                             </Grid>
 
                         </Grid>
@@ -278,7 +276,6 @@ const AddNewPost: FC = () => {
                             )}
                         >
                             <ProFormGroup >
-
                                 <ProFormText
                                     label="Position Name"
                                     width="sm"
@@ -308,6 +305,16 @@ const AddNewPost: FC = () => {
                                         },
                                     ]}
                                     name="schoolName"
+                                />
+                                <ProFormSelect
+                                    name="location"
+                                    label="Address"
+                                    showSearch
+                                    debounceTime={300}
+                                    request={async ({ keyWords }) => handler.handleSearchAddress(keyWords)}
+                                    placeholder="Please select a country"
+                                    rules={[{ required: true, message: 'Please select your country!' }]}
+                                    options={options}
                                 />
                                 <ProFormText
                                     label="Location"
@@ -340,7 +347,6 @@ const AddNewPost: FC = () => {
 
                                     rules={[{ required: true, message: 'Chose time from & time to!' }]}
                                 />
-
                                 <ProFormSelect
                                     label="Document"
                                     width="sm"
@@ -366,7 +372,6 @@ const AddNewPost: FC = () => {
                                     debounceTime={5}
                                     tooltip="That field optional"
                                 />
-
                                 <ProFormDigit
                                     label="Amount"
                                     width="sm"
@@ -377,8 +382,6 @@ const AddNewPost: FC = () => {
                                         },
                                     ]}
                                 />
-
-
                                 <ProFormMoney
                                     label="Salary"
                                     name="salary"
@@ -539,6 +542,7 @@ const AddNewPost: FC = () => {
 
                 </Box >
             </Box >
+
         </Spin>
     );
 };

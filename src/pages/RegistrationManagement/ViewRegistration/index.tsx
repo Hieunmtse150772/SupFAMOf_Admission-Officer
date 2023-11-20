@@ -1,21 +1,72 @@
+import { FilterOutlined } from '@ant-design/icons';
+import { LightFilter, ProFormRadio } from '@ant-design/pro-components';
 import SFAMOGrid from 'components/SFAMOGrid';
+import { useEffect, useRef } from 'react';
 import ConfirmRegistrationModal from '../ConfirmRegistration/ConfirmRegistrationModal';
 import useViewRegistrationHook from './useViewRegistrationHook';
 
 const ViewPostList = () => {
+    const yourRef = useRef(null);
+
+    useEffect(() => {
+        // Access the DOM node using the ref
+        const domNode = yourRef.current;
+        // Perform actions with the DOM node here...
+    }, []);
+    const LightFilterCustom = (
+        <div ref={yourRef}>
+            <LightFilter
+                key="light-filter"
+                initialValues={{
+                    sex: 1,
+                }}
+                bordered
+                collapseLabel={<FilterOutlined rev={undefined} />}
+                onFinish={async (values) => handler.handleSetStatus(values)}
+            >
+                <ProFormRadio.Group
+                    name="radio"
+                    radioType="button"
+                    options={[
+                        {
+                            value: 1,
+                            label: 'Opening',
+                        },
+                        {
+                            value: 2,
+                            label: 'Closed',
+                        },
+                        {
+                            value: 3,
+                            label: 'Ended',
+                        },
+                        {
+                            value: 4,
+                            label: 'Re-open',
+                        },
+                    ]}
+                />
+            </LightFilter>
+        </div>
+
+    )
     const { handler, props, expandedRowRender } = useViewRegistrationHook();
     return (
         <>{
             props?.posts && (
                 <SFAMOGrid
+                    handleTableChange={handler.handleActionChange}
+                    toolbar={LightFilterCustom}
                     expandedRowRender={expandedRowRender}
                     pageSizeOptions={props.pageSizeOptions}
                     total={props.total}
                     onPageChange={handler.onPageChange}
                     onChangePageSize={handler.onChangePageSize}
-                    page={props.page} pageSize={props.pageSize}
-                    rows={props.rows} columns={props?.columns}
-                    isLoading={props.loading}
+                    page={props.page} 
+                    pageSize={props.pageSize}
+                    rows={props.rows} 
+                    columns={props?.columns}
+                    isLoading={props.isLoading}
                     rowsExpanded={props.rowsExpanded} />
             )
         }

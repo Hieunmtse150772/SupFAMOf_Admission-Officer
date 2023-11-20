@@ -1,10 +1,11 @@
 import { EditOutlined, QuestionCircleFilled, SafetyCertificateOutlined } from '@ant-design/icons'; // Import the icon from the library
-import { ProColumns } from "@ant-design/pro-components";
+import { ProColumns, RequestData } from "@ant-design/pro-components";
 import { FiberManualRecord } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import { green, grey, red, yellow } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { Drawer, Image, Popconfirm, Table, TableColumnsType } from 'antd';
+import { SortOrder } from 'antd/es/table/interface';
 import Link from 'antd/es/typography/Link';
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
@@ -307,6 +308,24 @@ function useViewPostList() {
     console.log('value', value)
     await dispatch(deletePostById(value?.key))
   }
+  const handleActionChange = async (params: any,
+    sorter: Record<string, SortOrder>,
+    filter: Record<string, (string | number)[] | null>): Promise<Partial<RequestData<any>>> => {
+    console.log('sorter: ', sorter);
+    if (sorter && Object.keys(sorter).length > 0) {
+      const keys = Object.keys(sorter);
+      const fieldName = keys[0];
+      const sortOrder = sorter[fieldName] === 'ascend' ? 'asc' : 'desc';
+      await dispatch(getPostByAccountId({ page: page, PageSize: pageSize, Sort: fieldName, Order: String(sortOrder) }))
+    } else {
+      await dispatch(getPostByAccountId({ page: page, PageSize: pageSize }))
+    }
+    return {
+      data: [],
+      success: true, // Set to true if the request was successful
+      total: 10, // Total number of data items (if available)
+    };
+  }
   const onPageChange = (value: any) => {
     setPage(value)
   }
@@ -316,8 +335,6 @@ function useViewPostList() {
   }
 
   const rows = posts.data.map(post => ({
-    // Map the properties from PostI to AnyObject as needed
-    // For example:
     // ...post,
     key: post?.id,
     id: post?.postCode,
@@ -360,7 +377,8 @@ function useViewPostList() {
     onPageChange,
     setPageSize,
     onChangePageSize,
-    handleAddPost
+    handleAddPost,
+    handleActionChange
   }
   const props = {
     total,

@@ -106,6 +106,16 @@ export const confirmEndPost = createAsyncThunk('post/confirm-end-post',
             return rejectWithValue(axiosError.response?.data)
         }
     })
+export const confirmReopenPost = createAsyncThunk('post/confirm-reopen-post',
+    async (id: number, { rejectWithValue }) => {
+        try {
+            const result = await postService.confirmReopen(id);
+            return result
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data)
+        }
+    })
 export const postSlice = createSlice({
     name: 'post',
     initialState,

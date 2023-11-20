@@ -10,6 +10,7 @@ import { AxiosResponse } from 'axios';
 import { Dayjs } from 'dayjs';
 import { getCertificate } from 'features/certificateSlice';
 import { getDocument } from 'features/documentSlice';
+import { getGoogleAddress } from 'features/googleAPISlice';
 import { geocodingLeafLetApi } from 'features/leafLetAPISlice';
 import { createPost } from 'features/postSlice';
 import { getPostTitle } from 'features/postTitleSlice';
@@ -45,6 +46,12 @@ interface PostPosition {
     salary: number;
     isBusService: boolean;
     date: string;
+}
+interface GooglePlacePrediction {
+    description: string;
+    place_id: string;
+    // Các trường dữ liệu khác mà API trả về
+    // ...
 }
 type RangeType = 'start' | 'end';
 
@@ -125,6 +132,7 @@ const useAddNewPostHook = () => {
     const [fileImage, setFileImage] = useState<any>('');
     const [paramsCreatePost, setParamsCreatePost] = useState<PostCreatedV2>()
     const [optionDate, setOptionDate] = useState<any[]>([])
+    const [optionAddress, setOptionAddress] = useState<GooglePlacePrediction[]>([]);
 
     const disabledTime: RangeDisabledTime = (now, defaultType) => {
         if (defaultType === 'start') {
@@ -161,8 +169,38 @@ const useAddNewPostHook = () => {
         setFileList(newFileList);
         if (photoUrl !== '') setErrorUrl('');
     }
+
     const removeImage = () => {
         setPhotoUrl('')
+    }
+    const handleSearchAddress = async (keyWords: string) => {
+        try {
+            // Thực hiện gọi API Google ở đây
+            console.log('keyword: ', keyWords)
+            const response = await dispatch(getGoogleAddress({ address: keyWords, key: 'AIzaSyDSEKbLICxkqgw7vIuEbK9-f2oHiuKw-XY' }));
+            unwrapResult(response)
+            console.log('response: ', response)
+            return []
+            // if (response.meta.requestStatus === 'fulfilled') {
+            //     const data = await response.payload;
+            //     const optionsFromAPI: GooglePlacePrediction[] = data.predictions.map((prediction: GooglePlacePrediction) => ({
+            //         label: prediction.description,
+            //         value: prediction.place_id, // hoặc thông tin khác từ API phản hồi của bạn
+            //     }));
+            //     setOptionAddress(optionsFromAPI);
+            //     console.log('optionsFromAPI: ', optionsFromAPI)
+            //     return optionsFromAPI;
+            // } else {
+            //     throw new Error('Failed to fetch data');
+            // }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            return [];
+        }
+    };
+
+    const onSelectOption = (value: any) => {
+
     }
     const onCloseAddTitleModal = () => {
         setOpenAddTitleModal(false);
@@ -346,18 +384,23 @@ const useAddNewPostHook = () => {
             setOptionDate(optionDatePicker)
         } else setOptionDate([])
     }
+
     useEffect(() => {
         console.log('optionDate: ', optionDate)
     }, [optionDate])
+
     const fetchPostTitleOption = async () => {
         await dispatch(getPostTitle());
     }
+
     const fetchDocumentOption = async () => {
         await dispatch(getDocument());
     }
+
     const fetchCertificateOption = async () => {
         await dispatch(getCertificate());
     }
+
     const handleChangePosition = (value: PostOptionI | null) => {
         setValue('postTitle', value?.id)
     }
@@ -408,7 +451,9 @@ const useAddNewPostHook = () => {
         fetchCertificateOption,
         disabledTime,
         handleChangeDateRangePicker,
-        validateAddress
+        validateAddress,
+        handleSearchAddress,
+        onSelectOption
     }
     const props = {
         open,
