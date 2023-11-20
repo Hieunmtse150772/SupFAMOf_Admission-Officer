@@ -1,14 +1,15 @@
 import { CheckCircleOutlined, EditOutlined, ExclamationCircleFilled, FolderViewOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons'; // Import the icon from the library
-import { ProColumns } from "@ant-design/pro-components";
+import { ProColumns, RequestData } from "@ant-design/pro-components";
 import { FiberManualRecord } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import { green, grey, red, yellow } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
 import { Button, Image, Modal, Popover, Progress, StepsProps, Table, TableColumnsType } from 'antd';
+import { SortOrder } from 'antd/es/table/interface';
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import Status from 'enums/status.enum';
-import { confirmEndPost, confirmRunningPost, getPostByAccountId } from "features/postSlice";
+import { confirmEndPost, confirmReopenPost, confirmRunningPost, getPostByAccountId } from "features/postSlice";
 import { getRegistrationByPositionId } from 'features/registrationSlice';
 import { ListPositionI } from 'models/post.model';
 import moment from "moment";
@@ -22,7 +23,7 @@ interface ExpandedDataType {
     positionName: string,
     amount: number,
     salary: number,
-    registerAmount: number,
+    positionRegisterAmount: number,
     date: Date,
     timeFrom: Date,
     timeTo: Date,
@@ -42,6 +43,8 @@ function useViewRegistrationHook() {
     const collabsList = collabs?.data ? collabs?.data : []
     const [postInfo, setPostInfo] = useState<any>();
     const [page, setPage] = useState<number>(1);
+    const [statusFilter, setStatusFilter] = useState<number>(1);
+
     const pageSizeOptions = [10, 20, 30]; // Các tùy chọn cho pageSize
     const total = posts?.metadata?.total;
     const [totalCollab, setTotalCollab] = useState<number>(0);
@@ -51,6 +54,8 @@ function useViewRegistrationHook() {
     const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
     const [searchByEmail, setSearchByEmail] = useState<string>('')
     const [status, setStatus] = useState<number>(1)
+    const [sortModel, setSortModel] = useState({});
+
     const customDot: StepsProps['progressDot'] = (dot, { status, index }) => (
         <Popover
             content={
@@ -182,7 +187,7 @@ function useViewRegistrationHook() {
 
                     case Status.ended:
                         color = red[500];
-                        statusText = 'Ending';
+                        statusText = 'Ended';
                         break;
                     case Status.canceled:
                         color = yellow[500];
@@ -297,7 +302,7 @@ function useViewRegistrationHook() {
         const columnsExpanded: TableColumnsType<ExpandedDataType> = [
             { title: 'Position Name', dataIndex: 'positionName', key: 'positionName', width: 200 },
             { title: 'Amount', dataIndex: 'amount', key: 'amount' },
-            { title: 'Amount Confirmed', dataIndex: 'registerAmount', key: 'registerAmount', width: 200 },
+            { title: 'Amount Confirmed', dataIndex: 'positionRegisterAmount', key: 'positionRegisterAmount', width: 200 },
             {
                 title: 'Progress', dataIndex: 'percent', render: (value) => <Progress style={{ maxWidth: '90%' }} percent={Number(value)} size="small" />, width: 200
             },
@@ -319,12 +324,12 @@ function useViewRegistrationHook() {
                 id: value.id,
                 positionName: value.positionName,
                 amount: value.amount,
-                registerAmount: value.registerAmount,
+                positionRegisterAmount: value.positionRegisterAmount,
                 date: value.date,
                 timeFrom: value.timeFrom,
                 timeTo: value.timeTo,
                 salary: value.salary,
-                percent: Number((value.registerAmount * 100 / value.amount).toFixed(1)),
+                percent: Number((value.positionRegisterAmount * 100 / value.amount).toFixed(1)),
             }
         })
         return <Table
@@ -338,7 +343,7 @@ function useViewRegistrationHook() {
 
     const handleOpenConfirmModal = async (value: any) => {
         setTotalCollab(value?.amount)
-        setAmountConfirmed(value?.registerAmount)
+        setAmountConfirmed(value?.positionRegisterAmount)
         setPositionId(value.id)
         const result = await dispatch(getRegistrationByPositionId(
             {
@@ -360,6 +365,10 @@ function useViewRegistrationHook() {
     const handleConfirmEndPost = async (value: number) => {
         console.log('key: ', value)
         const result = await dispatch(confirmEndPost(value))
+    }
+    const handleConfirmReopenPost = async (value: number) => {
+        console.log('key: ', value)
+        const result = await dispatch(confirmReopenPost(value))
     }
     const handleAction = (value: any, status: number) => {
         console.log('value: ', value.props.record);
@@ -398,11 +407,40 @@ function useViewRegistrationHook() {
         }
     }
     const handleReopen = (value: any) => {
-
+        confirm({
+            title: 'Do you want to re-open the post?',
+            icon: <ExclamationCircleFilled rev={undefined} />,
+            onOk() {
+                handleConfirmReopenPost(Number(value?.props.record.key))
+            },
+            onCancel() {
+            },
+        });
     }
 
     const handleSubmit = async (value: any) => {
         console.log('list: ', value)
+    }
+    const handleSetStatus = async (value: any) => {
+        console.log('value: ', value);
+        setStatusFilter(value?.radio);
+    }
+    const handleActionChange = async (params: any,
+        sorter: Record<string, SortOrder>,
+        filter: Record<string, (string | number)[] | null>): Promise<Partial<RequestData<any>>> => {
+        if (sorter && Object.keys(sorter).length > 0) {
+            const keys = Object.keys(sorter);
+            const fieldName = keys[0];
+            const sortOrder = sorter[fieldName] === 'ascend' ? 'asc' : 'desc';
+            await dispatch(getPostByAccountId({ page: page, PageSize: pageSize, Sort: fieldName, Order: String(sortOrder) }))
+        } else {
+            await dispatch(getPostByAccountId({ page: page, PageSize: pageSize }))
+        }
+        return {
+            data: [],
+            success: true,
+            total: 10,
+        };
     }
     const onPageChange = (value: any) => {
         setPage(value)
@@ -433,12 +471,12 @@ function useViewRegistrationHook() {
     console.log('trainingposition: ', rowsExpanded)
 
     const fetchPostList = async () => {
-        await dispatch(getPostByAccountId({ page: page, PageSize: pageSize }))
+        await dispatch(getPostByAccountId({ page: page, PageSize: pageSize, Status: statusFilter }))
     }
 
     useEffect(() => {
         fetchPostList()
-    }, [page, pageSize])
+    }, [page, pageSize, statusFilter])
 
 
     const handler = {
@@ -449,6 +487,9 @@ function useViewRegistrationHook() {
         setPageSize,
         onChangePageSize,
         handleSubmit,
+        setStatusFilter,
+        handleSetStatus,
+        handleActionChange,
     }
     const props = {
         openConFirmModal,

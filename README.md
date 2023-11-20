@@ -1,173 +1,29 @@
-<h1><a href="https://ui-lib.com/downloads/uko-lite-react-dashboard/">Uko React Admin Dashboard Template</a></h1>
+## Valua Web
 
-<a href="https://uko-react-free.netlify.app/"><img alt="Uko React Admin" src="https://ui-lib.com/wp-content/uploads/2022/06/uko-react-free.png" /></a>
+# How to install
 
-<p>Professional React dashboard template with robust MUI components.
-Its clean codebase and design significantly reduce development costs, time, and effort.</p>
+- Install Node V14 LTS ( note: V16 will not run due to the SCSS library ). Download link: https://nodejs.org/dist/v14.16.1/
+  ![image](https://user-images.githubusercontent.com/54258769/139083262-266b6f1d-80d4-4ccc-b502-ef3c483ce9e4.png)
+- After node has been install, run node --version to check the version. If installed correctly, it will show the following screen:
+  ![image](https://user-images.githubusercontent.com/54258769/139083500-f93ac3f1-b834-4b6d-a117-85879e0168a1.png)
+- Check npm version
+  ![image](https://user-images.githubusercontent.com/54258769/139083720-43323767-d0b3-446a-9a77-5eeebf5737d0.png)
+- Install yarn by run the following command: npm install -g yarn
+  ![image](https://user-images.githubusercontent.com/54258769/139083918-334e3a65-f6c7-4eed-97e8-fb4e7312feb2.png)
+- Clone the project and open it in your preffered IDE ( VSCode is recommended )
+  ![image](https://user-images.githubusercontent.com/54258769/139084250-8e265ff2-288a-44b5-a13b-f4b695c9bc65.png)
+- On the terminal, enter: yarn. It will install all the necessary packages for the project
+  ![image](https://user-images.githubusercontent.com/54258769/139084421-514de3e1-a58c-40c6-bc52-0c0104e2b5fc.png)
+- After yarn finished, run **yarn start** to run the project. It will run at http://localhost:3000
+- Result:
+  ![image](https://user-images.githubusercontent.com/54258769/139084854-edfc40e7-da94-473e-8421-b25a52afb43c.png)
 
-<h2>Features and Pages</h2>
-<ul>
-  <li>JWT authentication</li>
-  <li>React Router</li>
-  <li>React Hooks</li>
-  <li>Lazy loading components</li>
-  <li>Code splitting</li>
-  <li><a href="https://uko-react-free.netlify.app/dashboard">Dashboard</a></li>
-  <li>Users
-    <ul>
-      <li><a href="https://uko-react-free.netlify.app/dashboard/user-profile">User Profile</a></li>
-      <li><a href="https://uko-react-free.netlify.app/dashboard/user-list">User List</a></li>
-      <li><a href="https://uko-react-free.netlify.app/dashboard/user-grid">User Grid</a></li>
-      <li><a href="https://uko-react-free.netlify.app/dashboard/add-user">Add User</a></li>
-    </ul>
-  </li>
-  <li>UI kits
-    <ul>
-      <li><a href="https://mui.com/components/">MUI components</a></li>
-    </ul>
-  </li>
-  <li>Session pages
-    <ul>
-      <li><a href="https://uko-react-free.netlify.app/login">Sign in</a></li>
-      <li><a href="https://uko-react-free.netlify.app/register">Sign up</a></li>
-    </ul>
-  </li>
-</ul>
+# How to run in production mode
 
-<h2>Free vs Pro</h2>
-<table>
-<tr>
-<th>Uko Lite</th>
-<th>Uko</th>
-</tr>
-<tr>
-<td>
-<a href="https://uko-react-free.netlify.app/">Live Preview</a> <br>
-<a href="https://ui-lib.com/downloads/uko-lite-react-dashboard/">Download Uko Lite</a>
-</td>
-<td>
-<a href="https://uko-react.vercel.app/dashboard/sales">Live Preview</a> <br>
-<a href="https://mui.com/store/items/uko-client-admin-dashboard/">Get Uko</a>
-</td>
-</tr>
-<tr>
-<td valign="top">
-<ul>
-  <li>JWT authentication</li>
-  <li>Lazy loading components</li>
-  <li>Code splitting</li>
-  <li>Dashboard</li>
-  <li>Users
-    <ul>
-      <li>User Profile</li>
-      <li>User List</li>
-      <li>User Grid</li>
-      <li>Add User</li>
-    </ul>
-  </li>
-  <li>UI kits
-    <ul>
-      <li>All MUI components</li>
-    </ul>
-  </li>
-  <li>Session pages
-    <ul>
-      <li>Sign in</li>
-      <li>Sign up</li>
-    </ul>
-  </li>
-  </ul>
-</td>
-<td valign="top">
-<ul>
-  <li>All features of Uko Lite +</li>
-  <li>Firebase authentication</li>
-  <li>Auth0 authentication</li>
-  <li>Dashboards
-    <ul>
-      <li>SaaS</li>
-      <li>Sales</li>
-      <li>Project Management v1</li>
-      <li>Project Management v2</li>
-    </ul>
-  </li>
-  <li>User Account settings</li>
-  <li> Datatables
-    <ul>
-      <li>React table style 1</li>
-      <li>React table style 2</li>
-    </ul>
-  </li>
-  <li>Ecommerce management
-    <ul>
-      <li>Product List/add/edit</li>
-      <li>Order List/add/edit</li>
-      <li>Customer List/add/edit</li>
-    </ul>
-  </li>
-  <li>Online store
-    <ul>
-      <li>Shop</li>
-      <li>Cart</li>
-      <li>Checkout</li>
-      <li>Purchase confirmation</li>
-    </ul>
-  </li>
-  <li>
-  <ul> Invoice
-    <li>Invoice list</li>
-    <li>Invoice details</li>
-    <li>Add Invoice</li>
-  </ul>
-  </li>
-  <li>Project management
-    <ul>
-      <li>Project list 1</li>
-      <li>Project list 2</li>
-      <li>Project list 3</li>
-      <li>Project details</li>
-      <li>Project team members</li>
-    </ul>
-  </li>
-  
-  <li>Working Apps
-    <ul>
-      <li>Canban card</li>
-      <li>Shop/eCommerce</li>
-      <li>Scrum board</li>
-      <li>Invoice builder</li>
-      <li>Event calendar</li>
-      <li>Chat</li>
-      <li>Inbox</li>
-    </ul>
-  </li>
-  <li>Pages
-    <ul>
-      <li>About</li>
-      <li>Contact</li>
-      <li>Pricing</li>
-      <li>Privacy</li>
-    </ul>
-  </li>
-  <li>Charts
-    <ul>
-      <li>eChart</li>
-      <li>Rechart</li>
-      <li>Victory chart</li>
-      <li>React vis</li>
-    </ul>
-  </li>
-  <li>User profile</li>
-  <li>6 months support</li>
+- Step 1: Run <code>npm install -g serve</code>
+- Step 2: Navigate to valua-web root folder
+- Step 3: Run <code>yarn build</code> (Might took a while)
+- Step 4: Run <code>serve -s build</code>
+- The final result should be:
 
-</ul>
-</td>
-</tr>
-</table>
-
-<h3>Download</h3>
-Download From <a href="https://ui-lib.com/downloads/uko-lite-react-client-admin-dashboard/">official website</a>
-<br/>
-Browse <a href="https://uko-react-doc.vercel.app/">Documentation</a>
-
-<h3>For questions and support mail us at <a href="mailto:support@ui-lib.com">support@ui-lib.com</a></h3>
+![image](https://user-images.githubusercontent.com/54258769/155705865-412da008-c2cd-4a09-933d-2d0c01826468.png)

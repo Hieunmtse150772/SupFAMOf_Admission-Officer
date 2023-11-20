@@ -72,7 +72,7 @@ export type PositionI = {
     longtitude: string;
     timeFrom: Date;
     timeTo: Date;
-    registerAmount: number;
+    positionRegisterAmount: number;
     amount: number,
     salary: number
 }
