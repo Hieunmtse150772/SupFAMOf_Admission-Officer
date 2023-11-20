@@ -311,12 +311,13 @@ const AddNewPost: FC = () => {
                                     label="Address"
                                     showSearch
                                     debounceTime={300}
+                                    width='lg'
                                     request={async ({ keyWords }) => handler.handleSearchAddress(keyWords)}
                                     placeholder="Please select a country"
                                     rules={[{ required: true, message: 'Please select your country!' }]}
                                     options={options}
                                 />
-                                <ProFormText
+                                {/* <ProFormText
                                     label="Location"
                                     width="sm"
                                     rules={[
@@ -328,7 +329,7 @@ const AddNewPost: FC = () => {
                                     ]}
                                     validateFirst
                                     name="location"
-                                />
+                                /> */}
                                 <ProFormSelect
                                     width="sm"
                                     options={optionDate}
@@ -372,6 +373,13 @@ const AddNewPost: FC = () => {
                                     debounceTime={5}
                                     tooltip="That field optional"
                                 />
+                                <ProFormCheckbox
+                                    label="Bus option"
+                                    width="xs"
+                                    tooltip="That field optional"
+                                    name="isBusService"
+                                    initialValue={false}
+                                >Yes/No</ProFormCheckbox>
                                 <ProFormDigit
                                     label="Amount"
                                     width="sm"
@@ -394,13 +402,7 @@ const AddNewPost: FC = () => {
                                     ]}
                                     locale="en-VN"
                                 />
-                                <ProFormCheckbox
-                                    label="Bus option"
-                                    width="sm"
-                                    tooltip="That field optional"
-                                    name="isBusService"
-                                    initialValue={false}
-                                >Yes/No</ProFormCheckbox>
+
                             </ProFormGroup>
 
                         </ProFormList>

@@ -23,7 +23,7 @@ const initialState: GoogleApiState = {
         status: ''
     },
     address: {
-        results: [] as addressI[],
+        predictions: [] as addressI[],
         status: ''
     }
 }

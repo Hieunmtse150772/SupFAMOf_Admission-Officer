@@ -132,7 +132,7 @@ const useAddNewPostHook = () => {
     const [fileImage, setFileImage] = useState<any>('');
     const [paramsCreatePost, setParamsCreatePost] = useState<PostCreatedV2>()
     const [optionDate, setOptionDate] = useState<any[]>([])
-    const [optionAddress, setOptionAddress] = useState<GooglePlacePrediction[]>([]);
+    const [optionAddress, setOptionAddress] = useState<any[]>([]);
 
     const disabledTime: RangeDisabledTime = (now, defaultType) => {
         if (defaultType === 'start') {
@@ -179,20 +179,22 @@ const useAddNewPostHook = () => {
             console.log('keyword: ', keyWords)
             const response = await dispatch(getGoogleAddress({ address: keyWords, key: 'AIzaSyDSEKbLICxkqgw7vIuEbK9-f2oHiuKw-XY' }));
             unwrapResult(response)
-            console.log('response: ', response)
-            return []
-            // if (response.meta.requestStatus === 'fulfilled') {
-            //     const data = await response.payload;
-            //     const optionsFromAPI: GooglePlacePrediction[] = data.predictions.map((prediction: GooglePlacePrediction) => ({
-            //         label: prediction.description,
-            //         value: prediction.place_id, // hoặc thông tin khác từ API phản hồi của bạn
-            //     }));
-            //     setOptionAddress(optionsFromAPI);
-            //     console.log('optionsFromAPI: ', optionsFromAPI)
-            //     return optionsFromAPI;
-            // } else {
-            //     throw new Error('Failed to fetch data');
-            // }
+            if (getGoogleAddress.fulfilled.match(response)) {
+                console.log('result', response.payload.data);  // Access the 'data' property
+                const optionsFromAPI = response.payload.data?.predictions?.map((prediction) => {
+                    console.log('first', prediction)
+                    return {
+                        label: prediction.description,
+                        value: prediction.description
+                    }
+                });
+                console.log('optionsFromAPI: ', optionsFromAPI)
+
+                setOptionAddress(optionsFromAPI);
+                return optionsFromAPI;
+            } else {
+                throw new Error('Failed to fetch data');
+            }
         } catch (error) {
             console.error('Error fetching data:', error);
             return [];

@@ -51,7 +51,7 @@ const Map: React.FC<MapProps> = ({ address, id }) => {
     useEffect(() => {
         if (map) {
             // Gọi hàm geocode với địa chỉ cần tìm
-            geocodeAddress(address ? address : 'Đại học fpt, thành phố Hồ Chí Minh');
+            geocodeAddress(address ? address : 'FPT University HCMC, Đường D1, Long Thạnh Mỹ, Thành Phố Thủ Đức, Thành phố Hồ Chí Minh, Việt Nam');
         }
     }, [map]);
 
