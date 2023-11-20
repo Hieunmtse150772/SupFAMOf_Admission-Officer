@@ -1,5 +1,6 @@
+import { PlusOutlined } from '@ant-design/icons';
 import { green, grey, red, yellow } from '@mui/material/colors';
-import { Badge, Descriptions, DescriptionsProps, Drawer, Image, Rate, Space, Tag } from 'antd';
+import { Badge, Button, Descriptions, DescriptionsProps, Drawer, Image, Rate, Space, Tag } from 'antd';
 import SFAMOGrid from 'components/SFAMOGrid';
 import Status from 'enums/status.enum';
 import Map from 'pages/Map/map';
@@ -115,20 +116,33 @@ const ViewPostList = () => {
             children: <Rate disabled allowHalf defaultValue={props.currentRow?.priority} />
         },
     ];
+    const ButtonAddNew = (
+        <Button
+            type="primary"
+            key="primary"
+            onClick={handler.handleAddPost}
+        >
+            < PlusOutlined rev={undefined} /> New
+        </Button >
+    )
     return (
         <>{
             props?.posts && (
                 <SFAMOGrid
+                    handleTableChange={handler.handleActionChange}
+                    toolbar={ButtonAddNew}
                     pageSizeOptions={props.pageSizeOptions}
-                    total={props.total} onPageChange={handler.onPageChange}
+                    total={props.total}
+                    onPageChange={handler.onPageChange}
                     onChangePageSize={handler.onChangePageSize}
                     page={props.page}
                     pageSize={props.pageSize}
                     rows={props.rows}
                     columns={props?.columns}
-                    isLoading={props.loading} rowsExpanded={props.rowsExpanded}
+                    isLoading={props.isLoading}
+                    rowsExpanded={props.rowsExpanded}
                     expandedRowRender={expandedRowRender}
-                    action={handler.handleAddPost} />
+                />
             )
         }
             <Drawer

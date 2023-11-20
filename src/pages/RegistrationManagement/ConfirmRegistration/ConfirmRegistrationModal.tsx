@@ -31,13 +31,13 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
     const dispatch = useAppDispatch();
     type DataItem = (typeof collabList)[number];
     const [dataSource, setDataSource] = useState<DataItem[]>(collabList);
-    const loading = useAppSelector(state => state.registration.loading)
+    const loading = useAppSelector(state => state.registration.loading);
     const [collabPicker, setCollabPicker] = useState<DataItem[]>();
     const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
     const [activeKey, setActiveKey] = useState<React.Key | undefined>('tab1');
-    const [isLoading, setLoading] = useState<boolean>(false)
-    const [status, setStatus] = useState<number>(1)
-    const [searchByEmail, setSearchByEmail] = useState<string>('')
+    const [isLoading, setLoading] = useState<boolean>(false);
+    const [status, setStatus] = useState<number>(1);
+    const [searchByEmail, setSearchByEmail] = useState<string>('');
 
     const rowSelection = {
         selectedRowKeys,
@@ -278,7 +278,7 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
                 </StepsForm.StepForm>
                 <StepsForm.StepForm
                     name="Confirm"
-                    title="confirm"
+                    title="Confirm"
                     onFinish={async () => {
                         handleConfirm()
                     }}

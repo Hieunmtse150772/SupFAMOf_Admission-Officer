@@ -1,9 +1,7 @@
-import { FilterOutlined, PlusOutlined } from "@ant-design/icons";
-import { LightFilter, ProColumns, ProFormRadio, ProTable } from "@ant-design/pro-components";
-import { Button } from "antd";
-import { TableLocale } from "antd/es/table/interface";
+import { ActionType, ProColumns, ProTable, RequestData } from "@ant-design/pro-components";
+import { SortOrder, TableLocale } from "antd/es/table/interface";
 import { ListPositionI } from "models/post.model";
-import { useState } from "react";
+import React, { useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import './style.scss';
 interface SFAMOGridProps {
@@ -19,10 +17,17 @@ interface SFAMOGridProps {
     pageSizeOptions: number[];
     expandedRowRender?: (record: any) => JSX.Element | null;
     action?: () => void;
+    toolbar?: React.ReactNode;
+    handleTableChange?: (
+        params: any,
+        sort: Record<string, SortOrder>,
+        filter: Record<string, (string | number)[] | null>
+    ) => Promise<Partial<RequestData<any>>>;
 }
-const SFAMOGrid = ({ isLoading, rows, columns, rowsExpanded, page, total, pageSize, onPageChange, onChangePageSize, pageSizeOptions, expandedRowRender, action }: SFAMOGridProps) => {
+const SFAMOGrid = ({ isLoading, rows, columns, rowsExpanded, page, total, pageSize, onPageChange, onChangePageSize, pageSizeOptions, expandedRowRender, action, toolbar, handleTableChange }: SFAMOGridProps) => {
     const [selectedRowsState, setSelectedRows] = useState<any[]>([]);
     let navigate = useNavigate();
+    const actionRef = useRef<ActionType>();
 
     console.log('total: ', total)
     const customLocale: TableLocale = {
@@ -35,8 +40,6 @@ const SFAMOGrid = ({ isLoading, rows, columns, rowsExpanded, page, total, pageSi
     const handleSubmit = (value: any) => {
         console.log(value)
     }
-
-
     const customPagination = {
         current: page,
         pageSize: pageSize,
@@ -50,50 +53,14 @@ const SFAMOGrid = ({ isLoading, rows, columns, rowsExpanded, page, total, pageSi
     return (
         <>
             <ProTable
+
+                actionRef={actionRef}
+                request={handleTableChange}
                 expandable={{ expandedRowRender }}
-                toolBarRender={() => [
-                    <LightFilter
-                        key="light-filter"
-                        initialValues={{
-                            sex: 'man',
-                        }}
-                        bordered
-                        collapseLabel={<FilterOutlined rev={undefined} />}
-                        onFinish={async (values) => console.log(values)}
-                    >
-                        <ProFormRadio.Group
-                            name="radio"
-                            radioType="button"
-                            options={[
-                                {
-                                    value: 'Opening',
-                                    label: 'Opening',
-                                },
-                                {
-                                    value: 'Closed',
-                                    label: 'Closed',
-                                },
-                                {
-                                    value: 'Ended',
-                                    label: 'Ended',
-                                },
-                                {
-                                    value: 'Re-open',
-                                    label: 'Re-open',
-                                },
-                            ]}
-                        />
-                    </LightFilter>,
-                    <Button
-                        type="primary"
-                        key="primary"
-                        onClick={action}
-                    >
-                        <PlusOutlined rev={undefined} />New
-                    </Button>,
-                ]}
+                toolBarRender={() => [toolbar]}
                 onSubmit={value => handleSubmit(value)}
-                dataSource={rows} columns={columns} loading={isLoading}
+                dataSource={rows} columns={columns}
+                loading={isLoading}
                 rowSelection={{
                     onChange: (_, selectedRows) => {
                         setSelectedRows(selectedRows);
@@ -101,7 +68,6 @@ const SFAMOGrid = ({ isLoading, rows, columns, rowsExpanded, page, total, pageSi
                 }}
                 locale={customLocale}
                 pagination={customPagination}
-
             >
             </ProTable>
         </>
