@@ -10,7 +10,7 @@ import { AxiosResponse } from 'axios';
 import { Dayjs } from 'dayjs';
 import { getCertificate } from 'features/certificateSlice';
 import { getDocument } from 'features/documentSlice';
-import { getGoogleAddress } from 'features/googleAPISlice';
+import { getGeoApiFi, getGoogleAddress } from 'features/googleAPISlice';
 import { geocodingLeafLetApi } from 'features/leafLetAPISlice';
 import { createPost } from 'features/postSlice';
 import { getPostTitle } from 'features/postTitleSlice';
@@ -200,7 +200,32 @@ const useAddNewPostHook = () => {
             return [];
         }
     };
-
+    const handleSearchAddressGeoapifi = async (keyWords: string) => {
+        try {
+            // Thực hiện gọi API Google ở đây
+            console.log('keyword: ', keyWords)
+            const response = await dispatch(getGeoApiFi({ address: keyWords, key: '6f44e55eb27841738cbd3be2852d936c' }));
+            console.log('response: ', response)
+            unwrapResult(response)
+            if (getGeoApiFi.fulfilled.match(response)) {
+                console.log('result', response.payload.data);  // Access the 'data' property
+                const optionsFromAPI = response.payload.data?.features?.map((feature) => {
+                    console.log('first', feature)
+                    return {
+                        label: feature.properties.formatted,
+                        value: feature.properties.formatted
+                    }
+                });
+                setOptionAddress(optionsFromAPI);
+                return optionsFromAPI;
+            } else {
+                throw new Error('Failed to fetch data');
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            return [];
+        }
+    };
     const onSelectOption = (value: any) => {
 
     }
@@ -455,7 +480,8 @@ const useAddNewPostHook = () => {
         handleChangeDateRangePicker,
         validateAddress,
         handleSearchAddress,
-        onSelectOption
+        onSelectOption,
+        handleSearchAddressGeoapifi
     }
     const props = {
         open,

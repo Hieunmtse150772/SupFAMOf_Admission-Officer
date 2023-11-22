@@ -1,7 +1,7 @@
 import { ActionType, ProColumns, ProTable, RequestData } from "@ant-design/pro-components";
 import { SortOrder, TableLocale } from "antd/es/table/interface";
 import { ListPositionI } from "models/post.model";
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { useNavigate } from "react-router";
 import './style.scss';
 interface SFAMOGridProps {
@@ -25,7 +25,6 @@ interface SFAMOGridProps {
     ) => Promise<Partial<RequestData<any>>>;
 }
 const SFAMOGrid = ({ isLoading, rows, columns, rowsExpanded, page, total, pageSize, onPageChange, onChangePageSize, pageSizeOptions, expandedRowRender, action, toolbar, handleTableChange }: SFAMOGridProps) => {
-    const [selectedRowsState, setSelectedRows] = useState<any[]>([]);
     let navigate = useNavigate();
     const actionRef = useRef<ActionType>();
 
@@ -61,11 +60,6 @@ const SFAMOGrid = ({ isLoading, rows, columns, rowsExpanded, page, total, pageSi
                 onSubmit={value => handleSubmit(value)}
                 dataSource={rows} columns={columns}
                 loading={isLoading}
-                rowSelection={{
-                    onChange: (_, selectedRows) => {
-                        setSelectedRows(selectedRows);
-                    },
-                }}
                 locale={customLocale}
                 pagination={customPagination}
             >

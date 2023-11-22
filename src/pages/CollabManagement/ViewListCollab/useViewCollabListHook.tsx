@@ -1,5 +1,6 @@
-import { ProColumns } from "@ant-design/pro-components";
+import { ProColumns, RequestData } from "@ant-design/pro-components";
 import { Avatar, Button, Space, Tag } from "antd";
+import { SortOrder } from "antd/es/table/interface";
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import { getCollabList } from "features/collabSlice";
@@ -13,11 +14,10 @@ const useViewCollablistHook = () => {
     const [showDetail, setShowDetail] = useState<boolean>(false);
     const [openCertificateModal, setOpenCertificateModal] = useState<boolean>(false)
     const [certificateList, setCertificateList] = useState<CertificateOptionI[]>([])
-    const collabAPI = useAppSelector(state => state.collab.collabList);
-    const isLoading = useAppSelector(state => state.post.loading);
+    const { collabList, loading } = useAppSelector(state => state.collab);
     const [page, setPage] = useState<number>(1);
     const pageSizeOptions = [10, 20, 30]; // Các tùy chọn cho pageSize
-    const total = collabAPI?.metadata?.total;
+    const total = collabList?.metadata?.total;
     const [totalCollab, setTotalCollab] = useState<number>(0);
     const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
     const option = [{ label: 'true', value: true }, { label: 'false', value: false }]
@@ -43,7 +43,6 @@ const useViewCollablistHook = () => {
             },
         },
         {
-
             title: 'Full name',
             dataIndex: 'name',
             key: 'name',
@@ -67,21 +66,18 @@ const useViewCollablistHook = () => {
             title: 'Email',
             dataIndex: 'email',
             key: 'email',
-            hideInSearch: true,
         },
         {
             title: 'Phone',
             dataIndex: 'phone',
             key: 'phone',
-            sorter: true,
             hideInSearch: true,
         },
         {
             title: 'Is Premium',
             dataIndex: 'isPremium',
             key: 'isPremium',
-            sorter: true,
-            filterDropdown: { filters: option },
+            hideInSearch: true,
             render: (isPremium) => {
 
                 return <Space size={0}>
@@ -98,6 +94,7 @@ const useViewCollablistHook = () => {
         {
             title: 'Certificates',
             dataIndex: 'certificates',
+            hideInSearch: true,
             key: 'certificates',
             render: (certificates) => {
                 if (Array.isArray(certificates)) {
@@ -140,7 +137,20 @@ const useViewCollablistHook = () => {
         setCertificateList(value?.certificates)
         setOpenCertificateModal(true)
     }
-    const rows = collabAPI?.data.map(collab => ({
+    const handleActionChange = async (params: any,
+        sorter: Record<string, SortOrder>,
+        filter: Record<string, (string | number)[] | null>): Promise<Partial<RequestData<any>>> => {
+        console.log('sorter: ', params);
+        if (params) {
+            await dispatch(getCollabList(params))
+        }
+        return {
+            data: [],
+            success: true, // Set to true if the request was successful
+            total: 10, // Total number of data items (if available)
+        };
+    }
+    const rows = collabList?.data.map(collab => ({
         key: collab?.id,
         name: collab?.name,
         email: collab?.email,
@@ -156,14 +166,14 @@ const useViewCollablistHook = () => {
         // ...
     }));
     const fetchCollabList = async () => {
-        await dispatch(getCollabList())
+        await dispatch(getCollabList({ page: page, PageSize: pageSize }))
     }
 
     useEffect(() => {
         fetchCollabList()
     }, [page, pageSize])
-    const handler = { onPageChange, onChangePageSize, setCurrentRow, setShowDetail, setOpenCertificateModal }
-    const props = { columns, collabAPI, pageSizeOptions, total, page, pageSize, rows, isLoading, showDetail, currentRow, openCertificateModal, certificateList }
+    const handler = { onPageChange, onChangePageSize, setCurrentRow, setShowDetail, setOpenCertificateModal, handleActionChange }
+    const props = { columns, collabList, pageSizeOptions, total, page, pageSize, rows, loading, showDetail, currentRow, openCertificateModal, certificateList }
     return {
         handler,
         props,

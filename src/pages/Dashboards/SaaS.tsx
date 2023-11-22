@@ -8,9 +8,9 @@ import TotalSpent from "components/Dashboards/saas/TotalSpent";
 import { H5 } from "components/Typography";
 import { getCollabOverview } from "features/manageDashboardSlice";
 import useTitle from "hooks/useTitle";
-import BucketIcon from "icons/BucketIcon";
-import EarningIcon from "icons/EarningIcon";
-import WindowsLogoIcon from "icons/WindowsLogoIcon";
+import ProfileIcon from "icons/ProfileIcon";
+import UploadIcon from "icons/UploadIcon";
+import UserPlusIcon from "icons/UserPlusIcon";
 import { FC, useEffect } from "react";
 
 const SaaS: FC = () => {
@@ -32,19 +32,19 @@ const SaaS: FC = () => {
   const cardList = [
     {
       number: collabOverview?.data?.totalCollaborator,
-      Icon: BucketIcon,
+      Icon: ProfileIcon,
       title: "Total collaborator",
       color: theme.palette.primary.main,
     },
     {
       number: 0,
       title: "Total post",
-      Icon: EarningIcon,
+      Icon: UploadIcon,
       color: theme.palette.primary.purple,
     },
     {
       number: 0,
-      Icon: WindowsLogoIcon,
+      Icon: UserPlusIcon,
       title: "Total registration",
       color: theme.palette.primary.red,
     }
