@@ -312,7 +312,7 @@ const AddNewPost: FC = () => {
                                     showSearch
                                     debounceTime={300}
                                     width='lg'
-                                    request={async ({ keyWords }) => handler.handleSearchAddress(keyWords)}
+                                    request={async ({ keyWords }) => handler.handleSearchAddressGeoapifi(keyWords)}
                                     placeholder="Please select a country"
                                     rules={[{ required: true, message: 'Please select your country!' }]}
                                     options={options}

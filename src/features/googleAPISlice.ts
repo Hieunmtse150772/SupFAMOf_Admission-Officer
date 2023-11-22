@@ -1,10 +1,13 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
+import { addressGeoApiDto } from 'dtos/GeoAPIFi/address.dto';
 import { addressDto } from 'dtos/GoogleAPI/address.dto';
 import { geocodingDto } from 'dtos/GoogleAPI/geocoding.dto';
 import addressI from 'models/address.model';
+import addressGeoApiI from 'models/addressGeoApi.model';
 import geocodingI from 'models/geocoding.model';
 import { paramI } from 'models/geocodingParam.model';
+import { geoApiService } from 'services/geoAPI.service';
 import { googleApiService } from 'services/googleAPI.service';
 
 interface GoogleApiState {
@@ -12,6 +15,7 @@ interface GoogleApiState {
     error: string | null,
     location: geocodingDto,
     address: addressDto,
+    addressGeoAPI: addressGeoApiDto,
 
 }
 
@@ -25,6 +29,9 @@ const initialState: GoogleApiState = {
     address: {
         predictions: [] as addressI[],
         status: ''
+    },
+    addressGeoAPI: {
+        features: [] as addressGeoApiI[],
     }
 }
 
@@ -56,7 +63,19 @@ export const getGoogleAddress = createAsyncThunk(
     },
 );
 
-export const googleApiSlice = createSlice({
+export const getGeoApiFi = createAsyncThunk(
+    'address/get-address-geoAPIfi',
+    async (params: paramI, { rejectWithValue }) => {
+        try {
+            const result = await geoApiService.addressAPI(params)
+            return result;
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data);
+        }
+    },
+);
+const googleApiSlice = createSlice({
     name: 'geocoding',
     initialState,
     reducers: {},
@@ -83,6 +102,18 @@ export const googleApiSlice = createSlice({
                 state.loading = false;
             })
             .addCase(getGoogleAddress.rejected, (state, action) => {
+                state.error = String(action.payload);
+                state.loading = false;
+            })
+            .addCase(getGeoApiFi.pending, (state) => {
+                state.loading = true;
+                state.error = "";
+            })
+            .addCase(getGeoApiFi.fulfilled, (state, action) => {
+                state.addressGeoAPI = action.payload.data;
+                state.loading = false;
+            })
+            .addCase(getGeoApiFi.rejected, (state, action) => {
                 state.error = String(action.payload);
                 state.loading = false;
             })

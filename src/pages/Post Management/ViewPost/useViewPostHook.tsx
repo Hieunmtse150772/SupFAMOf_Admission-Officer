@@ -58,10 +58,10 @@ function useViewPostList() {
 
   const columns: ProColumns[] = [
     {
-      title: 'Name',
-      dataIndex: 'title',
-      key: 'title',
-      width: 5,
+      title: 'Post Code',
+      dataIndex: 'id',
+      key: 'id',
+      width: 10,
       render: (dom, entity) => {
         return (
           // eslint-disable-next-line jsx-a11y/anchor-is-valid
@@ -79,40 +79,47 @@ function useViewPostList() {
       },
     },
     {
+      title: 'Category',
+      dataIndex: 'title',
+      key: 'title',
+      width: 5,
+    },
+    {
       title: 'Title',
       dataIndex: 'titleType',
       key: 'titleType',
       width: 10,
-      hideInTable: true
+      hideInTable: true,
+      hideInSearch: true,
     },
     {
       title: 'Date From',
       dataIndex: 'dateFrom',
       key: 'dateFrom',
+      valueType: 'date',
       width: 30,
       sorter: true,
-      hideInSearch: true,
     },
     {
       title: 'Date To',
       dataIndex: 'dateTo',
       key: 'dateTo',
+      valueType: 'date',
       width: 30,
       sorter: true,
-      hideInSearch: true,
     },
     {
       title: 'Description',
       dataIndex: 'description',
       key: 'Description',
       width: 20,
+      hideInSearch: true,
       render: (value) => {
 
         if (value !== '') {
           return (ReactHtmlParser(String(value)));
         }
         return <span></span>;
-
       },
       hideInTable: true,
     },
@@ -312,6 +319,7 @@ function useViewPostList() {
     sorter: Record<string, SortOrder>,
     filter: Record<string, (string | number)[] | null>): Promise<Partial<RequestData<any>>> => {
     console.log('sorter: ', sorter);
+    console.log('params: ', params);
     if (sorter && Object.keys(sorter).length > 0) {
       const keys = Object.keys(sorter);
       const fieldName = keys[0];
@@ -344,8 +352,8 @@ function useViewPostList() {
     description: post?.postDescription,
     location: post?.location,
     status: post?.status,
-    dateFrom: moment(post?.dateFrom).format(Formatter),
-    dateTo: moment(post?.dateTo).format(Formatter),
+    dateFrom: post?.dateFrom,
+    dateTo: post?.dateTo,
     timeFrom: post?.timeFrom,
     timeTo: post?.timeTo,
     postImg: post?.postImg,

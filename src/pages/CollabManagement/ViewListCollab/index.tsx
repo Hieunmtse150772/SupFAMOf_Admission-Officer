@@ -75,8 +75,9 @@ const ViewCollabList = () => {
     ];
     return (
         <>
-            {props.collabAPI && (
+            {props.collabList && (
                 <SFAMOGrid
+                    handleTableChange={handler.handleActionChange}
                     pageSizeOptions={props.pageSizeOptions}
                     total={props.total}
                     onPageChange={handler.onPageChange}
@@ -85,7 +86,7 @@ const ViewCollabList = () => {
                     pageSize={props.pageSize}
                     rows={props.rows}
                     columns={props?.columns}
-                    isLoading={props.isLoading} />
+                    isLoading={props.loading} />
             )}
             <Drawer
                 width={1000}
