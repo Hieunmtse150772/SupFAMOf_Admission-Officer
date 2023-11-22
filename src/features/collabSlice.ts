@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
+import SearchCollabParamDto from 'dtos/Collab/searchCollab.dto';
 import { CollabDto } from 'dtos/collab.dto';
 import { CollabListDto } from 'dtos/collabList.dto';
 import CollabInfo from 'models/collab.model';
@@ -26,9 +27,9 @@ const initialState: CollabState = {
     },
 }
 export const getCollabList = createAsyncThunk('collabs/get-collab-list',
-    async (_, { rejectWithValue }) => {
+    async (params: SearchCollabParamDto, { rejectWithValue }) => {
         try {
-            const result = await collabService.getCollabList();
+            const result = await collabService.getCollabList(params);
             return result
         } catch (error) {
             const axiosError = error as AxiosError;

@@ -13,6 +13,7 @@ interface PostState {
     posts: PostIDto;
     postInfo: PostInfoDto | null,
     isDeleted: boolean,
+
 }
 
 const initialState: PostState = {
@@ -176,6 +177,7 @@ export const postSlice = createSlice({
             })
             .addMatcher(isAnyOf(confirmRunningPost.fulfilled, confirmEndPost.fulfilled), (state, action) => {
                 state.loading = false;
+                state.postInfo = action.payload.data
             })
             .addMatcher(isAnyOf(confirmRunningPost.rejected, confirmEndPost.rejected), (state, action) => {
                 state.error = String(action.payload);

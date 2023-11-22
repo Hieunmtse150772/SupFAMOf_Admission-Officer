@@ -4,7 +4,6 @@ import { AxiosResponse } from 'axios';
 import PostIDto from 'dtos/Post/Post View/post.dto';
 import PostInfoDto from 'dtos/Post/Post View/postInfo.dto';
 import SearchPostParams from 'dtos/Post/Post View/searchPost.dto';
-import { PostDto } from 'dtos/postInfo.dto';
 import { PostCreatedV2, PostUpdated } from 'models/postCreated.model';
 import LoginUserTokenDto from '../dtos/login.userToken.model';
 import axiosClient from './axiosClient';
@@ -26,11 +25,11 @@ export const postService = {
             },
         })
     },
-    updatePostById: (params: PostUpdated): Promise<AxiosResponse<PostDto>> => {
+    updatePostById: (params: PostUpdated): Promise<AxiosResponse<PostInfoDto>> => {
         const url = `/admission/admission-post/update?postId=${params.postId}`;
         return axiosClient.put(url, params)
     },
-    deletePostById: (id: string): Promise<AxiosResponse<PostDto>> => {
+    deletePostById: (id: string): Promise<AxiosResponse<PostInfoDto>> => {
         const url = '/admission/admission-post/post/delete';
         return axiosClient.delete(url, {
             params: {
@@ -38,7 +37,7 @@ export const postService = {
             },
         })
     },
-    confirmPostByCollabList: (id: number[]): Promise<AxiosResponse<PostDto>> => {
+    confirmPostByCollabList: (id: number[]): Promise<AxiosResponse<PostInfoDto>> => {
         const url = 'api/admission/admission-post-registration/review-updateRequest';
         return axiosClient.put(url, {
             params: {
@@ -46,16 +45,16 @@ export const postService = {
             },
         })
     },
-    confirmRunningPost: (postId: number): Promise<AxiosResponse<PostDto>> => {
+    confirmRunningPost: (postId: number): Promise<AxiosResponse<PostInfoDto>> => {
         const url = `/admission/admission-post/confirmRunningPost?postId=${postId}`;
         return axiosClient.put(url)
     },
-    confirmEndPost: (postId: number): Promise<AxiosResponse<PostDto>> => {
+    confirmEndPost: (postId: number): Promise<AxiosResponse<PostInfoDto>> => {
         const url = `/admission/admission-post/confirmEndPost?postId=${postId}`;
         return axiosClient.put(url)
     },
-    confirmReopen: (postId: number): Promise<AxiosResponse<PostDto>> => {
-        const url = `/admission/admission-post/confirmEndPost?postId=${postId}`;
+    confirmReopen: (postId: number): Promise<AxiosResponse<PostInfoDto>> => {
+        const url = `/admission/admission-post/Re-openPostRegistration?postId=${postId}`;
         return axiosClient.put(url)
     }
 };
