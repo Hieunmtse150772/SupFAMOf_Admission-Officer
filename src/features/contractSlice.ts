@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import { ContractDto } from 'dtos/contract.dto';
 import ContractInfo from 'models/contract.model';
+import ContractCreated from 'models/contractCreated.model';
 import { contractService } from 'services/contract.service';
 
 interface ContractState {
@@ -29,6 +30,16 @@ export const getContractList = createAsyncThunk('collabs/get-collab-list',
             return rejectWithValue(axiosError.response?.data)
         }
     })
+export const createContract = createAsyncThunk('collabs/create-collab-list',
+    async (params: ContractCreated, { rejectWithValue }) => {
+        try {
+            const result = await contractService.createContract(params);
+            return result
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data)
+        }
+    })
 
 export const contractSlice = createSlice({
     name: 'collabs',
@@ -45,6 +56,18 @@ export const contractSlice = createSlice({
                 state.contractList = action.payload.data
             })
             .addCase(getContractList.rejected, (state, action) => {
+                state.error = String(action.payload);
+                state.loading = false;
+            })
+            .addCase(createContract.pending, (state) => {
+                state.loading = true;
+                state.error = "";
+            })
+            .addCase(createContract.fulfilled, (state, action) => {
+                state.loading = false;
+                state.contractList = action.payload.data
+            })
+            .addCase(createContract.rejected, (state, action) => {
                 state.error = String(action.payload);
                 state.loading = false;
             })

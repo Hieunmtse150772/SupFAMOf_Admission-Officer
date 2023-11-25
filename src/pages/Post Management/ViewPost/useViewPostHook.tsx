@@ -1,12 +1,11 @@
-import { EditOutlined, QuestionCircleFilled, SafetyCertificateOutlined } from '@ant-design/icons'; // Import the icon from the library
+import { DeleteOutlined, EditOutlined, ExclamationCircleFilled, MoreOutlined, SafetyCertificateOutlined } from '@ant-design/icons'; // Import the icon from the library
 import { ProColumns, RequestData } from "@ant-design/pro-components";
 import { FiberManualRecord } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import { green, grey, red, yellow } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { Drawer, Image, Popconfirm, Table, TableColumnsType } from 'antd';
+import { Button, Drawer, Dropdown, Image, MenuProps, Modal, Table, TableColumnsType } from 'antd';
 import { SortOrder } from 'antd/es/table/interface';
-import Link from 'antd/es/typography/Link';
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import Status from 'enums/status.enum';
@@ -39,9 +38,23 @@ type RuleListItem = {
   createdAt?: string;
   progress?: number;
 };
+type SortModalI = {
+  Sort: string,
+  Order: string
+}
+type SearchParamsI = {
+  postName?: string,
+  postCode?: string,
+  dateFrom?: Date,
+  dateTo?: Date,
+  status?: string,
+  postCategoryId?: number
+}
 function useViewPostList() {
   const Formatter = 'DD/MM/YYYY'
   const [currentRow, setCurrentRow] = useState<any>();
+  const { confirm } = Modal;
+
   // const [selectedRowsState, setSelectedRows] = useState<boolean>([]);
   const [showDetail, setShowDetail] = useState<boolean>(false);
   const [openEditPostModal, setOpenEditPostModal] = useState<boolean>(false);
@@ -51,6 +64,12 @@ function useViewPostList() {
   const isLoading = useAppSelector(state => state.post.loading);
   const [postInfo, setPostInfo] = useState<any>();
   const [page, setPage] = useState<number>(1);
+  const [sortModel, setSortModel] = useState<SortModalI>({
+    Sort: 'createAt',
+    Order: 'desc'
+  });
+  const [searchParams, setSearchParams] = useState<SearchParamsI>()
+
   const pageSizeOptions = [10, 20, 30]; // Các tùy chọn cho pageSize
   const total = posts?.metadata?.total
   const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
@@ -59,8 +78,8 @@ function useViewPostList() {
   const columns: ProColumns[] = [
     {
       title: 'Post Code',
-      dataIndex: 'id',
-      key: 'id',
+      dataIndex: 'postCode',
+      key: 'postCode',
       width: 10,
       render: (dom, entity) => {
         return (
@@ -91,6 +110,14 @@ function useViewPostList() {
       width: 10,
       hideInTable: true,
       hideInSearch: true,
+    },
+    {
+      title: 'Create at',
+      dataIndex: 'createAt',
+      key: 'createAt',
+      valueType: 'date',
+      width: 30,
+      sorter: true,
     },
     {
       title: 'Date From',
@@ -221,26 +248,57 @@ function useViewPostList() {
 
       },
     },
+    // {
+    //   title: 'Delete/Edit',
+    //   width: 10,
+    //   hideInSearch: true,
+    //   render: (value) => (
+    //     <Box>
+    //       <Popconfirm
+    //         title="Delete the post"
+    //         description="Are you sure to delete this post?"
+    //         icon={<QuestionCircleFilled rev={undefined} style={{ color: 'red' }} />}
+    //         onConfirm={() => handleDeletePost(value)}
+    //       >
+    //         <Link >Delete </Link>
+    //       </Popconfirm>
+    //       <Link onClick={() => handleOpenEditPostModal(value)} >/<EditOutlined rev={undefined} />Edit</Link>
+
+    //     </Box>
+
+    //   )
+    // },
     {
-      title: 'Delete/Edit',
+      title: 'Action',
+      align: 'center',
       width: 10,
       hideInSearch: true,
-      render: (value) => (
-        <Box>
-          <Popconfirm
-            title="Delete the post"
-            description="Are you sure to delete this post?"
-            icon={<QuestionCircleFilled rev={undefined} style={{ color: 'red' }} />}
-            onConfirm={() => handleDeletePost(value)}
-          >
-            <Link >Delete </Link>
-          </Popconfirm>
-          <Link onClick={() => handleOpenEditPostModal(value)} >/<EditOutlined rev={undefined} />Edit</Link>
-
+      render: (value, valueEnum) => {
+        const items: MenuProps['items'] = [
+          {
+            label: 'Delete',
+            key: '1',
+            icon: <DeleteOutlined color='red' rev={undefined} />,
+            onClick: () => handleDeletePost(value),
+            danger: true
+          },
+          {
+            label: 'Edit',
+            key: '2',
+            icon: <EditOutlined color='green' rev={undefined} />,
+            onClick: () => handleOpenEditPostModal(value),
+          },
+        ];
+        const menuProps = {
+          items,
+        };
+        return <Box>
+          <Dropdown menu={menuProps} trigger={['click']} placement='bottomLeft'>
+            <Button icon={<MoreOutlined rev={undefined} />}></Button>
+          </Dropdown>
         </Box>
-
-      )
-    }
+      },
+    },
   ];
   const rowsExpanded: ListPositionI[] = posts.data.map(post => ({
     key: post.postCode,
@@ -308,30 +366,45 @@ function useViewPostList() {
     setEditPostModalId(value?.id)
   }
   const handleDeletePost = async (value: any) => {
-    console.log('value', value)
-    await dispatch(deletePostById(value?.key))
+    confirm({
+      title: 'Do you want to delete the post?',
+      icon: <ExclamationCircleFilled rev={undefined} />,
+      onOk: async () => {
+        await dispatch(deletePostById(value?.key))
+      },
+      onCancel() {
+      },
+    });
   }
   const handleDeletePosition = async (value: any) => {
     console.log('value', value)
     await dispatch(deletePostById(value?.key))
   }
+  const handleSearch = (value: any) => {
+
+  }
   const handleActionChange = async (params: any,
     sorter: Record<string, SortOrder>,
     filter: Record<string, (string | number)[] | null>): Promise<Partial<RequestData<any>>> => {
-    console.log('sorter: ', sorter);
-    console.log('params: ', params);
+    console.log('params: ', params)
+
+    if (JSON.stringify(params) !== JSON.stringify({ current: 1, pageSize: 10 })) {
+      setSearchParams(params);
+    }
     if (sorter && Object.keys(sorter).length > 0) {
       const keys = Object.keys(sorter);
       const fieldName = keys[0];
+      console.log('sorter[fieldName]: ', sorter[fieldName])
       const sortOrder = sorter[fieldName] === 'ascend' ? 'asc' : 'desc';
-      await dispatch(getPostByAccountId({ page: page, PageSize: pageSize, Sort: fieldName, Order: String(sortOrder) }))
-    } else {
-      await dispatch(getPostByAccountId({ page: page, PageSize: pageSize }))
-    }
+      if (sorter[fieldName] !== sortModel.Sort && fieldName !== sortModel.Order) {
+        setSortModel({ Sort: fieldName, Order: String(sortOrder) })
+      }
+    } else setSortModel({ Sort: 'createAt', Order: 'desc' })
+
     return {
       data: [],
-      success: true, // Set to true if the request was successful
-      total: 10, // Total number of data items (if available)
+      success: true,
+      total: 10,
     };
   }
   const onPageChange = (value: any) => {
@@ -346,6 +419,7 @@ function useViewPostList() {
     // ...post,
     key: post?.id,
     id: post?.postCode,
+    postCode: post?.postCode,
     title: post?.postCategory?.postCategoryDescription,
     titleType: post?.postCategory?.postCategoryType,
     isPremium: post?.isPremium,
@@ -358,19 +432,30 @@ function useViewPostList() {
     timeTo: post?.timeTo,
     postImg: post?.postImg,
     priority: post?.priority,
-    position: post?.postPositions
+    position: post?.postPositions,
+    createAt: post?.createAt
     // ...
   }));
   console.log('trainingposition: ', rowsExpanded)
   const fetchPostList = async () => {
-    await dispatch(getPostByAccountId({ page: page, PageSize: pageSize }))
+    await dispatch(getPostByAccountId({
+      page: page,
+      PageSize: pageSize,
+      Sort: sortModel?.Sort,
+      Order: sortModel?.Order,
+      dateFrom: searchParams?.dateFrom,
+      dateTo: searchParams?.dateTo,
+      postCode: searchParams?.postCode,
+      postName: searchParams?.postName,
+      postCategoryId: searchParams?.postCategoryId
+    }))
   }
   const handleAddPost = () => {
     navigate('/dashboard/add-post')
   }
   useEffect(() => {
     fetchPostList()
-  }, [page, pageSize])
+  }, [page, pageSize, searchParams, sortModel])
   useEffect(() => {
     fetchPostList()
   }, [isDeleted])
@@ -386,7 +471,8 @@ function useViewPostList() {
     setPageSize,
     onChangePageSize,
     handleAddPost,
-    handleActionChange
+    handleActionChange,
+    handleSearch
   }
   const props = {
     total,

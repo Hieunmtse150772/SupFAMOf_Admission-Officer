@@ -14993,6 +14993,13 @@ react-transition-group@^4.3.0, react-transition-group@^4.4.2:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
+react-viewer@^3.2.2:
+  version "3.2.2"
+  resolved "https://registry.npmjs.org/react-viewer/-/react-viewer-3.2.2.tgz"
+  integrity sha512-DHOq1x6cXsAViY43204ILRzLVR5ovP1MgzsC+LzZCWlInRuHjzAgpQZ8GzWm1CkiNYuHGwCxH36X0JUHl2xDSg==
+  dependencies:
+    classnames "^2.2.5"
+
 react@*, "react@^0.14.0 || ^15.0.0 || ^16 || ^17", "react@^0.14.0 || ^15.0.0 || ^16.0.0 || ^17.0.0", "react@^0.14.0 || ^15.0.0 || ^16.0.0-0", "react@^0.14.0 || ^16.0.0 || ^17.0.0 || ^18.0.0", "react@^0.14.9 || ^15.3.0 || ^16.0.0-rc || ^16.0 || ^17.0", "react@^16 || ^17 || ^18", "react@^16.0.0 || ^17.0.0 || ^18.0.0", "react@^16.11.0 || ^17.0.0 || ^18.0.0", "react@^16.3.0 || ^17.0.0", "react@^16.6.0 || ^17.0.0 || ^18.0.0", "react@^16.6.0 || 17 || 18", "react@^16.8 || ^17.0 || ^18.0", "react@^16.8.0 || ^17 || ^18", "react@^16.8.0 || ^17.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0", "react@^16.8.3 || ^17.0.0-0", "react@^16.9.0 || ^17.0.0 || ^18", react@^17.0.0, "react@^17.0.0 || ^18.0.0", "react@^17.0.2 || ^18.0.0", "react@>= 16", "react@>= 16.8 || 18.0.0", "react@>= 16.8.0", react@>=0.13, react@>=15, react@>=16, react@>=16.0.0, react@>=16.11.0, react@>=16.12.0, react@>=16.3.0, react@>=16.4.0, react@>=16.6.0, react@>=16.8, react@>=16.8.0, react@>=16.9.0, react@>=17.0.0, "react@16.x || 17.x", react@17.0.2:
   version "17.0.2"
   resolved "https://registry.npmjs.org/react/-/react-17.0.2.tgz"
@@ -17424,6 +17431,11 @@ vm-browserify@^1.0.1:
   version "1.1.2"
   resolved "https://registry.npmjs.org/vm-browserify/-/vm-browserify-1.1.2.tgz"
   integrity sha512-2ham8XPWTONajOR0ohOKOHXkm3+gaBmGut3SRuu75xLd/RRaY6vqgh8NBYYk7+RW3u5AtzPQZG8F10LHkl0lAQ==
+
+vn-num2words@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.npmjs.org/vn-num2words/-/vn-num2words-1.0.4.tgz"
+  integrity sha512-Zjm/TOsYK3kdoylWibXriM9GTLFRS5ACpI2+yqHgltMaIp7/QStHEqBb5M4vfjqz/Xosg3jrT7YVmllJEbY3Vg==
 
 w3c-hr-time@^1.0.2:
   version "1.0.2"

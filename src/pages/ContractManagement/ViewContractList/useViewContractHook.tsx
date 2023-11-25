@@ -91,6 +91,9 @@ const useViewContractHook = () => {
         },
     ];
     const dispatch = useAppDispatch();
+    const handleSearch = () => {
+
+    }
     const onPageChange = (value: any) => {
         setPage(value)
     }
@@ -118,7 +121,7 @@ const useViewContractHook = () => {
     useEffect(() => {
         fetchContractList()
     }, [page, pageSize])
-    const handler = { onPageChange, onChangePageSize, handleAddContract, setOpenAddContractModal }
+    const handler = { onPageChange, onChangePageSize, handleAddContract, setOpenAddContractModal, handleSearch }
     const props = { columns, contractAPI, pageSizeOptions, total, page, pageSize, rows, isLoading, openAddContractModal }
     return {
         handler,

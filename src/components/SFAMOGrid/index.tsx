@@ -23,8 +23,9 @@ interface SFAMOGridProps {
         sort: Record<string, SortOrder>,
         filter: Record<string, (string | number)[] | null>
     ) => Promise<Partial<RequestData<any>>>;
+    handleSearch: (value: any) => void
 }
-const SFAMOGrid = ({ isLoading, rows, columns, rowsExpanded, page, total, pageSize, onPageChange, onChangePageSize, pageSizeOptions, expandedRowRender, action, toolbar, handleTableChange }: SFAMOGridProps) => {
+const SFAMOGrid = ({ isLoading, rows, columns, rowsExpanded, page, total, pageSize, onPageChange, onChangePageSize, pageSizeOptions, expandedRowRender, action, toolbar, handleTableChange, handleSearch }: SFAMOGridProps) => {
     let navigate = useNavigate();
     const actionRef = useRef<ActionType>();
 
@@ -36,9 +37,6 @@ const SFAMOGrid = ({ isLoading, rows, columns, rowsExpanded, page, total, pageSi
         selectAll: 'Select all'
         // Add more customizations as needed...
     };
-    const handleSubmit = (value: any) => {
-        console.log(value)
-    }
     const customPagination = {
         current: page,
         pageSize: pageSize,
@@ -52,12 +50,11 @@ const SFAMOGrid = ({ isLoading, rows, columns, rowsExpanded, page, total, pageSi
     return (
         <>
             <ProTable
-
                 actionRef={actionRef}
                 request={handleTableChange}
                 expandable={{ expandedRowRender }}
                 toolBarRender={() => [toolbar]}
-                onSubmit={value => handleSubmit(value)}
+                onSubmit={value => handleSearch(value)}
                 dataSource={rows} columns={columns}
                 loading={isLoading}
                 locale={customLocale}
