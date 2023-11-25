@@ -77,6 +77,7 @@ const ViewCollabList = () => {
         <>
             {props.collabList && (
                 <SFAMOGrid
+                    handleSearch={handler.handleSearch}
                     handleTableChange={handler.handleActionChange}
                     pageSizeOptions={props.pageSizeOptions}
                     total={props.total}

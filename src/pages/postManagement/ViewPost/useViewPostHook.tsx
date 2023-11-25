@@ -285,6 +285,9 @@ function useViewPostList() {
     setOpenEditPostModal(true);
     setEditPostModalId(value?.id)
   }
+  const handleSearch = (value: any) => {
+
+  }
   const handleDeletePost = async (value: any) => {
     console.log('value', value)
     await dispatch(deletePostById(value?.key))
@@ -341,7 +344,8 @@ function useViewPostList() {
     onPageChange,
     setPageSize,
     onChangePageSize,
-    handleAddPost
+    handleAddPost,
+    handleSearch
   }
   const props = {
     total,
