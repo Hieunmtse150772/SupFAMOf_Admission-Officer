@@ -77,6 +77,16 @@ export const deletePostById = createAsyncThunk('post/delete-post-by-PostId',
             return rejectWithValue(axiosError.response?.data)
         }
     })
+export const deletePositionById = createAsyncThunk('post/delete-post-by-PostId',
+    async (id: string, { rejectWithValue }) => {
+        try {
+            const result = await postService.deletePositionById(id);
+            return result
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data)
+        }
+    })
 export const confirmColabborator = createAsyncThunk('post/confirm-post-collabList',
     async (id: number[], { rejectWithValue }) => {
         try {
@@ -158,16 +168,16 @@ export const postSlice = createSlice({
                 state.error = String(action.payload);
                 state.loading = false;
             })
-            .addCase(deletePostById.pending, (state) => {
+            .addMatcher(isAnyOf(deletePostById.pending, deletePositionById.pending), (state) => {
                 state.loading = true;
                 state.error = "";
                 state.isDeleted = false;
             })
-            .addCase(deletePostById.fulfilled, (state, action) => {
+            .addMatcher(isAnyOf(deletePostById.fulfilled, deletePositionById.fulfilled), (state, action) => {
                 state.loading = false;
                 state.isDeleted = true;
             })
-            .addCase(deletePostById.rejected, (state, action) => {
+            .addMatcher(isAnyOf(deletePostById.rejected, deletePositionById.rejected), (state, action) => {
                 state.error = String(action.payload);
                 state.loading = false;
             })

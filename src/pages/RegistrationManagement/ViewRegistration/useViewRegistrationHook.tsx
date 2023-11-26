@@ -366,7 +366,7 @@ function useViewRegistrationHook() {
                         key: '2',
                         icon: <UnlockOutlined rev={undefined} />,
                         onClick: () => handleReopen(value),
-                        disabled: Boolean(valueEnum?.status === 1 || valueEnum?.status === 3),
+                        disabled: Boolean(valueEnum?.status === 1 || valueEnum?.status === 3 || valueEnum?.status === 6),
                     },
 
                     {
@@ -489,7 +489,7 @@ function useViewRegistrationHook() {
         const result = await dispatch(confirmReopenPost(value)).then((response: any) => {
             if (response?.payload?.errorCode === 4008) {
                 message.error(response?.payload?.message)
-            } else if (response?.payload?.statusCode === 200) {
+            } else if (response?.payload?.status === 200) {
                 message.success('Reopen post success!');
                 fetchPostList();
             }
@@ -563,7 +563,7 @@ function useViewRegistrationHook() {
         if (value.radio === 0) {
             setStatusFilter(null)
             setPage(1)
-            await dispatch(getPostByAccountId({ page: 1, PageSize: 10 }))
+            await dispatch(getPostByAccountId({ page: 1, PageSize: 10, Sort: 'createAt', Order: 'desc' }))
         } else {
             setStatusFilter(value?.radio);
             setPage(1)
