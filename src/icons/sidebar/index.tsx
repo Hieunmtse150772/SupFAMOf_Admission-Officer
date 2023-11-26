@@ -2,6 +2,7 @@ import {
   PostAdd as AddPostIcon,
   AddToPhotosOutlined,
   PersonAdd as AddUserIcon,
+  Assignment,
   DocumentScannerOutlined as DocumentIcon,
   Login as LoginIcon,
   Map as MapIcon,
@@ -29,5 +30,6 @@ export default {
   RegistrationList,
   DocumentIcon,
   MapIcon,
-  AddToPhotosOutlined
+  AddToPhotosOutlined,
+  Assignment
 };

@@ -6,9 +6,8 @@ import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import { getCertificate } from "features/certificateSlice";
 import { getDocument } from "features/documentSlice";
-import { getPostByPostId, updatePostById } from "features/postSlice";
+import { getPostByPostId } from "features/postSlice";
 import { getPostTitle } from "features/postTitleSlice";
-import { PostUpdated } from "models/postCreated.model";
 import { useEffect, useState } from "react";
 import { upload } from "../../../../firebase";
 
@@ -104,35 +103,35 @@ const useEditPostModal = () => {
         if (!isEdited) {
             message.warning('Nothing was change!')
         } else {
-            const params: PostUpdated = {
-                postId: postInfo?.data.id ? postInfo?.data.id : 0,
-                postCategoryId: value?.postCategory,
-                postDescription: description,
-                postImg: photoUrl,
-                postPositions: value?.postPositions?.map((postPosition: PostPosition) => {
-                    return {
-                        id: postPosition?.id,
-                        positionDescription: postPosition.positionDescription,
-                        positionName: postPosition?.positionName,
-                        schoolName: postPosition?.schoolName,
-                        location: postPosition?.location,
-                        latitude: 0,
-                        longtitude: 0,
-                        amount: postPosition?.amount,
-                        salary: postPosition?.salary
-                    }
-                }),
-            }
-            await dispatch(updatePostById(params)).then((response) => {
-                const result2 = unwrapResult(response);
-                if (result2.status === 200) {
-                    message.success('Create post success!');
-                    setLoading(false);
-                }
-            }).catch((error) => {
-                console.error(error)
-            })
-            console.log('params: ', params)
+            // // const params: PostUpdated = {
+            // //     postId: postInfo?.data.id ? postInfo?.data.id : 0,
+            // //     postCategoryId: value?.postCategory,
+            // //     postDescription: description,
+            // //     postImg: photoUrl,
+            // //     postPositions: value?.postPositions?.map((postPosition: PostPosition) => {
+            // //         return {
+            // //             id: postPosition?.id,
+            // //             positionDescription: postPosition.positionDescription,
+            // //             positionName: postPosition?.positionName,
+            // //             schoolName: postPosition?.schoolName,
+            // //             location: postPosition?.location,
+            // //             latitude: 0,
+            // //             longtitude: 0,
+            // //             amount: postPosition?.amount,
+            // //             salary: postPosition?.salary
+            // //         }
+            // //     }),
+            // // }
+            // await dispatch(updatePostById(params)).then((response) => {
+            //     const result2 = unwrapResult(response);
+            //     if (result2.status === 200) {
+            //         message.success('Create post success!');
+            //         setLoading(false);
+            //     }
+            // }).catch((error) => {
+            //     console.error(error)
+            // })
+            // console.log('params: ', params)
             message.success('Post is updated!')
         }
         console.log(value)

@@ -7,8 +7,8 @@ import PostInfoDto from "dtos/Post/Post View/postInfo.dto";
 import { FC, useState } from "react";
 import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css'; // Import Quill styles
+import './style.scss';
 import useEditPostModalHook from "./useEditPostModalHook";
-
 interface EditPostModalProps {
     open: boolean,
     setOpenEditPostModal: React.Dispatch<React.SetStateAction<boolean>>,
@@ -19,6 +19,7 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
     const [position, setPosition] = useState<'bottom' | 'top'>('bottom');
 
     const { handler, props } = useEditPostModalHook();
+    props.form.setFieldValue('description', postInfo?.data.postDescription)
     // const { postInfo } = props;
 
     // useEffect(() => {
@@ -39,20 +40,34 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
             ['link'],
         ],
     };
-
     return (
         <ModalForm
             width={1190}
             loading={props.isloading}
+            form={props.form}
             title={`Edit post ${postInfo?.data?.postCode}`}
             open={open}
             onFinish={(value) => handler.handleUpdatePost(value, setOpenEditPostModal)}
             onOpenChange={setOpenEditPostModal}
+            // submitter={{
+            //     searchConfig: {
+            //         submitText: 'Submit',
+            //         resetText: 'Cancel'// Đặt lại văn bản cho nút gửi
+            //     }
+            // }}
             submitter={{
-                searchConfig: {
-                    submitText: 'Submit',
-                    resetText: 'Cancel'// Đặt lại văn bản cho nút gửi
-                }
+                render: (props) => (
+                    <Button color='primary' type="primary" htmlType="submit" onClick={() => {
+                        console.log('props.form?.getFieldValue', props.form?.getFieldValue('description'))
+                        if (props.form?.getFieldValue('description')) {
+                            handler.setDescription(props.form?.getFieldValue('description') === '<p><br></p>' ? '' : props.form?.getFieldValue('description'))
+                        } else {
+                            handler.setDescription('')
+                        }
+                        props.form?.submit()
+                    }}
+                    >Submit</Button>
+                )
             }}
         >
             <Grid container spacing={1}>
@@ -87,7 +102,6 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                     rules={[{ required: true, message: 'Description is required!' }]}
                     onMetaChange={onchange = () => handleEdit()}
                 /> */}
-
                         <ProFormSlider
                             name="piority"
                             label="Piority 1-5"
@@ -101,30 +115,30 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                         <ProFormSwitch name="isPremium" label="Is Premium show" initialValue={postInfo?.data?.isPremium}
                             onMetaChange={onchange = () => handler.handleEdit()}
                         />
-                        <Upload
-                            customRequest={handler.customRequest}
-                            listType="picture-card"
-                            fileList={props.fileList}
-                            maxCount={1}
-                            onPreview={handler.handlePreview}
-                            onChange={handler.handleChange}
-                            onRemove={handler.removeImage}
-                        >
-                            {props.fileList.length >= 1 ? null : uploadButton}
 
-                        </Upload>
-                        <Modal open={props.previewOpen} title={props.previewTitle} footer={null} onCancel={handler.handleCancel}>
-                            <img alt="example" style={{ width: '100%' }} src={props.previewImage} />
-                        </Modal>
 
                     </ProForm.Group>
+                    <Upload
+                        customRequest={handler.customRequest}
+                        listType="picture-card"
+                        fileList={props.fileList}
+                        onPreview={handler.handlePreview}
+                        onChange={handler.handleChange}
+                        onRemove={handler.removeImage}
+                    >
+                        {props.fileList.length >= 1 ? null : uploadButton}
+                    </Upload>
+                    <span className="error">{props.errorUrl}</span>
+                    <Modal open={props.previewOpen} title={props.previewTitle} footer={null} onCancel={handler.handleCancel}>
+                        <img alt="example" style={{ width: '100%' }} src={props.previewImage} />
+                    </Modal>
+
                 </Grid>
                 <Grid item sm={6.8}>
                     <Small fontSize={15}>
                         Description
                     </Small>
                     <ProForm.Item key={'description'}
-                        initialValue={postInfo?.data?.postDescription}
                         shouldUpdate={(prevValues, currentValues) =>
                             prevValues.description !== currentValues.description
                         }
@@ -134,14 +148,14 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                             <div className="parent-scroll"><ReactQuill
                                 modules={modules}
                                 defaultValue={postInfo?.data?.postDescription}
-                                onChange={(newValue: string) => handler.setDescription(newValue)}
+                                onChange={(newValue: string) => field.setFieldValue('description', newValue)}
                                 style={{ paddingBottom: 30, paddingTop: 9, height: 300 }}
                             />
                             </div>
 
                         )}
                     </ProForm.Item>
-                    {/* <span className="error">{props.error}</span> */}
+                    <span className="error">{props.error}</span>
                 </Grid>
             </Grid>
             <ProFormList
@@ -150,7 +164,6 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                     {
                         required: true,
                         validator: async (_, value) => {
-                            console.log(value);
                             if (value && value.length > 0) {
                                 return;
                             }
@@ -168,9 +181,6 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                 initialValue={postInfo?.data?.postPositions}
                 itemRender={({ listDom, action }, { index }) => (
                     <ProCard
-                        extra={<>{action} <Button onClick={handler.handleDeltePosition} danger>
-                            Delete
-                        </Button></>}
                         bordered
                         style={{ marginBlockEnd: 8 }}
                         title={`Position${index + 1}`}
@@ -184,36 +194,39 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
 
                     <ProFormText
                         label="Position Name"
-                        width="sm"
+                        width="md"
                         rules={[
                             {
                                 required: true,
                             },
                         ]}
                         name="positionName"
+                        onMetaChange={onchange = () => handler.handleEdit()}
                     />
                     <ProFormText
                         label="Position Description"
-                        width="sm"
+                        width="md"
                         rules={[
                             {
                                 required: true,
                             },
                         ]}
                         name="positionDescription"
+                        onMetaChange={onchange = () => handler.handleEdit()}
                     />
 
                     <ProFormText
                         label="School Name"
-                        width="sm"
+                        width="md"
                         rules={[
                             {
                                 required: true,
                             },
                         ]}
                         name="schoolName"
+                        onMetaChange={onchange = () => handler.handleEdit()}
                     />
-                    <ProFormText
+                    {/* <ProFormText
                         label="Location"
                         width="sm"
                         rules={[
@@ -222,38 +235,54 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                             },
                         ]}
                         name="location"
-                    />
+                    /> */}
                     <ProFormSelect
-                        label="Document"
-                        width="sm"
-                        rules={[
-                            {
-                                required: false,
-                            },
-                        ]}
-                        name="documentOption"
-                        options={props.documentOptions}
-                        debounceTime={5}
-                        tooltip="That field optional" />
-                    <ProFormSelect
-                        label="Certificate"
-                        width="sm"
-                        rules={[
-                            {
-                                required: false,
-                            },
-                        ]}
-                        name="certificateOption"
-                        options={props.certificateOptions}
-                        debounceTime={5}
-                        tooltip="That field optional"
+                        name="location"
+                        label="Address"
+                        showSearch
+                        debounceTime={300}
+                        width='md'
+                        request={async ({ keyWords }) => handler.handleSearchAddressGeoapifi(keyWords)}
+                        placeholder="Please select a country"
+                        rules={[{ required: true, message: 'Please select your country!' }]}
+                        onMetaChange={onchange = () => handler.handleEdit()}
                     />
                     <ProFormDatePicker
                         label="Date"
-                        width="sm"
+                        width="md"
                         disabled
                         name="date"
                         rules={[{ required: true, message: 'Chose Date!' }]} />
+
+                    <ProFormSelect
+                        label="Document"
+                        width="md"
+                        rules={[
+                            {
+                                required: false,
+                            },
+                        ]}
+                        name="documentId"
+                        options={props.documentOptions}
+                        debounceTime={5}
+                        tooltip="That field optional"
+                        onMetaChange={onchange = () => handler.handleEdit()}
+                    />
+                    <ProFormSelect
+                        label="Certificate"
+                        width="md"
+                        rules={[
+                            {
+                                required: false,
+                            },
+                        ]}
+                        name="trainingCertificateId"
+                        options={props.certificateOptions}
+                        debounceTime={5}
+                        tooltip="That field optional"
+                        onMetaChange={onchange = () => handler.handleEdit()}
+                    />
+
                     <ProFormTimePicker
                         label="Time From"
                         width="xs"
@@ -273,20 +302,20 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                     />
                     <ProFormDigit
                         label="Amount"
-                        width="sm"
+                        width="xs"
                         name="amount"
                         rules={[
                             {
                                 required: true,
                             },
                         ]}
+                        onMetaChange={onchange = () => handler.handleEdit()}
+
                     />
-
-
                     <ProFormMoney
                         label="Salary"
                         name="salary"
-                        width="sm"
+                        width="xs"
                         customSymbol="đ"
                         rules={[
                             {
@@ -294,13 +323,17 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                             },
                         ]}
                         locale="en-VN"
+                        onMetaChange={onchange = () => handler.handleEdit()}
+
                     />
                     <ProFormCheckbox
                         label="Bus option"
-                        width="sm"
+                        width="xs"
                         tooltip="That field optional"
                         name="isBusService"
                         initialValue={false}
+                        onMetaChange={onchange = () => handler.handleEdit()}
+
                     >Yes/No</ProFormCheckbox>
                 </ProFormGroup>
 

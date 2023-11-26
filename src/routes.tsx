@@ -56,6 +56,9 @@ const AddContract = Loadable(
 const Map = Loadable(
   lazy(() => import("./pages/Map/map"))
 );
+const ViewRequest = Loadable(
+  lazy(() => import("./pages/Request Management/ViewRequest"))
+);
 // error
 const Error = Loadable(lazy(() => import("./pages/404")));
 
@@ -138,6 +141,11 @@ const routes = [
       {
         path: "add-contract",
         element: <AddContract />
+      }
+      ,
+      {
+        path: "request-list",
+        element: <ViewRequest />
       }
       ,
       {

@@ -23,6 +23,12 @@ const index = [
   }
   ,
   {
+    title: "Request Management",
+    Icon: Icons.Assignment,
+    path: "/dashboard/request-list",
+  }
+  ,
+  {
     title: "Registration Management",
     Icon: Icons.RegistrationList,
     path: "/dashboard/registration-list",

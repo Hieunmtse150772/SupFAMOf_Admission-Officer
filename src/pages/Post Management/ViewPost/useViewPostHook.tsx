@@ -4,12 +4,12 @@ import { FiberManualRecord } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import { green, grey, red, yellow } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { Button, Drawer, Dropdown, Image, MenuProps, Modal, Table, TableColumnsType } from 'antd';
+import { Button, Drawer, Dropdown, Image, MenuProps, Modal, Space, Table, TableColumnsType, Tag, message } from 'antd';
 import { SortOrder } from 'antd/es/table/interface';
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import Status from 'enums/status.enum';
-import { deletePostById, getPostByAccountId, getPostByPostId } from "features/postSlice";
+import { deletePositionById, deletePostById, getPostByAccountId, getPostByPostId } from "features/postSlice";
 import { ListPositionI } from 'models/post.model';
 import moment from "moment";
 import { useEffect, useState } from "react";
@@ -308,7 +308,7 @@ function useViewPostList() {
     const columnsExpanded: TableColumnsType<ExpandedDataType> = [
       { title: 'Position Name', dataIndex: 'positionName', key: 'positionName' },
       { title: 'Amount', dataIndex: 'amount', key: 'amount' },
-      { title: 'Register Amount', dataIndex: 'registerAmount', key: 'registerAmount' },
+      { title: 'Register Amount', dataIndex: 'positionRegisterAmount', key: 'positionRegisterAmount' },
       { title: 'Date', dataIndex: 'date', key: 'date', render: (value) => <span>{moment(value).format(Formatter)}</span> },
       { title: 'Time From', dataIndex: 'timeFrom', key: 'timeFrom' },
       { title: 'Time To', dataIndex: 'timeTo', key: 'timeTo' },
@@ -317,6 +317,34 @@ function useViewPostList() {
       { title: 'Document', dataIndex: 'documentId', key: 'documentId' },
       { title: 'Training certificate', dataIndex: 'trainingCertificateId', key: 'trainingCertificateId' },
       { title: 'Salary', dataIndex: 'salary', key: 'salary' },
+      {
+        title: 'Status', dataIndex: 'status', key: 'status', render: (rows) => {
+          return rows === 1 ? (
+            <Space size={0}>
+              <Tag color="blue">Is Active</Tag>
+            </Space>
+          ) : (
+            <Space size={0}>
+              <Tag color="red">Deleted</Tag>
+            </Space>
+          );
+        }
+      },
+      {
+        title: 'Action',
+        key: 'action',
+        render: (value) => <Button icon={<DeleteOutlined rev={undefined} />} onClick={() => {
+          confirm({
+            title: 'Do you want to delete this position?',
+            icon: <ExclamationCircleFilled rev={undefined} />,
+            onOk: () => {
+              handleDeletePosition(value)
+            },
+            onCancel() {
+            },
+          });
+        }} danger>Delete</Button>,
+      }
     ];
 
     const data = rowsExpanded.find((value) => value.key === record?.id);
@@ -365,6 +393,17 @@ function useViewPostList() {
     setOpenEditPostModal(true);
     setEditPostModalId(value?.id)
   }
+  const handleDeletePosition = async (value: any) => {
+    console.log('value: ', value.id)
+    await dispatch(deletePositionById(value?.id)).then((response: any) => {
+      if (response?.payload?.errorCode === 4006) {
+        message.warning(response?.payload?.message)
+      } else if (response?.payload?.status === 200) {
+        message.success('Delete position success!');
+        fetchPostList();
+      }
+    })
+  }
   const handleDeletePost = async (value: any) => {
     confirm({
       title: 'Do you want to delete the post?',
@@ -376,10 +415,7 @@ function useViewPostList() {
       },
     });
   }
-  const handleDeletePosition = async (value: any) => {
-    console.log('value', value)
-    await dispatch(deletePostById(value?.key))
-  }
+
   const handleSearch = (value: any) => {
 
   }

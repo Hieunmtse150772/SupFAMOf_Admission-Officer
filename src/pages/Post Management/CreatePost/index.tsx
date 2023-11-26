@@ -70,7 +70,7 @@ const AddNewPost: FC = () => {
             disabledSeconds: () => [55, 56],
         };
     };
-    const { options, provinceOptions, districtOptions, wardOptions, optionDate } = props
+    const { options, optionDate } = props
 
     const modules = {
         toolbar: [
@@ -111,6 +111,8 @@ const AddNewPost: FC = () => {
                                     props.form?.resetFields();
                                 }}>Reset</Button>
                                 <Button color='primary' type="primary" htmlType="submit" onClick={() => {
+                                    console.log('props.form?.getFieldValue', props.form?.getFieldValue('description'))
+
                                     if (props.form?.getFieldValue('description')) {
                                         handler.setDescription(props.form?.getFieldValue('description') === '<p><br></p>' ? '' : props.form?.getFieldValue('description'))
                                     } else {
@@ -249,7 +251,6 @@ const AddNewPost: FC = () => {
                                 {
                                     required: true,
                                     validator: async (_, value) => {
-                                        console.log(value);
                                         if (value && value.length > 0) {
                                             return;
                                         }

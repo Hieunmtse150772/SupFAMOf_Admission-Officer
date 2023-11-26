@@ -102,20 +102,6 @@ const useAddNewPostHook = () => {
         value: title.id,
         label: title.certificateName
     }));
-    const provinceOptions = province?.map((province) => ({
-        value: province.province_id,
-        label: province.province_name
-    }));
-    const districtOptions = district?.map((district) => ({
-        value: district.district_id,
-        label: district.district_name
-    }));
-
-    const wardOptions = ward?.map((ward) => ({
-        value: ward.ward_id,
-        label: ward.ward_name
-    }));
-
     const FormatTime = 'HH:mm:ss'
     const loading = useAppSelector(state => state.postTitle.loading);
     const [openAddTitleModal, setOpenAddTitleModal] = useState(false);
@@ -499,9 +485,6 @@ const useAddNewPostHook = () => {
         error,
         contextHolder,
         openAddTitleModal,
-        provinceOptions,
-        districtOptions,
-        wardOptions,
         previewOpen,
         previewTitle,
         previewImage,
@@ -517,7 +500,6 @@ const useAddNewPostHook = () => {
         documentOptionsAPI,
         postTitleOptionsAPI,
         optionDate
-
     }
     return { handler, props }
 

@@ -15,19 +15,24 @@ export type PostUpdated = {
     postId: number,
     postCategoryId: number,
     postDescription: string,
+    priority: number,
+    isPremium: boolean,
     postImg: string,
-    postPositions: [
-        {
-            id: number,
-            positionName: string,
-            schoolName: string,
-            location: string,
-            latitude: number,
-            longtitude: number,
-            amount: number,
-            salary: number
-        }
-    ]
+    postPositions: PositionUpdated[]
+}
+export type PositionUpdated = {
+    id: number;
+    positionDescription: string,
+    positionName: string,
+    schoolName: string,
+    location: string,
+    latitude: number,
+    longitude: number,
+    amount: number,
+    salary: number,
+    trainingCertificateId: number,
+    isBusService: boolean,
+    documentId: number
 }
 export type PositionCreatedI = {
     positionName: string,
