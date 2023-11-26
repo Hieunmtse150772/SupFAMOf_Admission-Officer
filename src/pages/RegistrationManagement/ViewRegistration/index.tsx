@@ -27,7 +27,12 @@ const ViewPostList = () => {
                 <ProFormRadio.Group
                     name="radio"
                     radioType="button"
+                    initialValue={0}
                     options={[
+                        {
+                            value: 0,
+                            label: 'All',
+                        },
                         {
                             value: 1,
                             label: 'Opening',
@@ -55,6 +60,7 @@ const ViewPostList = () => {
         <>{
             props?.posts && (
                 <SFAMOGrid
+                    handleSearch={handler.handleSearch}
                     handleTableChange={handler.handleActionChange}
                     toolbar={LightFilterCustom}
                     expandedRowRender={expandedRowRender}
@@ -62,9 +68,9 @@ const ViewPostList = () => {
                     total={props.total}
                     onPageChange={handler.onPageChange}
                     onChangePageSize={handler.onChangePageSize}
-                    page={props.page} 
+                    page={props.page}
                     pageSize={props.pageSize}
-                    rows={props.rows} 
+                    rows={props.rows}
                     columns={props?.columns}
                     isLoading={props.isLoading}
                     rowsExpanded={props.rowsExpanded} />

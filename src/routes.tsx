@@ -50,8 +50,14 @@ const ViewRegistration = Loadable(
 const ViewContract = Loadable(
   lazy(() => import("./pages/ContractManagement/ViewContractList"))
 );
+const AddContract = Loadable(
+  lazy(() => import("./pages/ContractManagement/AddContract"))
+);
 const Map = Loadable(
   lazy(() => import("./pages/Map/map"))
+);
+const ViewRequest = Loadable(
+  lazy(() => import("./pages/Request Management/ViewRequest"))
 );
 // error
 const Error = Loadable(lazy(() => import("./pages/404")));
@@ -130,6 +136,16 @@ const routes = [
       {
         path: "contract-list",
         element: <ViewContract />
+      }
+      ,
+      {
+        path: "add-contract",
+        element: <AddContract />
+      }
+      ,
+      {
+        path: "request-list",
+        element: <ViewRequest />
       }
       ,
       {

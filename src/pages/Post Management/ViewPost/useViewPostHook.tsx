@@ -1,16 +1,15 @@
-import { EditOutlined, QuestionCircleFilled, SafetyCertificateOutlined } from '@ant-design/icons'; // Import the icon from the library
+import { DeleteOutlined, EditOutlined, ExclamationCircleFilled, MoreOutlined, SafetyCertificateOutlined } from '@ant-design/icons'; // Import the icon from the library
 import { ProColumns, RequestData } from "@ant-design/pro-components";
 import { FiberManualRecord } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import { green, grey, red, yellow } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { Drawer, Image, Popconfirm, Table, TableColumnsType } from 'antd';
+import { Button, Drawer, Dropdown, Image, MenuProps, Modal, Space, Table, TableColumnsType, Tag, message } from 'antd';
 import { SortOrder } from 'antd/es/table/interface';
-import Link from 'antd/es/typography/Link';
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import Status from 'enums/status.enum';
-import { deletePostById, getPostByAccountId, getPostByPostId } from "features/postSlice";
+import { deletePositionById, deletePostById, getPostByAccountId, getPostByPostId } from "features/postSlice";
 import { ListPositionI } from 'models/post.model';
 import moment from "moment";
 import { useEffect, useState } from "react";
@@ -39,9 +38,23 @@ type RuleListItem = {
   createdAt?: string;
   progress?: number;
 };
+type SortModalI = {
+  Sort: string,
+  Order: string
+}
+type SearchParamsI = {
+  postName?: string,
+  postCode?: string,
+  dateFrom?: Date,
+  dateTo?: Date,
+  status?: string,
+  postCategoryId?: number
+}
 function useViewPostList() {
   const Formatter = 'DD/MM/YYYY'
   const [currentRow, setCurrentRow] = useState<any>();
+  const { confirm } = Modal;
+
   // const [selectedRowsState, setSelectedRows] = useState<boolean>([]);
   const [showDetail, setShowDetail] = useState<boolean>(false);
   const [openEditPostModal, setOpenEditPostModal] = useState<boolean>(false);
@@ -51,6 +64,12 @@ function useViewPostList() {
   const isLoading = useAppSelector(state => state.post.loading);
   const [postInfo, setPostInfo] = useState<any>();
   const [page, setPage] = useState<number>(1);
+  const [sortModel, setSortModel] = useState<SortModalI>({
+    Sort: 'createAt',
+    Order: 'desc'
+  });
+  const [searchParams, setSearchParams] = useState<SearchParamsI>()
+
   const pageSizeOptions = [10, 20, 30]; // Các tùy chọn cho pageSize
   const total = posts?.metadata?.total
   const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
@@ -59,8 +78,8 @@ function useViewPostList() {
   const columns: ProColumns[] = [
     {
       title: 'Post Code',
-      dataIndex: 'id',
-      key: 'id',
+      dataIndex: 'postCode',
+      key: 'postCode',
       width: 10,
       render: (dom, entity) => {
         return (
@@ -91,6 +110,14 @@ function useViewPostList() {
       width: 10,
       hideInTable: true,
       hideInSearch: true,
+    },
+    {
+      title: 'Create at',
+      dataIndex: 'createAt',
+      key: 'createAt',
+      valueType: 'date',
+      width: 30,
+      sorter: true,
     },
     {
       title: 'Date From',
@@ -221,26 +248,57 @@ function useViewPostList() {
 
       },
     },
+    // {
+    //   title: 'Delete/Edit',
+    //   width: 10,
+    //   hideInSearch: true,
+    //   render: (value) => (
+    //     <Box>
+    //       <Popconfirm
+    //         title="Delete the post"
+    //         description="Are you sure to delete this post?"
+    //         icon={<QuestionCircleFilled rev={undefined} style={{ color: 'red' }} />}
+    //         onConfirm={() => handleDeletePost(value)}
+    //       >
+    //         <Link >Delete </Link>
+    //       </Popconfirm>
+    //       <Link onClick={() => handleOpenEditPostModal(value)} >/<EditOutlined rev={undefined} />Edit</Link>
+
+    //     </Box>
+
+    //   )
+    // },
     {
-      title: 'Delete/Edit',
+      title: 'Action',
+      align: 'center',
       width: 10,
       hideInSearch: true,
-      render: (value) => (
-        <Box>
-          <Popconfirm
-            title="Delete the post"
-            description="Are you sure to delete this post?"
-            icon={<QuestionCircleFilled rev={undefined} style={{ color: 'red' }} />}
-            onConfirm={() => handleDeletePost(value)}
-          >
-            <Link >Delete </Link>
-          </Popconfirm>
-          <Link onClick={() => handleOpenEditPostModal(value)} >/<EditOutlined rev={undefined} />Edit</Link>
-
+      render: (value, valueEnum) => {
+        const items: MenuProps['items'] = [
+          {
+            label: 'Delete',
+            key: '1',
+            icon: <DeleteOutlined color='red' rev={undefined} />,
+            onClick: () => handleDeletePost(value),
+            danger: true
+          },
+          {
+            label: 'Edit',
+            key: '2',
+            icon: <EditOutlined color='green' rev={undefined} />,
+            onClick: () => handleOpenEditPostModal(value),
+          },
+        ];
+        const menuProps = {
+          items,
+        };
+        return <Box>
+          <Dropdown menu={menuProps} trigger={['click']} placement='bottomLeft'>
+            <Button icon={<MoreOutlined rev={undefined} />}></Button>
+          </Dropdown>
         </Box>
-
-      )
-    }
+      },
+    },
   ];
   const rowsExpanded: ListPositionI[] = posts.data.map(post => ({
     key: post.postCode,
@@ -250,7 +308,7 @@ function useViewPostList() {
     const columnsExpanded: TableColumnsType<ExpandedDataType> = [
       { title: 'Position Name', dataIndex: 'positionName', key: 'positionName' },
       { title: 'Amount', dataIndex: 'amount', key: 'amount' },
-      { title: 'Register Amount', dataIndex: 'registerAmount', key: 'registerAmount' },
+      { title: 'Register Amount', dataIndex: 'positionRegisterAmount', key: 'positionRegisterAmount' },
       { title: 'Date', dataIndex: 'date', key: 'date', render: (value) => <span>{moment(value).format(Formatter)}</span> },
       { title: 'Time From', dataIndex: 'timeFrom', key: 'timeFrom' },
       { title: 'Time To', dataIndex: 'timeTo', key: 'timeTo' },
@@ -259,6 +317,34 @@ function useViewPostList() {
       { title: 'Document', dataIndex: 'documentId', key: 'documentId' },
       { title: 'Training certificate', dataIndex: 'trainingCertificateId', key: 'trainingCertificateId' },
       { title: 'Salary', dataIndex: 'salary', key: 'salary' },
+      {
+        title: 'Status', dataIndex: 'status', key: 'status', render: (rows) => {
+          return rows === 1 ? (
+            <Space size={0}>
+              <Tag color="blue">Is Active</Tag>
+            </Space>
+          ) : (
+            <Space size={0}>
+              <Tag color="red">Deleted</Tag>
+            </Space>
+          );
+        }
+      },
+      {
+        title: 'Action',
+        key: 'action',
+        render: (value) => <Button icon={<DeleteOutlined rev={undefined} />} onClick={() => {
+          confirm({
+            title: 'Do you want to delete this position?',
+            icon: <ExclamationCircleFilled rev={undefined} />,
+            onOk: () => {
+              handleDeletePosition(value)
+            },
+            onCancel() {
+            },
+          });
+        }} danger>Delete</Button>,
+      }
     ];
 
     const data = rowsExpanded.find((value) => value.key === record?.id);
@@ -307,31 +393,54 @@ function useViewPostList() {
     setOpenEditPostModal(true);
     setEditPostModalId(value?.id)
   }
-  const handleDeletePost = async (value: any) => {
-    console.log('value', value)
-    await dispatch(deletePostById(value?.key))
-  }
   const handleDeletePosition = async (value: any) => {
-    console.log('value', value)
-    await dispatch(deletePostById(value?.key))
+    console.log('value: ', value.id)
+    await dispatch(deletePositionById(value?.id)).then((response: any) => {
+      if (response?.payload?.errorCode === 4006) {
+        message.warning(response?.payload?.message)
+      } else if (response?.payload?.status === 200) {
+        message.success('Delete position success!');
+        fetchPostList();
+      }
+    })
+  }
+  const handleDeletePost = async (value: any) => {
+    confirm({
+      title: 'Do you want to delete the post?',
+      icon: <ExclamationCircleFilled rev={undefined} />,
+      onOk: async () => {
+        await dispatch(deletePostById(value?.key))
+      },
+      onCancel() {
+      },
+    });
+  }
+
+  const handleSearch = (value: any) => {
+
   }
   const handleActionChange = async (params: any,
     sorter: Record<string, SortOrder>,
     filter: Record<string, (string | number)[] | null>): Promise<Partial<RequestData<any>>> => {
-    console.log('sorter: ', sorter);
-    console.log('params: ', params);
+    console.log('params: ', params)
+
+    if (JSON.stringify(params) !== JSON.stringify({ current: 1, pageSize: 10 })) {
+      setSearchParams(params);
+    }
     if (sorter && Object.keys(sorter).length > 0) {
       const keys = Object.keys(sorter);
       const fieldName = keys[0];
+      console.log('sorter[fieldName]: ', sorter[fieldName])
       const sortOrder = sorter[fieldName] === 'ascend' ? 'asc' : 'desc';
-      await dispatch(getPostByAccountId({ page: page, PageSize: pageSize, Sort: fieldName, Order: String(sortOrder) }))
-    } else {
-      await dispatch(getPostByAccountId({ page: page, PageSize: pageSize }))
-    }
+      if (sorter[fieldName] !== sortModel.Sort && fieldName !== sortModel.Order) {
+        setSortModel({ Sort: fieldName, Order: String(sortOrder) })
+      }
+    } else setSortModel({ Sort: 'createAt', Order: 'desc' })
+
     return {
       data: [],
-      success: true, // Set to true if the request was successful
-      total: 10, // Total number of data items (if available)
+      success: true,
+      total: 10,
     };
   }
   const onPageChange = (value: any) => {
@@ -346,6 +455,7 @@ function useViewPostList() {
     // ...post,
     key: post?.id,
     id: post?.postCode,
+    postCode: post?.postCode,
     title: post?.postCategory?.postCategoryDescription,
     titleType: post?.postCategory?.postCategoryType,
     isPremium: post?.isPremium,
@@ -358,19 +468,30 @@ function useViewPostList() {
     timeTo: post?.timeTo,
     postImg: post?.postImg,
     priority: post?.priority,
-    position: post?.postPositions
+    position: post?.postPositions,
+    createAt: post?.createAt
     // ...
   }));
   console.log('trainingposition: ', rowsExpanded)
   const fetchPostList = async () => {
-    await dispatch(getPostByAccountId({ page: page, PageSize: pageSize }))
+    await dispatch(getPostByAccountId({
+      page: page,
+      PageSize: pageSize,
+      Sort: sortModel?.Sort,
+      Order: sortModel?.Order,
+      dateFrom: searchParams?.dateFrom,
+      dateTo: searchParams?.dateTo,
+      postCode: searchParams?.postCode,
+      postName: searchParams?.postName,
+      postCategoryId: searchParams?.postCategoryId
+    }))
   }
   const handleAddPost = () => {
     navigate('/dashboard/add-post')
   }
   useEffect(() => {
     fetchPostList()
-  }, [page, pageSize])
+  }, [page, pageSize, searchParams, sortModel])
   useEffect(() => {
     fetchPostList()
   }, [isDeleted])
@@ -386,7 +507,8 @@ function useViewPostList() {
     setPageSize,
     onChangePageSize,
     handleAddPost,
-    handleActionChange
+    handleActionChange,
+    handleSearch
   }
   const props = {
     total,

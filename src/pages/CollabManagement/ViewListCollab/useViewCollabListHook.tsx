@@ -132,6 +132,9 @@ const useViewCollablistHook = () => {
         console.log('pagesize: ', value)
         setPageSize(value)
     }
+    const handleSearch = (value: any) => {
+
+    }
     const handleOpenCertificateModal = (value: any) => {
         console.log('value: ', value)
         setCertificateList(value?.certificates)
@@ -172,7 +175,7 @@ const useViewCollablistHook = () => {
     useEffect(() => {
         fetchCollabList()
     }, [page, pageSize])
-    const handler = { onPageChange, onChangePageSize, setCurrentRow, setShowDetail, setOpenCertificateModal, handleActionChange }
+    const handler = { onPageChange, onChangePageSize, setCurrentRow, setShowDetail, setOpenCertificateModal, handleActionChange, handleSearch }
     const props = { columns, collabList, pageSizeOptions, total, page, pageSize, rows, loading, showDetail, currentRow, openCertificateModal, certificateList }
     return {
         handler,

@@ -56,5 +56,13 @@ export const postService = {
     confirmReopen: (postId: number): Promise<AxiosResponse<PostInfoDto>> => {
         const url = `/admission/admission-post/Re-openPostRegistration?postId=${postId}`;
         return axiosClient.put(url)
-    }
+    },
+    deletePositionById: (id: string): Promise<AxiosResponse<PostInfoDto>> => {
+        const url = '/admission/admission-post/position/delete';
+        return axiosClient.delete(url, {
+            params: {
+                positionId: id,
+            },
+        })
+    },
 };

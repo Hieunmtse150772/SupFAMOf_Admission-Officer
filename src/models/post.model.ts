@@ -17,8 +17,8 @@ type PostInfo = {
     isActive: true,
     status: number,
     isEnd: false,
-    createAt: string,
-    updateAt: string,
+    createAt: Date,
+    updateAt: Date,
     account: {
         id: number,
         roleId: number,

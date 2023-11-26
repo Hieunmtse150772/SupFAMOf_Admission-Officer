@@ -102,20 +102,6 @@ const useAddNewPostHook = () => {
         value: title.id,
         label: title.certificateName
     }));
-    const provinceOptions = province?.map((province) => ({
-        value: province.province_id,
-        label: province.province_name
-    }));
-    const districtOptions = district?.map((district) => ({
-        value: district.district_id,
-        label: district.district_name
-    }));
-
-    const wardOptions = ward?.map((ward) => ({
-        value: ward.ward_id,
-        label: ward.ward_name
-    }));
-
     const FormatTime = 'HH:mm:ss'
     const loading = useAppSelector(state => state.postTitle.loading);
     const [openAddTitleModal, setOpenAddTitleModal] = useState(false);
@@ -167,11 +153,12 @@ const useAddNewPostHook = () => {
 
     const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) => {
         setFileList(newFileList);
-        if (photoUrl !== '') setErrorUrl('');
+        if (fileImage !== '') setErrorUrl('');
     }
 
     const removeImage = () => {
-        setPhotoUrl('')
+        setPhotoUrl('');
+        setFileImage('');
     }
     const handleSearchAddress = async (keyWords: string) => {
         try {
@@ -326,6 +313,9 @@ const useAddNewPostHook = () => {
 
     const handleSubmitAnt = async (value: any) => {
         console.log('description: ', description)
+        if (description !== '') {
+            setError('');
+        }
         if (fileImage !== '' && description !== '') {
             setError('');
             const dateFrom = new Date(value?.dateFrom_dateTo[0]);
@@ -366,7 +356,7 @@ const useAddNewPostHook = () => {
                 setError('Description is required!')
                 message.warning('Add description to create post!');
             }
-            if (photoUrl === '') {
+            if (fileImage === '') {
                 setErrorUrl('Image is required!')
                 message.warning('Add image to create post!');
             }
@@ -378,6 +368,8 @@ const useAddNewPostHook = () => {
             if (result2.status === 200) {
                 setLoading(false)
                 message.success('Create post success!')
+                removeImage();
+                setFileList([]);
                 form.resetFields();
                 setLoading(false);
             }
@@ -493,9 +485,6 @@ const useAddNewPostHook = () => {
         error,
         contextHolder,
         openAddTitleModal,
-        provinceOptions,
-        districtOptions,
-        wardOptions,
         previewOpen,
         previewTitle,
         previewImage,
@@ -511,7 +500,6 @@ const useAddNewPostHook = () => {
         documentOptionsAPI,
         postTitleOptionsAPI,
         optionDate
-
     }
     return { handler, props }
 

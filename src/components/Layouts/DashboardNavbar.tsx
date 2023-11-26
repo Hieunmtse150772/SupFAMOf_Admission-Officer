@@ -72,15 +72,23 @@ const DashboardNavbar: FC<DashboardNavBarProps> = ({
     },
     {
       path: '/dashboard/user-list',
-      title: 'Collab List',
+      title: 'Collab Management',
     },
     {
       path: '/dashboard/post-list',
-      title: 'Post List',
+      title: 'Post Management',
     },
     {
       path: '/dashboard/registration-list',
-      title: 'Registration List',
+      title: 'Registration Management',
+    },
+    {
+      path: '/dashboard/contract-list',
+      title: 'Contract Management',
+    },
+    {
+      path: '/dashboard/add-contract',
+      title: 'Add Contract',
     }
   ];
   const last = items.find((item) => item.path === location.pathname)?.title

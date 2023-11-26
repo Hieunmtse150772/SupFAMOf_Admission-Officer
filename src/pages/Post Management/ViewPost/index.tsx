@@ -129,6 +129,7 @@ const ViewPostList = () => {
         <>{
             props?.posts && (
                 <SFAMOGrid
+                    handleSearch={handler.handleSearch}
                     handleTableChange={handler.handleActionChange}
                     toolbar={ButtonAddNew}
                     pageSizeOptions={props.pageSizeOptions}

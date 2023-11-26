@@ -1,10 +1,10 @@
-import { CheckCircleOutlined, EditOutlined, ExclamationCircleFilled, FolderViewOutlined, LockOutlined, UnlockOutlined } from '@ant-design/icons'; // Import the icon from the library
+import { CheckCircleOutlined, ExclamationCircleFilled, FolderViewOutlined, MoreOutlined, UnlockOutlined } from '@ant-design/icons'; // Import the icon from the library
 import { ProColumns, RequestData } from "@ant-design/pro-components";
 import { FiberManualRecord } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import { green, grey, red, yellow } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { Button, Image, Modal, Popover, Progress, StepsProps, Table, TableColumnsType, message } from 'antd';
+import { Button, Dropdown, Image, MenuProps, Modal, Popover, Progress, StepsProps, Table, TableColumnsType, message } from 'antd';
 import { SortOrder } from 'antd/es/table/interface';
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
@@ -30,6 +30,18 @@ interface ExpandedDataType {
     timeTo: Date,
     percent: number,
 }
+type SortModalI = {
+    Sort: string,
+    Order: string
+}
+type SearchParamsI = {
+    postName?: string,
+    postCode?: string,
+    dateFrom?: Date,
+    dateTo?: Date,
+    status?: string,
+    postCategoryId?: number
+}
 function useViewRegistrationHook() {
     const Formatter = 'DD/MM/YYYY'
     const [currentRow, setCurrentRow] = useState<any>();
@@ -49,7 +61,7 @@ function useViewRegistrationHook() {
     const collabsList = collabs?.data ? collabs?.data : []
     const [postInfo, setPostInfo] = useState<any>();
     const [page, setPage] = useState<number>(1);
-    const [statusFilter, setStatusFilter] = useState<number>(1);
+    const [statusFilter, setStatusFilter] = useState<number | null>();
     const pageSizeOptions = [10, 20, 30]; // Các tùy chọn cho pageSize
     const total = posts?.metadata?.total;
     const [totalCollab, setTotalCollab] = useState<number>(0);
@@ -59,7 +71,11 @@ function useViewRegistrationHook() {
     const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
     const [searchByEmail, setSearchByEmail] = useState<string>('')
     const [status, setStatus] = useState<number>(1)
-    const [sortModel, setSortModel] = useState({});
+    const [sortModel, setSortModel] = useState<SortModalI>({
+        Sort: 'createAt',
+        Order: 'desc'
+    });
+    const [searchParams, setSearchParams] = useState<SearchParamsI>()
 
     const customDot: StepsProps['progressDot'] = (dot, { status, index }) => (
         <Popover
@@ -106,6 +122,13 @@ function useViewRegistrationHook() {
             dataIndex: 'numberOfPosition',
             key: 'numberOfPosition',
             hideInSearch: true,
+        },
+        {
+            title: 'Create at',
+            dataIndex: 'createAt',
+            key: 'createAt',
+            valueType: 'date',
+            sorter: true,
         },
         {
             title: 'Date From',
@@ -217,9 +240,90 @@ function useViewRegistrationHook() {
                 </Box>
             },
         },
+        // {
+        //     title: 'Action',
+        //     width: 250,
+        //     hideInSearch: true,
+        //     dataIndex: 'status',
+        //     valueEnum: {
+        //         1: {
+        //             text: 'Pending',
+        //             status: 'Pending',
+        //         },
+        //         2: {
+        //             text: 'Closed',
+        //             status: 'Closed',
+        //         },
+        //         3: {
+        //             text: 'Ending',
+        //             status: 'Success',
+        //         },
+        //         4: {
+        //             text: 'Canceled',
+        //             status: 'Canceled',
+        //         },
+        //         5: {
+        //             text: 'Deleted',
+        //             status: 'Deleted',
+        //         },
+        //         6: {
+        //             text: 'Re-open',
+        //             status: 'Re-open',
+        //         },
+        //     },
+        //     render: (value, valueEnum) => {
+        //         let color = grey[400].toString();
+        //         let statusText = 'Unknown';
+        //         let disable = false;
+        //         let icon = <EditOutlined rev={undefined} />
+        //         switch (valueEnum?.status) {
+        //             case Status.opening:
+        //                 color = '#1890ff';
+
+        //                 icon = <LockOutlined rev={undefined} />;
+        //                 statusText = 'Close';
+        //                 break;
+
+        //             case Status.closed:
+        //                 color = green[500];
+        //                 statusText = 'End';
+        //                 icon = <CheckCircleOutlined rev={undefined} />;
+        //                 break;
+
+        //             case Status.ended:
+        //                 color = red[500];
+        //                 statusText = 'End';
+        //                 disable = true;
+        //                 break;
+        //             case Status.canceled:
+        //                 color = yellow[500];
+        //                 statusText = 'End';
+        //                 disable = true;
+        //                 break;
+        //             case Status.deleted:
+        //                 color = red[500];
+        //                 statusText = 'End';
+        //                 disable = true;
+        //                 break;
+        //             case Status.reopen:
+        //                 color = green[500];
+        //                 statusText = 'Close';
+        //                 icon = <LockOutlined rev={undefined} />;
+        //                 disable = false;
+        //                 break;
+        //             default:
+        //                 break;
+        //         }
+        //         return <Box>
+        //             {valueEnum?.status === 2 && (<><Button onClick={() => handleReopen(value)} type='default' color={color} style={{ color: color, width: '100px' }} disabled={disable} icon={<UnlockOutlined rev={undefined} />}>Re-open</Button> | </>)}
+        //             <Button onClick={() => handleAction(value, valueEnum.status)} type='default' color={color} style={{ color: color, width: '100px' }} disabled={disable} icon={icon}>{statusText}</Button>
+        //         </Box>
+        //     },
+        // },
         {
             title: 'Action',
-            width: 250,
+            width: 100,
+            align: 'center',
             hideInSearch: true,
             dataIndex: 'status',
             valueEnum: {
@@ -249,51 +353,38 @@ function useViewRegistrationHook() {
                 },
             },
             render: (value, valueEnum) => {
-                let color = grey[400].toString();
-                let statusText = 'Unknown';
-                let disable = false;
-                let icon = <EditOutlined rev={undefined} />
-                switch (valueEnum?.status) {
-                    case Status.opening:
-                        color = '#1890ff';
+                const items: MenuProps['items'] = [
+                    {
+                        label: 'Close',
+                        key: '1',
+                        icon: <CheckCircleOutlined rev={undefined} />,
+                        onClick: () => handleAction(value, valueEnum.status),
+                        disabled: Boolean(valueEnum?.status === 2 || valueEnum?.status === 3)
+                    },
+                    {
+                        label: 'Re-open',
+                        key: '2',
+                        icon: <UnlockOutlined rev={undefined} />,
+                        onClick: () => handleReopen(value),
+                        disabled: Boolean(valueEnum?.status === 1 || valueEnum?.status === 3 || valueEnum?.status === 6),
+                    },
 
-                        icon = <LockOutlined rev={undefined} />;
-                        statusText = 'Close';
-                        break;
-
-                    case Status.closed:
-                        color = green[500];
-                        statusText = 'End';
-                        icon = <CheckCircleOutlined rev={undefined} />;
-                        break;
-
-                    case Status.ended:
-                        color = red[500];
-                        statusText = 'End';
-                        disable = true;
-                        break;
-                    case Status.canceled:
-                        color = yellow[500];
-                        statusText = 'End';
-                        disable = true;
-                        break;
-                    case Status.deleted:
-                        color = red[500];
-                        statusText = 'End';
-                        disable = true;
-                        break;
-                    case Status.reopen:
-                        color = green[500];
-                        statusText = 'Close';
-                        icon = <LockOutlined rev={undefined} />;
-                        disable = false;
-                        break;
-                    default:
-                        break;
-                }
+                    {
+                        label: 'End',
+                        key: '3',
+                        icon: <CheckCircleOutlined rev={undefined} />,
+                        onClick: () => handleAction(value, valueEnum.status),
+                        disabled: Boolean(valueEnum?.status === 1 || valueEnum?.status === 6),
+                        danger: true
+                    },
+                ];
+                const menuProps = {
+                    items,
+                };
                 return <Box>
-                    {valueEnum?.status === 2 && (<><Button onClick={() => handleReopen(value)} type='default' color={color} style={{ color: color, width: '100px' }} disabled={disable} icon={<UnlockOutlined rev={undefined} />}>Re-open</Button> | </>)}
-                    <Button onClick={() => handleAction(value, valueEnum.status)} type='default' color={color} style={{ color: color, width: '100px' }} disabled={disable} icon={icon}>{statusText}</Button>
+                    <Dropdown menu={menuProps} trigger={['click']} placement='bottomLeft'>
+                        <Button icon={<MoreOutlined rev={undefined} />}></Button>
+                    </Dropdown>
                 </Box>
             },
         },
@@ -345,7 +436,14 @@ function useViewRegistrationHook() {
     };
     const dispatch = useAppDispatch();
     const { confirm } = Modal;
-
+    const handleMenuClick: MenuProps['onClick'] = (e) => {
+        message.info('Click on menu item.');
+        console.log('click', e);
+    };
+    const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+        message.info('Click on left button.');
+        console.log('click left button', e);
+    };
     const handleOpenConfirmModal = async (value: any) => {
         setTotalCollab(value?.amount)
         setAmountConfirmed(value?.positionRegisterAmount)
@@ -391,7 +489,7 @@ function useViewRegistrationHook() {
         const result = await dispatch(confirmReopenPost(value)).then((response: any) => {
             if (response?.payload?.errorCode === 4008) {
                 message.error(response?.payload?.message)
-            } else if (response?.payload?.statusCode === 200) {
+            } else if (response?.payload?.status === 200) {
                 message.success('Reopen post success!');
                 fetchPostList();
             }
@@ -399,6 +497,7 @@ function useViewRegistrationHook() {
             message.error(error);
         })
     }
+
     const handleAction = (value: any, status: number) => {
         console.log('value: ', value.props.record);
         console.log('status', status)
@@ -461,22 +560,46 @@ function useViewRegistrationHook() {
     }
     const handleSetStatus = async (value: any) => {
         console.log('value: ', value);
-        setStatusFilter(value?.radio);
+        if (value.radio === 0) {
+            setStatusFilter(null)
+            setPage(1)
+            await dispatch(getPostByAccountId({ page: 1, PageSize: 10, Sort: 'createAt', Order: 'desc' }))
+        } else {
+            setStatusFilter(value?.radio);
+            setPage(1)
+            await dispatch(getPostByAccountId({ page: 1, PageSize: 10, Status: value?.radio }))
+        }
+    }
+    const handleSearch = async (value: any) => {
+        if (value) {
+            setSearchParams(value)
+            await dispatch(getPostByAccountId({
+                page: page,
+                PageSize: pageSize,
+                Status: statusFilter,
+                Sort: sortModel?.Sort,
+                Order: sortModel?.Order,
+                dateFrom: value?.dateFrom,
+                dateTo: value?.dateTo,
+                postCode: value?.postCode,
+                postName: value?.postName,
+                postCategoryId: value?.postCategoryId
+            }))
+        }
     }
     const handleActionChange = async (params: any,
         sorter: Record<string, SortOrder>,
         filter: Record<string, (string | number)[] | null>): Promise<Partial<RequestData<any>>> => {
-        if (params) {
-            await dispatch(getPostByAccountId(params))
-        } else
-            if (sorter && Object.keys(sorter).length > 0) {
-                const keys = Object.keys(sorter);
-                const fieldName = keys[0];
-                const sortOrder = sorter[fieldName] === 'ascend' ? 'asc' : 'desc';
-                await dispatch(getPostByAccountId({ page: page, PageSize: pageSize, Sort: fieldName, Order: String(sortOrder) }))
-            } else {
-                await dispatch(getPostByAccountId({ page: page, PageSize: pageSize }))
-            }
+        if (sorter && Object.keys(sorter).length > 0) {
+            const keys = Object.keys(sorter);
+            const fieldName = keys[0];
+            console.log('sorter[fieldName]: ', sorter[fieldName])
+            const sortOrder = sorter[fieldName] === 'ascend' ? 'asc' : 'desc';
+            console.log('sorter: ', sortOrder)
+
+            setSortModel({ Sort: fieldName, Order: String(sortOrder) })
+        } else setSortModel({ Sort: 'createAt', Order: 'desc' })
+
         return {
             data: [],
             success: true,
@@ -507,12 +630,24 @@ function useViewRegistrationHook() {
         timeTo: post?.timeTo,
         postImg: post?.postImg,
         priority: post?.priority,
-        numberOfPosition: post.postPositions.length,
+        numberOfPosition: post?.postPositions.length,
+        createAt: post?.createAt
         // ...
     }));
 
     const fetchPostList = async () => {
-        await dispatch(getPostByAccountId({ page: page, PageSize: pageSize, Status: statusFilter }))
+        await dispatch(getPostByAccountId({
+            page: page,
+            PageSize: pageSize,
+            Status: statusFilter,
+            Sort: sortModel?.Sort,
+            Order: sortModel?.Order,
+            dateFrom: searchParams?.dateFrom,
+            dateTo: searchParams?.dateTo,
+            postCode: searchParams?.postCode,
+            postName: searchParams?.postName,
+            postCategoryId: searchParams?.postCategoryId
+        }))
     }
     const fetchPostTitleOption = async () => {
         await dispatch(getPostTitle());
@@ -520,9 +655,11 @@ function useViewRegistrationHook() {
     useEffect(() => {
         fetchPostTitleOption()
     }, [])
+
     useEffect(() => {
         fetchPostList()
-    }, [page, pageSize, statusFilter])
+    }, [page, pageSize, sortModel])
+
 
     const handler = {
         setCurrentRow,
@@ -535,6 +672,7 @@ function useViewRegistrationHook() {
         setStatusFilter,
         handleSetStatus,
         handleActionChange,
+        handleSearch
     }
     const props = {
         openConFirmModal,
