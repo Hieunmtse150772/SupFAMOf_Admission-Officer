@@ -21,6 +21,7 @@ export const auth = getAuth(app);
 export const storage = getStorage(app);
 export const messaging: Messaging = getMessaging(app);
 export const provider = new GoogleAuthProvider();
+const desiredExtension = '.docx';
 
 // Custom hook
 export function useAuth(): User | null {
@@ -34,6 +35,26 @@ export function useAuth(): User | null {
 }
 
 // Storage
+export async function uploadDocs(file: File, setLoading: React.Dispatch<React.SetStateAction<boolean>>): Promise<string> {
+  try {
+    const fileExtension = file.name.split('.').pop(); // Lấy đuôi của tệp gốc
+    const fileName = fileExtension === 'docx' ? file.name : `${uuidv4()}${desiredExtension}`; // Tên tệp với đuôi mong muốn
+  
+    const fileRef = ref(storage, `images/admission/event${fileName}`);
+    setLoading(true);
+
+    const uploadTask = uploadBytesResumable(fileRef, file);
+    const snapshot: UploadTaskSnapshot = await uploadTask;
+
+    const photoURL: string = await getDownloadURL(snapshot.ref);
+    setLoading(false);
+    return photoURL;
+  } catch(error) {
+    console.log('error: ', error);
+    setLoading(false);
+    return '';
+  }
+}
 export async function uploadImage(file: File, setLoading: React.Dispatch<React.SetStateAction<boolean>>): Promise<string> {
   try{
     const fileRef = ref(storage, `images/admission/event${uuidv4()}`);

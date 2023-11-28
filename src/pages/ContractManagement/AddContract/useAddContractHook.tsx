@@ -1,23 +1,24 @@
 import { ExclamationCircleFilled } from '@ant-design/icons';
 import { ProForm } from "@ant-design/pro-components";
-import { unwrapResult } from '@reduxjs/toolkit';
 import { Modal, UploadProps, message } from "antd";
 import { RangePickerProps } from "antd/es/date-picker";
 import { UploadFile } from 'antd/lib/upload';
-import { useAppSelector } from "app/hooks";
+import { useAppSelector } from 'app/hooks';
 import { useAppDispatch } from "app/store";
 import dayjs from "dayjs";
-import { createContract } from 'features/contractSlice';
+import { CollabListDto } from 'dtos/collabList.dto';
+import { getCollabList } from 'features/collabSlice';
+import { createContract, sendContractEmail } from 'features/contractSlice';
 import ContractCreated from 'models/contractCreated.model';
-import { useEffect, useState } from "react";
-import { uploadImage } from '../../../firebase';
+import { Key, useEffect, useState } from "react";
+import { uploadDocs } from '../../../firebase';
 const useAddContractHook = () => {
     const [form] = ProForm.useForm();
     const { confirm } = Modal;
 
     const dispatch = useAppDispatch();
-    const postInfo = useAppSelector(state => state.post.postInfo)
-    const [url, setUrl] = useState<string>('');
+    const collabLists: CollabListDto = useAppSelector(state => state.collab.collabList);
+    const loading = useAppSelector(state => state.collab.loading)
     const [isLoading, setLoading] = useState<boolean>(false);
     const [disableDate, setDisableDate] = useState<boolean>(true)
     const [disableDateAssign, setDisableDateAsign] = useState<RangePickerProps['disabledDate']>()
@@ -27,10 +28,19 @@ const useAddContractHook = () => {
     const [errorUrl, setErrorUrl] = useState<string>('');
     const [FileContract, setFileContract] = useState<any>('');
     const [fileList, setFileList] = useState<UploadFile[]>([]);
-    const [endDateLimit, setEndDateLimit] = useState<Date[]>();
-    const [paramsCreateContract, setParamsCreateContract] = useState<ContractCreated>()
-    const [amountInWords, setAmountInWords] = useState('');
-
+    const [searchByEmail, setSearchByEmail] = useState<string>('');
+    type DataItem = (typeof collabLists.data)[number];
+    const [dataSource, setDataSource] = useState<DataItem[]>(collabLists.data);
+    const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
+    const [collabPicker, setCollabPicker] = useState<DataItem[]>();
+    const [contractId, setContractId] = useState<number | null>(null)
+    const [isEdit, setEdit] = useState<boolean>(false);
+    const rowSelection = {
+        selectedRowKeys,
+        onChange: (keys: Key[]) => {
+            setSelectedRowKeys(keys)
+        },
+    };
     const customRequest = async ({ file, onSuccess, onError }: any) => {
         try {
             setTimeout(() => {
@@ -50,10 +60,8 @@ const useAddContractHook = () => {
     const disabledDate: RangePickerProps['disabledDate'] = (current) => {
         // Lấy thời điểm hiện tại
         const currentTime = dayjs();
-
         // Thêm 48 giờ (2 ngày) vào thời điểm hiện tại
         const twoDaysLater = currentTime.add(48, 'hour');
-
         // Kiểm tra nếu 'current' tồn tại và nhỏ hơn thời điểm sau 48 giờ
         return current && current < twoDaysLater;
     };
@@ -68,40 +76,29 @@ const useAddContractHook = () => {
             return current && current < twoDaysLater.startOf('day');
         }
     };
+    const handleSearchCollabByEmail = async (email: string) => {
+        setSearchByEmail(email)
+    }
+    const handleChangeContractName = (value: any) => {
+        if (value) {
+            console.log('value.target.value: ', value.target.value)
+            form.setFieldValue('contractName', value.target.value);
+        } else {
+            form.setFieldValue('contractName', '');
+        }
 
+    }
     const handleAssignDateChange = (value: any) => {
         console.log('value: ', value)
         if (value) {
             setDisableDate(false);
             setAssignDate(value);
             const twoDaysLater = dayjs(value).get('day');
-            form.setFieldValue('dateFrom_dateTo', null);
-
+            form.setFieldValue('startingDate', null);
         } else {
             setDisableDate(true);
-            form.setFieldValue('dateFrom_dateTo', null);
+            form.setFieldValue('startingDate', null);
         }
-
-    }
-    const removeImage = () => {
-        setFileContract('');
-    }
-    const handleCreateContract = async (params: ContractCreated) => {
-        await dispatch(createContract(params)).then((response) => {
-            const result2 = unwrapResult(response);
-            if (result2.status === 200) {
-                setLoading(false)
-                message.success('Create post success!')
-                removeImage();
-                setFileList([]);
-                form.resetFields();
-                setLoading(false);
-            }
-        }).catch((error) => {
-            message.error('Intenal server error!')
-            setLoading(false)
-            console.error(error)
-        })
     }
     // const handleChange = (event: any) => {
     //     const inputAmount = event.target.value;
@@ -109,56 +106,97 @@ const useAddContractHook = () => {
     //     const words = numberToWords.toWords(inputAmount);
     //     setAmountInWords(words);
     // };
-    const handleSubmitAnt = async (value: any) => {
-        console.log('value: ', value)
+    const handleSubmitAnt = async (value: any): Promise<Boolean | void> => {
         console.log('description: ', description)
-
+        let result = false;
         if (description !== '') {
             setError('');
         }
         if (FileContract !== '' && description !== '') {
             setError('');
             confirm({
-                title: 'Do you want to create post?',
+                title: 'Do you want to create contract?',
                 icon: <ExclamationCircleFilled rev={undefined} />,
                 onOk: async () => {
                     setLoading(true)
-                    const photoUrl = await uploadImage(FileContract, setLoading); // Gọi hàm upload của bạn
+                    const photoUrl = await uploadDocs(FileContract, setLoading); // Gọi hàm upload của bạn
                     const params: ContractCreated = {
-                        contractName: value?.contractName,
+                        contractName: form.getFieldValue('contractName'),
                         contractDescription: description,
                         sampleFile: photoUrl,
-                        signingDate: value?.signingDate,
-                        startDate: value?.startingDate,
-                        totalSalary: value?.endDate
+                        signingDate: form.getFieldValue('signingDate'),
+                        startDate: form.getFieldValue('startingDate'),
+                        totalSalary: Number(form.getFieldValue('salary'))
                     }
-                    setParamsCreateContract(params);
+                    if (params) {
+                        await dispatch(createContract(params)).then((response: any) => {
+                            console.log('repsonse: ', response)
+                            if (response.payload.status === 200) {
+                                setLoading(false)
+                                message.success('Create post success!')
+                                setLoading(false);
+                                setContractId(response.payload.data.data.id);
+                                fetchCollabList(searchByEmail)
+                                form.submit();
+                                result = true;
+                            }
+                        }).catch((error) => {
+                            message.error('Intenal server error!')
+                            setLoading(false)
+                            console.error(error)
+                            result = false;
+                        })
+                    }
                 },
                 onCancel() {
-                    console.log('Cancel');
+                    result = false;
                 },
             });
         } else {
             if (description === '') {
-                console.log('Description is required!')
                 setError('Description is required!')
-                message.warning('Add description to create post!');
+                result = false;
             }
-            if (FileContract === '') {
-                console.log('Image is required!')
-
-                setErrorUrl('Image is required!')
-                message.warning('Add image to create post!');
-            }
+        }
+        return result;
+    }
+    const handleConfirm = async () => {
+        setLoading(true)
+        console.log('contractId: ', contractId);
+        const numbers = selectedRowKeys.map((key) => +key);
+        try {
+            await dispatch(sendContractEmail({ contractId: contractId, accountIds: numbers })).then((response: any) => {
+                if (response.payload.status === 200) {
+                    setLoading(false);
+                    message.success('Send contract email success!');
+                    form.submit();
+                }
+            })
+        } catch (error) {
+        } finally {
+            setLoading(false)
         }
     }
-
-    useEffect(() => {
-        if (paramsCreateContract) {
-            handleCreateContract(paramsCreateContract)
+    const handleNext = async () => {
+        if (selectedRowKeys.length === 0) {
+            message.error('Please enter at least one collab!')
+        } else {
+            setCollabPicker(collabLists.data.filter((collab) => selectedRowKeys.includes(collab.id)))
+            form.submit()
+            return true
         }
-    }, [paramsCreateContract])
-
+    }
+    const fetchCollabList = async (email: string) => {
+        await dispatch(getCollabList({ email: email }));
+    }
+    useEffect(() => {
+        fetchCollabList(searchByEmail)
+    }, [searchByEmail])
+    useEffect(() => {
+        setDataSource(collabLists.data)
+    }, [collabLists])
+    useEffect(() => {
+    }, [isEdit])
     const handler = {
         customRequest,
         disabledDate,
@@ -168,12 +206,26 @@ const useAddContractHook = () => {
         setDescription,
         handleSubmitAnt,
         handleChange,
+        handleSearchCollabByEmail,
+        setLoading,
+        handleConfirm,
+        handleNext,
+        handleChangeContractName,
+        setEdit
     }
     const props = {
         disableDate,
         form,
         error,
-        errorUrl
+        errorUrl,
+        isLoading,
+        collabLists,
+        loading,
+        rowSelection,
+        collabPicker,
+        dataSource,
+        fileList,
+        isEdit
     }
     return { handler, props }
 }

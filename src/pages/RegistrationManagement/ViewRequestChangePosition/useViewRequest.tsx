@@ -1,12 +1,10 @@
 import { CheckOutlined, CloseCircleOutlined, MoreOutlined } from '@ant-design/icons'; // Import the icon from the library
 import { ProColumns, RequestData } from "@ant-design/pro-components";
 import { Box } from '@mui/material';
-import { unwrapResult } from '@reduxjs/toolkit';
 import { Button, Drawer, Dropdown, MenuProps, Modal, Space, Tag, message } from 'antd';
 import { SortOrder } from 'antd/es/table/interface';
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
-import { getPostByPostId } from "features/postSlice";
 import { getRequestByAccountId, updateRequest } from 'features/requestSlice';
 import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router';
@@ -45,7 +43,8 @@ type SearchParamsI = {
     status?: string,
     postCategoryId?: number
 }
-function useViewRequest() {
+function useViewRequest(postId: number) {
+    console.log('postId: ', postId)
     const Formatter = 'DD/MM/YYYY'
     const [currentRow, setCurrentRow] = useState<any>();
     const { confirm } = Modal;
@@ -76,6 +75,7 @@ function useViewRequest() {
             title: 'Post Code',
             dataIndex: 'postCode',
             key: 'postCode',
+            hideInSearch: true,
             width: 10,
             render: (dom, entity) => {
                 return (
@@ -102,6 +102,7 @@ function useViewRequest() {
         },
         {
             title: 'Date',
+            hideInSearch: true,
             dataIndex: 'createAt',
             key: 'createAt',
             valueType: 'date',
@@ -182,6 +183,20 @@ function useViewRequest() {
             width: 10,
             dataIndex: 'status',
             hideInSearch: true,
+            valueEnum: {
+                1: {
+                    text: 'Pending',
+                    status: 'Pending',
+                },
+                2: {
+                    text: 'Approved',
+                    status: 'Approved',
+                },
+                3: {
+                    text: 'Rejected',
+                    status: 'Rejected',
+                },
+            },
             render: (value, valueEnum) => {
                 const items: MenuProps['items'] = [
                     {
@@ -189,7 +204,7 @@ function useViewRequest() {
                         key: '1',
                         icon: <CheckOutlined color='green' rev={undefined} />,
                         onClick: () => handleUpdateRequest(value, true),
-                        disabled: Boolean(value !== 1)
+                        disabled: Boolean(valueEnum.status !== 1)
                     },
                     {
                         label: 'Reject',
@@ -197,7 +212,7 @@ function useViewRequest() {
                         icon: <CloseCircleOutlined rev={undefined} />,
                         onClick: () => handleUpdateRequest(value, false),
                         danger: true,
-                        disabled: Boolean(value !== 1)
+                        disabled: Boolean(valueEnum.status !== 1)
                     },
                 ];
                 const menuProps = {
@@ -248,12 +263,13 @@ function useViewRequest() {
     const dispatch = useAppDispatch();
 
     const handleUpdateRequest = async (value: any, IsApproved: boolean) => {
+        console.log('value.id ', value?.props?.record.key)
         const title = IsApproved ? 'approve' : 'reject';
         confirm({
             title: `Do you want to ${title} the request?`,
             icon: IsApproved ? <CheckOutlined rev={undefined} /> : <CloseCircleOutlined rev={undefined} />,
             onOk: async () => {
-                const ids: number[] = [value?.id];
+                const ids: number[] = [value?.props?.record.key];
                 const params = {
                     ids: ids,
                     IsApproved: IsApproved
@@ -330,20 +346,14 @@ function useViewRequest() {
     const fetchRequest = async () => {
         await dispatch(getRequestByAccountId({
             page: page,
-            PageSize: pageSize
+            PageSize: pageSize,
+            postId: postId
         }))
-    }
-    const handleAddPost = () => {
-        navigate('/dashboard/add-post')
     }
     useEffect(() => {
         fetchRequest()
     }, [page, pageSize, searchParams, sortModel])
 
-    const fetchPost = async (postId: string) => {
-        const reusult = await dispatch(getPostByPostId(postId))
-        return unwrapResult(reusult);
-    }
     const handler = {
         setCurrentRow,
         setShowDetail,
@@ -351,7 +361,6 @@ function useViewRequest() {
         onPageChange,
         setPageSize,
         onChangePageSize,
-        handleAddPost,
         handleActionChange,
         handleSearch
     }

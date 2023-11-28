@@ -1,27 +1,54 @@
+import { DeleteOutlined, DownloadOutlined, EditOutlined, MoreOutlined } from "@ant-design/icons";
 import { ProColumns } from "@ant-design/pro-components";
-import { Space, Tag } from "antd";
+import { Box } from "@mui/material";
+import { unwrapResult } from "@reduxjs/toolkit";
+import { Avatar, Button, Dropdown, MenuProps, Space, Table, TableColumnsType, Tag } from "antd";
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
+import { getCollabList } from "features/collabSlice";
 import { getContractList } from "features/contractSlice";
+import UserPlusIcon from "icons/UserPlusIcon";
+import { ListContractI } from "models/contract.model";
 import moment from "moment";
-import { useEffect, useState } from "react";
-
+import { useEffect, useRef, useState } from "react";
+type CollumsField = {
+    key: number,
+    contractName: string,
+    contractDescription: string,
+    sampleFile: string,
+    totalSalary: number,
+    isActive: boolean,
+    createAt: Date
+}
+interface ExpandedDataType {
+    id: number,
+    contractId: number,
+    accountId: number,
+    status: number,
+    name: string,
+    email: string,
+    phone: string,
+    imgUrl: string,
+}
 const useViewContractHook = () => {
     const Formatter = 'DD/MM/YYYY'
     const [currentRow, setCurrentRow] = useState<any>();
     // const [selectedRowsState, setSelectedRows] = useState<boolean>([]);
     const [showDetail, setShowDetail] = useState<boolean>(false);
     const [openConFirmModal, setOpenConfirmModal] = useState<boolean>(false);
-
     const contractAPI = useAppSelector(state => state.contract.contractList);
+    const { collabList, loading } = useAppSelector(state => state.collab);
     const isLoading = useAppSelector(state => state.post.loading);
     const [page, setPage] = useState<number>(1);
     const pageSizeOptions = [10, 20, 30]; // Các tùy chọn cho pageSize
     const total = contractAPI?.metadata?.total;
     const [totalCollab, setTotalCollab] = useState<number>(0);
     const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
-    const [openAddContractModal, setOpenAddContractModal] = useState<boolean>(false)
-    const columns: ProColumns[] = [
+    const [openAddContractModal, setOpenAddContractModal] = useState<boolean>(false);
+    const [addCollabModal, setAddCollabModal] = useState<boolean>(false);
+    const [contractId, setContractId] = useState<number | null>(null);
+    const downloadRef = useRef<HTMLAnchorElement | null>(null);
+    const columns: ProColumns<CollumsField>[] = [
         {
             title: 'Contract Name',
             dataIndex: 'contractName',
@@ -57,7 +84,7 @@ const useViewContractHook = () => {
             width: 30,
             sorter: true,
             render: (value) => {
-                return <a href={String(value)}>Link</a>
+                return <a ref={downloadRef} href={String(value)} download='downloaded_file.doc'>Link</a>
             },
             hideInSearch: true,
         },
@@ -89,8 +116,122 @@ const useViewContractHook = () => {
             key: 'createAt',
             width: 20,
         },
+        {
+            title: 'Action',
+            align: 'center',
+            width: 10,
+            hideInSearch: true,
+            render: (value, valueEnum) => {
+                const items: MenuProps['items'] = [
+                    {
+                        label: 'Download',
+                        key: '1',
+                        icon: <DownloadOutlined rev={undefined} />,
+                        onClick: () => handleDownload(value),
+                    },
+                    {
+                        label: 'Edit',
+                        key: '2',
+                        icon: <EditOutlined color='green' rev={undefined} />,
+                        //   onClick: () => handleOpenEditPostModal(value),
+                    },
+                    {
+                        label: 'Add',
+                        key: '3',
+                        icon: <UserPlusIcon />,
+                        onClick: () => handleAddCollab(value),
+                    },
+                    {
+                        label: 'Delete',
+                        key: '4',
+                        icon: <DeleteOutlined color='green' rev={undefined} />,
+                        //   onClick: () => handleOpenEditPostModal(value),
+                        danger: true
+                    },
+
+                ];
+                const menuProps = {
+                    items,
+                };
+                return <Box>
+                    <Dropdown menu={menuProps} trigger={['click']} placement='bottomLeft'>
+                        <Button icon={<MoreOutlined rev={undefined} />}></Button>
+                    </Dropdown>
+                </Box>
+            },
+        },
     ];
+
+    const rowsExpanded: ListContractI[] = contractAPI.data.map(contract => ({
+        key: contract.id,
+        contract: contract.accountContracts
+    }));
+
+    const expandedRowRender = (record: any) => {
+        console.log('rowsExpanded: ', rowsExpanded)
+        const columnsExpanded: TableColumnsType<ExpandedDataType> = [
+            { title: 'Avatar', dataIndex: 'imgUrl', key: 'imgUrl', render: (value) => (<Avatar src={value}></Avatar>) },
+            { title: 'Name', dataIndex: 'name', key: 'name' },
+            { title: 'Email', dataIndex: 'email', key: 'email' },
+            { title: 'phone', dataIndex: 'phone', key: 'phone' },
+            {
+                title: 'Status', dataIndex: 'status', key: 'status', render: (rows) => {
+                    return rows === 1 ? (
+                        <Space size={0}>
+                            <Tag color="blue">Pending</Tag>
+                        </Space>
+                    ) : (
+                        <Space size={0}>
+                            <Tag color="Yellow">Comfirmed</Tag>
+                        </Space>
+                    );
+                }
+            },
+        ];
+        console.log('record: ', record?.id)
+        const data = rowsExpanded.find((value) => value.key === record?.id);
+        console.log('data: ', data)
+        const dataCustom = data?.contract.map((value) => {
+            return {
+                id: value.id,
+                name: value.account.name,
+                email: value.account.email,
+                accountId: value.account.id,
+                contractId: value.contractId,
+                status: value.status,
+                phone: value.account.phone,
+                imgUrl: value.account.imgUrl
+            }
+        })
+        return <Table
+            columns={columnsExpanded}
+            dataSource={dataCustom}
+            pagination={false}
+        />;
+    };
     const dispatch = useAppDispatch();
+    const handleAddCollab = async (value: any) => {
+        setContractId(value?.id)
+        const result = await dispatch(getCollabList({ email: '' }));
+        unwrapResult(result)
+        if (getCollabList.fulfilled.match(result)) {
+            setAddCollabModal(true);
+        }
+    }
+    const handleDownload = (value: any) => {
+        if (downloadRef.current && value && value.sampleFile) {
+            const fileUrl = value.sampleFile;
+            const fileName = 'downloaded_file.docx'; // Thay đổi đuôi file tại đây
+
+            // Tạo đường dẫn tải về với đuôi file .docx
+            const downloadUrl = `${fileUrl}?alt=media&download=${fileName}`;
+
+            // Mở tệp trong tab mới
+            window.open(downloadUrl, '_blank');
+        } else {
+            console.error('Invalid file URL');
+        }
+    }
     const handleSearch = () => {
 
     }
@@ -104,6 +245,7 @@ const useViewContractHook = () => {
 
     const rows = contractAPI?.data.map(contract => ({
         key: contract?.id,
+        id: contract?.id,
         contractName: contract?.contractName,
         contractDescription: contract?.contractDescription,
         sampleFile: contract?.sampleFile,
@@ -113,7 +255,7 @@ const useViewContractHook = () => {
         // ...
     }));
     const fetchContractList = async () => {
-        await dispatch(getContractList())
+        await dispatch(getContractList({ page: page, PageSize: pageSize }))
     }
     const handleAddContract = () => {
         setOpenAddContractModal(true);
@@ -121,11 +263,20 @@ const useViewContractHook = () => {
     useEffect(() => {
         fetchContractList()
     }, [page, pageSize])
-    const handler = { onPageChange, onChangePageSize, handleAddContract, setOpenAddContractModal, handleSearch }
-    const props = { columns, contractAPI, pageSizeOptions, total, page, pageSize, rows, isLoading, openAddContractModal }
+    const handler = {
+        onPageChange,
+        onChangePageSize,
+        handleAddContract,
+        setOpenAddContractModal,
+        handleSearch,
+        setAddCollabModal,
+        fetchContractList
+    }
+    const props = { columns, contractAPI, pageSizeOptions, total, page, pageSize, rows, isLoading, openAddContractModal, rowsExpanded, collabList, loading, contractId, addCollabModal }
     return {
         handler,
         props,
+        expandedRowRender
     }
 }
 

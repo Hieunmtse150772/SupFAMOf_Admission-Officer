@@ -3,6 +3,7 @@ import { LightFilter, ProFormRadio } from '@ant-design/pro-components';
 import SFAMOGrid from 'components/SFAMOGrid';
 import { useEffect, useRef } from 'react';
 import ConfirmRegistrationModal from '../ConfirmRegistration/ConfirmRegistrationModal';
+import ViewRequestChangePositionModal from '../ViewRequestChangePosition';
 import useViewRegistrationHook from './useViewRegistrationHook';
 
 const ViewPostList = () => {
@@ -85,6 +86,13 @@ const ViewPostList = () => {
                     collabList={props.registrationList.data}
                     amountUnConfirmed={props.amountUnConfirmed}
                     positionId={props.positionId}
+                />
+            }
+            {(props.openViewRequestModal && props.postId !== null) &&
+                <ViewRequestChangePositionModal
+                    open={props.openViewRequestModal}
+                    setOpenViewRequestModal={handler.setOpenViewRequestModal}
+                    postId={props.postId}
                 />
             }
         </>
