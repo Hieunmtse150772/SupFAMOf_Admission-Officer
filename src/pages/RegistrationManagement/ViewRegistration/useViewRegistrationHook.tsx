@@ -637,7 +637,8 @@ function useViewRegistrationHook() {
         handleSetStatus,
         handleActionChange,
         handleSearch,
-        setOpenViewRequestModal
+        setOpenViewRequestModal,
+        fetchPostList
     }
     const props = {
         openConFirmModal,

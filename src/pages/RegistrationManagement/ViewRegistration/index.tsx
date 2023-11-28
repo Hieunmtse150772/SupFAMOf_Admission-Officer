@@ -79,6 +79,7 @@ const ViewPostList = () => {
         }
             {(props.openConFirmModal && props.loading !== true && props.collabs !== null) &&
                 <ConfirmRegistrationModal
+                    fetchPostList={handler.fetchPostList}
                     total={props.totalCollab}
                     open={props.openConFirmModal}
                     setOpenConfirmModal={handler.setOpenConfirmModal}
@@ -90,6 +91,7 @@ const ViewPostList = () => {
             }
             {(props.openViewRequestModal && props.postId !== null) &&
                 <ViewRequestChangePositionModal
+                    fetchPost={handler.fetchPostList}
                     open={props.openViewRequestModal}
                     setOpenViewRequestModal={handler.setOpenViewRequestModal}
                     postId={props.postId}

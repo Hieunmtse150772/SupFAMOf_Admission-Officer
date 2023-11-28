@@ -366,7 +366,6 @@ const useAddNewPostHook = () => {
         await dispatch(createPost(params)).then((response) => {
             const result2 = unwrapResult(response);
             if (result2.status === 200) {
-                setLoading(false)
                 message.success('Create post success!')
                 removeImage();
                 setFileList([]);

@@ -1,4 +1,4 @@
-import { FooterToolbar, ProCard, ProDescriptions, ProForm, ProFormDatePicker, ProFormMoney, ProFormText, ProFormUploadDragger, ProList, StepsForm } from "@ant-design/pro-components";
+import { FooterToolbar, ProCard, ProDescriptions, ProForm, ProFormDatePicker, ProFormDateRangePicker, ProFormMoney, ProFormText, ProFormUploadDragger, ProList, StepsForm } from "@ant-design/pro-components";
 import { Box, Grid } from "@mui/material";
 import { Button, Result, Space, Spin, Tag } from "antd";
 import { Small, Span } from "components/Typography";
@@ -16,7 +16,7 @@ const AddContract = () => {
     const { handler, props } = useAddContractHook();
     const navigate = useNavigate();
     type DataItem = (typeof props.collabLists.data)[number];
-    const { isEdit } = props
+    const { isEdit, isLoading } = props
     const modules = {
         toolbar: [
             [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
@@ -47,6 +47,13 @@ const AddContract = () => {
                                                 handler.setDescription('')
                                             }
                                             handler.setEdit(!isEdit)
+                                            const dateFrom_dateTo = props.form?.getFieldValue('dateFrom_dateTo');
+                                            if (dateFrom_dateTo) {
+                                                const dateFrom = new Date(dateFrom_dateTo[0]);
+                                                handler.setDateFrom(dateFrom);
+                                                const dateTo = new Date(dateFrom_dateTo[1]);
+                                                handler.setDateTo(dateTo);
+                                            }
                                             props.form?.submit()
                                         }}
                                         >Next</Button>
@@ -71,8 +78,8 @@ const AddContract = () => {
                                 }
                                 if (props.step === 3) {
                                     return (<FooterToolbar>
-                                        <Button type="default" onClick={() => props.onPre()}>Previous</Button>
-                                        <Button color='primary' type="primary" htmlType="submit" onClick={async () => {
+                                        <Button type="default" disabled={isLoading} onClick={() => props.onPre()}>Previous</Button>
+                                        <Button color='primary' type="primary" htmlType="submit" disabled={isLoading} onClick={async () => {
                                             handler.handleConfirm()
                                         }}
                                         >Submit</Button>
@@ -117,8 +124,8 @@ const AddContract = () => {
                                         tooltip='The end date must be within 30 days of the start date!'
                                         rules={[{ required: true, message: 'Chose date from & date to!' }]}
                                     /> */}
-                                        <ProFormDatePicker
-                                            name="startingDate"
+                                        <ProFormDateRangePicker
+                                            name="dateFrom_dateTo"
                                             label="Starting date"
                                             width='xl'
                                             disabled={props.disableDate}
@@ -236,14 +243,17 @@ const AddContract = () => {
                                 </ProDescriptions.Item>
 
                                 <ProDescriptions.Item label="Start date" valueType={'date'}>
-                                    {props.form?.getFieldValue('startingDate')}
-
+                                    {props.dateFrom}
                                 </ProDescriptions.Item>
+
                                 <ProDescriptions.Item label="Salary word"
                                     valueType={'textarea'}
 
                                 >
                                     {props?.form?.getFieldValue('salary') ? numberToWords.toWords(Number(props?.form?.getFieldValue('salary'))) : props?.form?.getFieldValue('salary')} (Việt Nam đồng)
+                                </ProDescriptions.Item>
+                                <ProDescriptions.Item label="End date" valueType={'date'}>
+                                    {props.dateTo}
                                 </ProDescriptions.Item>
                                 <ProDescriptions.Item label="Assign date" valueType={'date'}>
                                     {props.form?.getFieldValue('signingDate')}

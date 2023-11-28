@@ -7,25 +7,14 @@ const index = [
     path: "/dashboard",
   },
   {
-    title: "Profile",
-    Icon: Icons.UserProfileIcon,
-    path: "/dashboard/user-profile",
-  },
-  {
-    title: "User Management",
+    title: "Collaborator Management",
     Icon: Icons.UserManagementIcon,
     path: "/dashboard/user-list",
   },
   {
-    title: "Post Mangement",
+    title: "Post Management",
     Icon: Icons.PostList,
     path: "/dashboard/post-list",
-  }
-  ,
-  {
-    title: "Request Management",
-    Icon: Icons.Assignment,
-    path: "/dashboard/request-list",
   }
   ,
   {
@@ -50,11 +39,6 @@ const index = [
     title: "Add Contract",
     Icon: Icons.AddToPhotosOutlined,
     path: "/dashboard/add-contract",
-  },
-  {
-    title: "Map",
-    Icon: Icons.MapIcon,
-    path: "/dashboard/map",
   }
 ];
 

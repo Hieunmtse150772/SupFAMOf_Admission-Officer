@@ -35,13 +35,13 @@ const ViewContract = () => {
                     rowsExpanded={props.rowsExpanded}
                 />
             )}
-            {(props.addCollabModal && props.loading !== true && props.collabList !== null) &&
+            {(props.addCollabModal && props.loading !== true && props.accountList !== null) &&
                 <AddContractModal
                     fetchContractList={handler.fetchContractList}
                     open={props.addCollabModal}
                     setOpenAddCollabModal={handler.setAddCollabModal}
-                    collabList={props.collabList.data}
-                    amountUnConfirmed={props.collabList.data.length}
+                    collabList={props.accountList}
+                    amountUnConfirmed={props.accountList.length}
                     contractId={props.contractId}
                 />
             }

@@ -7,7 +7,6 @@ import { H4, H6, Small } from "components/Typography";
 import UserInfo from "models/userInfor.model";
 import moment from "moment";
 import { FC, MouseEvent, useState } from "react";
-import PostCard from "./PostCard";
 
 // styled components
 const IconWrapper = styled(Box)<{ color?: string }>(({ theme, color }) => ({
@@ -113,9 +112,50 @@ const Profile: FC<UserProfileProps> = (userInfo) => {
       </Grid>
 
       <Grid item md={7} xs={12}>
-        {postList.map((post) => (
-          <PostCard post={post} key={post.id} handleMore={handleMoreOpen} />
-        ))}
+
+        <Card>
+          {/* <FollowWrapper>
+            <FlexBox alignItems="center">
+              <IconWrapper>
+                <UserPlusIcon fontSize="small" />
+              </IconWrapper>
+              <Box marginLeft={1.5}>
+                <H6 color="text.disabled" lineHeight={1}>
+                  Following
+                </H6>
+                <H3 lineHeight={1} mt={0.6}>
+                  93,675
+                </H3>
+              </Box>
+            </FlexBox>
+            <FlexBox alignItems="center">
+              <IconWrapper color="#FF9777">
+                <FollowerIcon fontSize="small" />
+              </IconWrapper>
+              <Box marginLeft={1.5}>
+                <H6 color="text.disabled" lineHeight={1}>
+                  Followers
+                </H6>
+                <H3 lineHeight={1} mt={0.6}>
+                  82,469
+                </H3>
+              </Box>
+            </FlexBox>
+          </FollowWrapper> */}
+
+          <Divider />
+
+          <Box padding={3}>
+            <H4 fontWeight={600}>Role</H4>
+            {/* <Small mt={1} display="block" lineHeight={1.9}>
+              Tart I love sugar plum I love oat cake. Sweet roll caramels I love
+              jujubes. Topping cake wafer..
+            </Small> */}
+
+            <Box mt={3}>
+            </Box>
+          </Box>
+        </Card>
 
         <MoreOptions anchorEl={moreEl} handleMoreClose={handleMoreClose} />
       </Grid>
