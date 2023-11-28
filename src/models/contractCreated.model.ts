@@ -5,6 +5,7 @@ type ContractCreated = {
     sampleFile: string,
     signingDate: Date,
     startDate: Date,
+    endDate: Date,
     totalSalary: number
 }
 export default ContractCreated;

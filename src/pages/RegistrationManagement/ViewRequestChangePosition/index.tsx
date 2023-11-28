@@ -6,11 +6,12 @@ import useViewRequest from "./useViewRequest";
 interface ViewRequestChangePositionModalProps {
     open: boolean,
     setOpenViewRequestModal: React.Dispatch<React.SetStateAction<boolean>>,
-    postId: number
+    postId: number,
+    fetchPost: () => void
 }
 
-const ViewRequestChangePositionModal: FC<ViewRequestChangePositionModalProps> = ({ open, setOpenViewRequestModal, postId }) => {
-    const { handler, props } = useViewRequest(postId);
+const ViewRequestChangePositionModal: FC<ViewRequestChangePositionModalProps> = ({ open, setOpenViewRequestModal, postId, fetchPost }) => {
+    const { handler, props } = useViewRequest(postId, fetchPost);
 
     return (
         <ModalForm

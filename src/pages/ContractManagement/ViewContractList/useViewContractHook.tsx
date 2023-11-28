@@ -8,9 +8,10 @@ import { useAppDispatch } from "app/store";
 import { getCollabList } from "features/collabSlice";
 import { getContractList } from "features/contractSlice";
 import UserPlusIcon from "icons/UserPlusIcon";
-import { ListContractI } from "models/contract.model";
-import moment from "moment";
+import CollabListInfo from "models/collabListInfo.model";
+import { ContractInfoRows, ListContractI } from "models/contract.model";
 import { useEffect, useRef, useState } from "react";
+import ReactHtmlParser from 'react-html-parser';
 type CollumsField = {
     key: number,
     contractName: string,
@@ -48,6 +49,7 @@ const useViewContractHook = () => {
     const [addCollabModal, setAddCollabModal] = useState<boolean>(false);
     const [contractId, setContractId] = useState<number | null>(null);
     const downloadRef = useRef<HTMLAnchorElement | null>(null);
+    const [accountList, setAccountList] = useState<CollabListInfo[]>([])
     const columns: ProColumns<CollumsField>[] = [
         {
             title: 'Contract Name',
@@ -76,6 +78,14 @@ const useViewContractHook = () => {
             key: 'contractDescription',
             width: 15,
             hideInSearch: true,
+            render: (value) => {
+
+                if (value !== '') {
+                    return (ReactHtmlParser(String(value)));
+                }
+                return <span></span>;
+
+            },
         },
         {
             title: 'File',
@@ -114,6 +124,7 @@ const useViewContractHook = () => {
             title: 'Date Create',
             dataIndex: 'createAt',
             key: 'createAt',
+            valueType: 'date',
             width: 20,
         },
         {
@@ -139,7 +150,7 @@ const useViewContractHook = () => {
                         label: 'Add',
                         key: '3',
                         icon: <UserPlusIcon />,
-                        onClick: () => handleAddCollab(value),
+                        onClick: () => handleAddCollab(value as ContractInfoRows),
                     },
                     {
                         label: 'Delete',
@@ -210,11 +221,17 @@ const useViewContractHook = () => {
         />;
     };
     const dispatch = useAppDispatch();
-    const handleAddCollab = async (value: any) => {
-        setContractId(value?.id)
+    const handleAddCollab = async (value: ContractInfoRows) => {
+        console.log('value111: ', value)
+        const listAccount: number[] = value?.accountContracts?.map((account: any) => account.account.id)
+        setContractId(Number(value?.id));
         const result = await dispatch(getCollabList({ email: '' }));
-        unwrapResult(result)
+        unwrapResult(result);
         if (getCollabList.fulfilled.match(result)) {
+            const filteredCollabs = result.payload.data.data.filter(collab => {
+                return !listAccount.includes(collab.id);
+            });
+            setAccountList(filteredCollabs);
             setAddCollabModal(true);
         }
     }
@@ -222,10 +239,8 @@ const useViewContractHook = () => {
         if (downloadRef.current && value && value.sampleFile) {
             const fileUrl = value.sampleFile;
             const fileName = 'downloaded_file.docx'; // Thay đổi đuôi file tại đây
-
             // Tạo đường dẫn tải về với đuôi file .docx
             const downloadUrl = `${fileUrl}?alt=media&download=${fileName}`;
-
             // Mở tệp trong tab mới
             window.open(downloadUrl, '_blank');
         } else {
@@ -243,7 +258,7 @@ const useViewContractHook = () => {
         setPageSize(value)
     }
 
-    const rows = contractAPI?.data.map(contract => ({
+    const rows: ContractInfoRows[] = contractAPI?.data.map(contract => ({
         key: contract?.id,
         id: contract?.id,
         contractName: contract?.contractName,
@@ -251,7 +266,8 @@ const useViewContractHook = () => {
         sampleFile: contract?.sampleFile,
         totalSalary: contract?.totalSalary,
         isActive: contract?.isActive,
-        createAt: moment(contract?.createAt).format(Formatter)
+        createAt: contract?.createAt,
+        accountContracts: contract?.accountContracts
         // ...
     }));
     const fetchContractList = async () => {
@@ -272,7 +288,23 @@ const useViewContractHook = () => {
         setAddCollabModal,
         fetchContractList
     }
-    const props = { columns, contractAPI, pageSizeOptions, total, page, pageSize, rows, isLoading, openAddContractModal, rowsExpanded, collabList, loading, contractId, addCollabModal }
+    const props = {
+        columns,
+        contractAPI,
+        pageSizeOptions,
+        total,
+        page,
+        pageSize,
+        rows,
+        isLoading,
+        openAddContractModal,
+        rowsExpanded,
+        collabList,
+        loading,
+        contractId,
+        addCollabModal,
+        accountList
+    }
     return {
         handler,
         props,

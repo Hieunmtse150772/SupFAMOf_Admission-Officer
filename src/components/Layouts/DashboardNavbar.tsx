@@ -72,7 +72,7 @@ const DashboardNavbar: FC<DashboardNavBarProps> = ({
     },
     {
       path: '/dashboard/user-list',
-      title: 'Collab Management',
+      title: 'Collaborator Management',
     },
     {
       path: '/dashboard/post-list',

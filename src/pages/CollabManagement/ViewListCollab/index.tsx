@@ -1,4 +1,5 @@
-import { Descriptions, DescriptionsProps, Drawer, Image, Space, Tag } from "antd";
+import { FileExcelOutlined } from "@ant-design/icons";
+import { Button, Descriptions, DescriptionsProps, Drawer, Image, Space, Tag } from "antd";
 import SFAMOGrid from "components/SFAMOGrid";
 import CertificateModal from "../CertificateModal/CertificateModal";
 import useViewCollabListHook from "./useViewCollabListHook";
@@ -73,10 +74,22 @@ const ViewCollabList = () => {
             )
         }
     ];
+    const ButtonExportExcel = (
+        <Button
+            type="default"
+            color="green"
+            style={{ color: 'green' }}
+            key="primary"
+            onClick={handler.handleExportExcel}
+        >
+            <FileExcelOutlined rev={undefined} /> Export excel
+        </Button >
+    )
     return (
         <>
             {props.collabList && (
                 <SFAMOGrid
+                    toolbar={ButtonExportExcel}
                     handleSearch={handler.handleSearch}
                     handleTableChange={handler.handleActionChange}
                     pageSizeOptions={props.pageSizeOptions}
@@ -89,6 +102,8 @@ const ViewCollabList = () => {
                     columns={props?.columns}
                     isLoading={props.loading} />
             )}
+            {props.excelFile && <button onClick={handler.downloadExcelFile}>Download Received Excel</button>}
+
             <Drawer
                 width={1000}
                 open={props.showDetail}

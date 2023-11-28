@@ -19,6 +19,9 @@ type paramUpdate = {
     ids: number[],
     IsApproved: boolean
 }
+type paramCancel = {
+    ids: number[],
+}
 const initialState: RegistrationState = {
     registrationList: {
         data: [] as Registrations[]
@@ -43,6 +46,18 @@ export const confirmPositionByCollabList = createAsyncThunk(
     async (params: paramUpdate, { rejectWithValue }) => {
         try {
             const result = await registrationService.updateRequest(params)
+            return result;
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data);
+        }
+    },
+);
+export const cancelRegistration = createAsyncThunk(
+    'registration/cancel-registration',
+    async (params: paramCancel, { rejectWithValue }) => {
+        try {
+            const result = await registrationService.cancelRegistration(params)
             return result;
         } catch (error) {
             const axiosError = error as AxiosError;
@@ -77,6 +92,17 @@ export const registrationSlice = createSlice({
                 state.loading = false;
             })
             .addCase(confirmPositionByCollabList.rejected, (state, action) => {
+                state.error = action.payload as ErrorDto;
+                state.loading = false;
+            })
+            .addCase(cancelRegistration.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(cancelRegistration.fulfilled, (state, action) => {
+                state.loading = false;
+            })
+            .addCase(cancelRegistration.rejected, (state, action) => {
                 state.error = action.payload as ErrorDto;
                 state.loading = false;
             })

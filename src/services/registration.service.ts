@@ -12,6 +12,9 @@ type paramUpdate = {
     ids: number[],
     IsApproved: boolean
 }
+type paramCancel = {
+    ids: number[],
+}
 export const registrationService = {
     getRegistrationByPositionId: (params: paramI): Promise<AxiosResponse<RegistrationsDTO>> => {
         const url = '/admission/admission-post-registration/getAccountByPostPositionId';
@@ -20,6 +23,11 @@ export const registrationService = {
     updateRequest: (params: paramUpdate): Promise<AxiosResponse<RegistrationsDTO>> => {
         const url = `/admission/admission-post-registration/review-joinRequest?IsApproved=${params.IsApproved}`;
         return axiosClient.put(url, params.ids
+        )
+    },
+    cancelRegistration: (params: paramCancel): Promise<AxiosResponse<RegistrationsDTO>> => {
+        const url = `/admission/admission-post-registration/cancel-post-registration`;
+        return axiosClient.delete(url, { data: params.ids }
         )
     }
 };

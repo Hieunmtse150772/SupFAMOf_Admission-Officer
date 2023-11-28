@@ -13,6 +13,18 @@ type ContractInfo = {
     updateAt: Date,
     accountContracts: AccountContract[]
 }
+
+export type ContractInfoRows = {
+    key: string,
+    id: string,
+    contractName: string,
+    contractDescription: string,
+    sampleFile: string,
+    totalSalary: number,
+    isActive: boolean,
+    createAt: Date,
+    accountContracts: AccountContract[]
+}
 export type AccountContract = {
     id: number,
     contractId: number,
