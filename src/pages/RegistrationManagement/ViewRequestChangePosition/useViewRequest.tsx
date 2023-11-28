@@ -43,7 +43,7 @@ type SearchParamsI = {
     status?: string,
     postCategoryId?: number
 }
-function useViewRequest(postId: number) {
+function useViewRequest(postId: number, fetchPost: () => void) {
     console.log('postId: ', postId)
     const Formatter = 'DD/MM/YYYY'
     const [currentRow, setCurrentRow] = useState<any>();
@@ -283,6 +283,7 @@ function useViewRequest(postId: number) {
                     else if (result.meta.requestStatus === "fulfilled") {
                         message.success('Update request success');
                         fetchRequest();
+                        fetchPost();
                     }
                 }
                 )

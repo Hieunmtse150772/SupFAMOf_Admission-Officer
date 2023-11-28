@@ -4,6 +4,7 @@ import { SortOrder } from "antd/es/table/interface";
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import { getCollabList } from "features/collabSlice";
+import { handleDownloadReport } from "features/reportSlice";
 import CertificateOptionI from "models/certificateOption.model";
 import { useEffect, useState } from "react";
 
@@ -20,10 +21,10 @@ const useViewCollablistHook = () => {
     const total = collabList?.metadata?.total;
     const [totalCollab, setTotalCollab] = useState<number>(0);
     const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
+    const excelFile = useAppSelector(state => state.report.excelFile)
     const option = [{ label: 'true', value: true }, { label: 'false', value: false }]
     const columns: ProColumns[] = [
         {
-
             title: 'Avatar',
             dataIndex: 'imgUrl',
             key: 'imgUrl',
@@ -121,7 +122,6 @@ const useViewCollablistHook = () => {
             key: 'action',
             render: (value) => (<Button onClick={() => handleOpenCertificateModal(value)} color="primary">View certificate</Button>
             )
-
         }
     ];
     const dispatch = useAppDispatch();
@@ -134,6 +134,9 @@ const useViewCollablistHook = () => {
     }
     const handleSearch = (value: any) => {
 
+    }
+    const handleExportExcel = async () => {
+        await dispatch(handleDownloadReport())
     }
     const handleOpenCertificateModal = (value: any) => {
         console.log('value: ', value)
@@ -171,12 +174,42 @@ const useViewCollablistHook = () => {
     const fetchCollabList = async () => {
         await dispatch(getCollabList({ page: page, PageSize: pageSize }))
     }
-
+    const downloadExcelFile = () => {
+        if (excelFile) {
+            const url = window.URL.createObjectURL(excelFile);
+            console.log('url: ', url)
+            const link = document.createElement('a');
+            console.log('link: ', link)
+            link.href = url;
+            link.setAttribute('download', 'account_report.xlsx');
+            document.body.appendChild(link);
+            link.click();
+            // Kiểm tra xem link có được chèn vào DOM hay không trước khi loại bỏ
+            if (link.parentNode) {
+                link.parentNode.removeChild(link);
+            }
+        }
+    };
     useEffect(() => {
         fetchCollabList()
     }, [page, pageSize])
-    const handler = { onPageChange, onChangePageSize, setCurrentRow, setShowDetail, setOpenCertificateModal, handleActionChange, handleSearch }
-    const props = { columns, collabList, pageSizeOptions, total, page, pageSize, rows, loading, showDetail, currentRow, openCertificateModal, certificateList }
+    // useEffect(() => {
+    //     if (excelFile) {
+    //         const url = window.URL.createObjectURL(excelFile);
+    //         const link = document.createElement('a');
+    //         link.href = url;
+    //         link.setAttribute('download', 'account_report.xlsx');
+    //         document.body.appendChild(link);
+    //         link.click();
+    //         // Kiểm tra xem link có được chèn vào DOM hay không trước khi loại bỏ
+    //         if (link.parentNode) {
+    //             link.parentNode.removeChild(link);
+    //         }
+    //     }
+    // }, [excelFile]);
+
+    const handler = { onPageChange, handleExportExcel, onChangePageSize, setCurrentRow, setShowDetail, setOpenCertificateModal, handleActionChange, handleSearch, downloadExcelFile }
+    const props = { columns, collabList, pageSizeOptions, total, page, pageSize, rows, loading, showDetail, currentRow, openCertificateModal, certificateList, excelFile }
     return {
         handler,
         props,

@@ -35,6 +35,9 @@ const useAddContractHook = () => {
     const [collabPicker, setCollabPicker] = useState<DataItem[]>();
     const [contractId, setContractId] = useState<number | null>(null)
     const [isEdit, setEdit] = useState<boolean>(false);
+    const [dateFrom, setDateFrom] = useState<Date | null>(null)
+    const [dateTo, setDateTo] = useState<Date | null>(null)
+
     const rowSelection = {
         selectedRowKeys,
         onChange: (keys: Key[]) => {
@@ -94,10 +97,10 @@ const useAddContractHook = () => {
             setDisableDate(false);
             setAssignDate(value);
             const twoDaysLater = dayjs(value).get('day');
-            form.setFieldValue('startingDate', null);
+            form.setFieldValue('dateFrom_dateTo', null);
         } else {
             setDisableDate(true);
-            form.setFieldValue('startingDate', null);
+            form.setFieldValue('dateFrom_dateTo', null);
         }
     }
     // const handleChange = (event: any) => {
@@ -119,13 +122,19 @@ const useAddContractHook = () => {
                 icon: <ExclamationCircleFilled rev={undefined} />,
                 onOk: async () => {
                     setLoading(true)
+                    const dateFrom_dateTo = form.getFieldValue('dateFrom_dateTo');
+                    const dateFrom = new Date(dateFrom_dateTo[0]);
+                    setDateFrom(dateFrom);
+                    const dateTo = new Date(dateFrom_dateTo[1]);
+                    setDateTo(dateTo);
                     const photoUrl = await uploadDocs(FileContract, setLoading); // Gọi hàm upload của bạn
                     const params: ContractCreated = {
                         contractName: form.getFieldValue('contractName'),
                         contractDescription: description,
                         sampleFile: photoUrl,
                         signingDate: form.getFieldValue('signingDate'),
-                        startDate: form.getFieldValue('startingDate'),
+                        startDate: dateFrom,
+                        endDate: dateTo,
                         totalSalary: Number(form.getFieldValue('salary'))
                     }
                     if (params) {
@@ -134,11 +143,14 @@ const useAddContractHook = () => {
                             if (response.payload.status === 200) {
                                 setLoading(false)
                                 message.success('Create post success!')
-                                setLoading(false);
                                 setContractId(response.payload.data.data.id);
                                 fetchCollabList(searchByEmail)
                                 form.submit();
                                 result = true;
+                            } else if (response.payload.errorCode === 4008) {
+                                message.error(response.payload.message)
+                                setLoading(false);
+                                result = false;
                             }
                         }).catch((error) => {
                             message.error('Intenal server error!')
@@ -211,7 +223,9 @@ const useAddContractHook = () => {
         handleConfirm,
         handleNext,
         handleChangeContractName,
-        setEdit
+        setEdit,
+        setDateFrom,
+        setDateTo,
     }
     const props = {
         disableDate,
@@ -225,7 +239,9 @@ const useAddContractHook = () => {
         collabPicker,
         dataSource,
         fileList,
-        isEdit
+        isEdit,
+        dateFrom,
+        dateTo,
     }
     return { handler, props }
 }

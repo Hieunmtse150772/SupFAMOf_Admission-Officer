@@ -1,10 +1,11 @@
 import { ProCard, ProList, StepsForm } from "@ant-design/pro-components";
+import { Box } from "@mui/material";
 import { unwrapResult } from "@reduxjs/toolkit";
-import { Badge, Modal, Progress, Space, Spin, Tag, message } from "antd";
+import { Badge, Button, Modal, Progress, Space, Spin, Tag, message } from "antd";
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import { Span } from "components/Typography";
-import { confirmPositionByCollabList, getRegistrationByPositionId } from "features/registrationSlice";
+import { cancelRegistration, confirmPositionByCollabList, getRegistrationByPositionId } from "features/registrationSlice";
 import Registrations from "models/registration.model";
 import { FC, Key, useEffect, useState } from "react";
 
@@ -15,7 +16,8 @@ interface ConfirmRegistrationModalProps {
     registerAmount: number,
     amountUnConfirmed: number,
     collabList: Registrations[],
-    positionId: string
+    positionId: string,
+    fetchPostList: () => void
 }
 const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
     {
@@ -25,7 +27,8 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
         registerAmount,
         amountUnConfirmed,
         collabList,
-        positionId
+        positionId,
+        fetchPostList
     }
 ) => {
     const dispatch = useAppDispatch();
@@ -58,9 +61,10 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
             }, time);
         });
     };
-    const handleNext = async () => {
+    const handleNext = async (): Promise<Boolean> => {
         if (selectedRowKeys.length === 0) {
             message.error('Please enter at least one collab!')
+            return false;
         } else {
             setCollabPicker(collabList.filter((registration) => selectedRowKeys.includes(registration.id)))
             return true
@@ -87,37 +91,69 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
         setDataSource(collabList);
     }, [collabList]);
     const handleConfirm = async () => {
-        setLoading(true)
+        setLoading(true);
         const numbers = selectedRowKeys.map((key) => +key);
-        const params = {
-            ids: numbers,
-            IsApproved: activeKey === 'tab1' ? true : false
-        }
-        try {
-            await dispatch(confirmPositionByCollabList(params))
-                .then((result) => {
-                    console.log('result: ', result);
-                    unwrapResult(result)
-                    if (result.meta.requestStatus === "rejected") {
-                        message.warning('Slot already full!');
-                        setLoading(false)
-                    } else if (result.meta.requestStatus === "fulfilled") {
-                        message.success(activeKey === 'tab1' ? 'Confirm collab successfull' : 'Rejected collab successfull');
-                        setLoading(false)
-                        setOpenConfirmModal(false);
+        if (activeKey === 'tab1') {
+            const params = {
+                ids: numbers,
+                IsApproved: true
+            }
+            try {
+                await dispatch(confirmPositionByCollabList(params))
+                    .then((result) => {
+                        unwrapResult(result)
+                        if (result.meta.requestStatus === "rejected") {
+                            message.warning('Slot already full!');
+                            setLoading(false)
+                        } else if (result.meta.requestStatus === "fulfilled") {
+                            message.success('Confirm collab successfull');
+                            setLoading(false)
+                            fetchPostList();
+                            setOpenConfirmModal(false);
+                        }
                     }
-                }
-                )
-                .catch((error) => {
-                    setLoading(false)
-                    message.error('Server internal error');
-                }
-                )
-        } catch (error) {
-            setLoading(false)
-            message.error('Server internal error');
-        } finally {
-            setLoading(false)
+                    )
+                    .catch((error) => {
+                        setLoading(false)
+                        message.error('Server internal error');
+                    }
+                    )
+            } catch (error) {
+                setLoading(false)
+                message.error('Server internal error');
+            } finally {
+                setLoading(false)
+            }
+        } else {
+            const params = {
+                ids: numbers,
+            }
+            try {
+                await dispatch(cancelRegistration(params))
+                    .then((result) => {
+                        unwrapResult(result)
+                        if (result.meta.requestStatus === "rejected") {
+                            message.warning('Can not cancel!');
+                            setLoading(false)
+                        } else if (result.meta.requestStatus === "fulfilled") {
+                            message.success('Cancel collab successfull');
+                            setLoading(false)
+                            fetchPostList();
+                            setOpenConfirmModal(false);
+                        }
+                    }
+                    )
+                    .catch((error) => {
+                        setLoading(false)
+                        message.error('Server internal error');
+                    }
+                    )
+            } catch (error) {
+                setLoading(false)
+                message.error('Server internal error');
+            } finally {
+                setLoading(false)
+            }
         }
 
     }
@@ -151,6 +187,48 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
     return (
         <Spin spinning={isLoading}>
             <StepsForm
+                submitter={{
+                    render: (props) => {
+                        if (props.step === 0) {
+                            return (
+                                <Button
+                                    color='primary'
+                                    type="primary"
+                                    htmlType="submit"
+                                    onClick={async () => {
+                                        const result = await handleNext();
+                                        if (result) {
+                                            props.form?.submit()
+                                        }
+                                    }}
+                                >
+                                    Next
+                                </Button>
+                            );
+                        }
+                        if (props.step === 1) {
+                            return (
+                                <Box>
+                                    <Button type="default" onClick={() => props.onPre()}>
+                                        Previous
+                                    </Button>
+                                    <Button
+                                        color='primary'
+                                        type="primary"
+                                        htmlType="submit"
+                                        disabled={isLoading}
+                                        onClick={() => {
+                                            handleConfirm()
+                                        }}
+                                    >
+                                        Finish
+                                    </Button>
+                                </Box>
+                            );
+                        }
+                        return null; // Default return to handle other cases
+                    },
+                }}
                 stepsFormRender={(dom, submitter) => {
                     return (
                         <Modal
@@ -169,7 +247,6 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
                 <StepsForm.StepForm
                     name="collab_confirm"
                     title="Choose collab"
-                    onFinish={handleNext}
                 >
                     <ProCard
                         title="Collaborator list"
@@ -285,9 +362,6 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
                     loading={isLoading}
                     name="Confirm"
                     title="Confirm"
-                    onFinish={async () => {
-                        handleConfirm()
-                    }}
                 >
                     <ProCard
                         title="Collaborator list"

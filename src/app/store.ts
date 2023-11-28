@@ -14,6 +14,7 @@ import dashboardReducer from '../features/manageDashboardSlice';
 import postReducer from '../features/postSlice';
 import postTitleReducer from '../features/postTitleSlice';
 import registrationReducer from '../features/registrationSlice';
+import reportReducer from '../features/reportSlice';
 import requestReducer from '../features/requestSlice';
 
 
@@ -31,7 +32,8 @@ export const store = configureStore({
     contract: contractReducer,
     location: rgoogleApiReducer,
     locationLeafLet: leafLetReducer,
-    request: requestReducer
+    request: requestReducer,
+    report: reportReducer
   },
 });
 
