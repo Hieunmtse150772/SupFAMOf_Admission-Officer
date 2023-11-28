@@ -24,7 +24,7 @@ interface SFAMOGridProps {
     ) => Promise<Partial<RequestData<any>>>;
     handleSearch: (value: any) => void,
 }
-const SFAMOGrid = ({ isLoading, rows, columns, rowsExpanded, page, total, pageSize, onPageChange, onChangePageSize, pageSizeOptions, expandedRowRender, action, toolbar, handleTableChange, handleSearch }: SFAMOGridProps) => {
+const SFAMOGridForModal = ({ isLoading, rows, columns, rowsExpanded, page, total, pageSize, onPageChange, onChangePageSize, pageSizeOptions, expandedRowRender, action, toolbar, handleTableChange, handleSearch }: SFAMOGridProps) => {
     let navigate = useNavigate();
     const actionRef = useRef<ActionType>();
     console.log('total: ', total)
@@ -48,6 +48,7 @@ const SFAMOGrid = ({ isLoading, rows, columns, rowsExpanded, page, total, pageSi
     return (
         <>
             <ProTable
+                search={false}
                 actionRef={actionRef}
                 request={handleTableChange}
                 expandable={{ expandedRowRender }}
@@ -63,4 +64,4 @@ const SFAMOGrid = ({ isLoading, rows, columns, rowsExpanded, page, total, pageSi
     )
 }
 
-export default SFAMOGrid;
+export default SFAMOGridForModal;

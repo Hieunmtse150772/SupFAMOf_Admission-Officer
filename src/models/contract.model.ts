@@ -1,6 +1,6 @@
 
 type ContractInfo = {
-    id: number,
+    id: string,
     contractName: string,
     createPersonId: number,
     contractDescription: string,
@@ -13,7 +13,7 @@ type ContractInfo = {
     updateAt: Date,
     accountContracts: AccountContract[]
 }
-type AccountContract = {
+export type AccountContract = {
     id: number,
     contractId: number,
     accountId: number,
@@ -63,6 +63,10 @@ type AccountContract = {
             }
         }
     }
+}
+export type ListContractI = {
+    key: string,
+    contract: AccountContract[];
 }
 type Account = {
     id: number,

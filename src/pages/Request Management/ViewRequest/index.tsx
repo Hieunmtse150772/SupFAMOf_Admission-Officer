@@ -1,7 +1,7 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { green, grey, red, yellow } from '@mui/material/colors';
 import { Badge, Button, DescriptionsProps, Image, Rate, Space, Tag } from 'antd';
-import SFAMOGrid from 'components/SFAMOGrid';
+import SFAMOGridForModal from 'components/SFAMOGridforModal';
 import Status from 'enums/status.enum';
 import ReactHtmlParser from 'react-html-parser';
 import useViewRequest from './useViewRequest';
@@ -112,7 +112,7 @@ const ViewPostList = () => {
     return (
         <>{
             props?.requests && (
-                <SFAMOGrid
+                <SFAMOGridForModal
                     handleSearch={handler.handleSearch}
                     handleTableChange={handler.handleActionChange}
                     toolbar={ButtonAddNew}
