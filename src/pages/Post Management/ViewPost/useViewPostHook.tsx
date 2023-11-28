@@ -469,7 +469,8 @@ function useViewPostList() {
     postImg: post?.postImg,
     priority: post?.priority,
     position: post?.postPositions,
-    createAt: post?.createAt
+    createAt: post?.createAt,
+    totalUpdateRegisterAmount: post?.totalUpdateRegisterAmount
     // ...
   }));
   console.log('trainingposition: ', rowsExpanded)

@@ -19,6 +19,7 @@ type PostInfo = {
     isEnd: false,
     createAt: Date,
     updateAt: Date,
+    totalUpdateRegisterAmount: number,
     account: {
         id: number,
         roleId: number,

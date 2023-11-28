@@ -1,10 +1,10 @@
-import { CheckCircleOutlined, ExclamationCircleFilled, FolderViewOutlined, MoreOutlined, UnlockOutlined } from '@ant-design/icons'; // Import the icon from the library
+import { CheckCircleOutlined, ExclamationCircleFilled, EyeOutlined, FolderViewOutlined, MoreOutlined, UnlockOutlined } from '@ant-design/icons'; // Import the icon from the library
 import { ProColumns, RequestData } from "@ant-design/pro-components";
 import { FiberManualRecord } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import { green, grey, red, yellow } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { Button, Dropdown, Image, MenuProps, Modal, Popover, Progress, StepsProps, Table, TableColumnsType, message } from 'antd';
+import { Badge, Button, Dropdown, Image, MenuProps, Modal, Popover, Progress, StepsProps, Table, TableColumnsType, message } from 'antd';
 import { SortOrder } from 'antd/es/table/interface';
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
@@ -51,14 +51,14 @@ function useViewRegistrationHook() {
     const { posts, isDeleted } = useAppSelector(state => state.post);
     const postInfoAPI = useAppSelector(state => state.post.postInfo);
     const isLoading = useAppSelector(state => state.post.loading);
-    const { collabs, loading } = useAppSelector(state => state.collab)
-    const { registrationList } = useAppSelector(state => state.registration)
-    const postTitleOptionsAPI = useAppSelector(state => state.postTitle.postTitleOption)
+    const { collabs, loading } = useAppSelector(state => state.collab);
+    const { registrationList } = useAppSelector(state => state.registration);
+    const postTitleOptionsAPI = useAppSelector(state => state.postTitle.postTitleOption);
     const valueEnum: { [key: number]: { text: string } } = {};
     postTitleOptionsAPI.forEach((option) => {
         valueEnum[option.id] = { text: option.postCategoryDescription };
     });
-    const collabsList = collabs?.data ? collabs?.data : []
+    const collabsList = collabs?.data ? collabs?.data : [];
     const [postInfo, setPostInfo] = useState<any>();
     const [page, setPage] = useState<number>(1);
     const [statusFilter, setStatusFilter] = useState<number | null>();
@@ -67,15 +67,17 @@ function useViewRegistrationHook() {
     const [totalCollab, setTotalCollab] = useState<number>(0);
     const [amountUnConfirmed, setAmountUnConfirmed] = useState<number>(0);
     const [registerAmount, setAmountConfirmed] = useState<number>(0);
-    const [positionId, setPositionId] = useState<string>('')
+    const [positionId, setPositionId] = useState<string>('');
     const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
-    const [searchByEmail, setSearchByEmail] = useState<string>('')
-    const [status, setStatus] = useState<number>(1)
+    const [searchByEmail, setSearchByEmail] = useState<string>('');
+    const [status, setStatus] = useState<number>(1);
+    const [postId, setPostId] = useState<number | null>(null);
+    const [openViewRequestModal, setOpenViewRequestModal] = useState<boolean>(false);
     const [sortModel, setSortModel] = useState<SortModalI>({
         Sort: 'createAt',
         Order: 'desc'
     });
-    const [searchParams, setSearchParams] = useState<SearchParamsI>()
+    const [searchParams, setSearchParams] = useState<SearchParamsI>();
 
     const customDot: StepsProps['progressDot'] = (dot, { status, index }) => (
         <Popover
@@ -240,92 +242,12 @@ function useViewRegistrationHook() {
                 </Box>
             },
         },
-        // {
-        //     title: 'Action',
-        //     width: 250,
-        //     hideInSearch: true,
-        //     dataIndex: 'status',
-        //     valueEnum: {
-        //         1: {
-        //             text: 'Pending',
-        //             status: 'Pending',
-        //         },
-        //         2: {
-        //             text: 'Closed',
-        //             status: 'Closed',
-        //         },
-        //         3: {
-        //             text: 'Ending',
-        //             status: 'Success',
-        //         },
-        //         4: {
-        //             text: 'Canceled',
-        //             status: 'Canceled',
-        //         },
-        //         5: {
-        //             text: 'Deleted',
-        //             status: 'Deleted',
-        //         },
-        //         6: {
-        //             text: 'Re-open',
-        //             status: 'Re-open',
-        //         },
-        //     },
-        //     render: (value, valueEnum) => {
-        //         let color = grey[400].toString();
-        //         let statusText = 'Unknown';
-        //         let disable = false;
-        //         let icon = <EditOutlined rev={undefined} />
-        //         switch (valueEnum?.status) {
-        //             case Status.opening:
-        //                 color = '#1890ff';
-
-        //                 icon = <LockOutlined rev={undefined} />;
-        //                 statusText = 'Close';
-        //                 break;
-
-        //             case Status.closed:
-        //                 color = green[500];
-        //                 statusText = 'End';
-        //                 icon = <CheckCircleOutlined rev={undefined} />;
-        //                 break;
-
-        //             case Status.ended:
-        //                 color = red[500];
-        //                 statusText = 'End';
-        //                 disable = true;
-        //                 break;
-        //             case Status.canceled:
-        //                 color = yellow[500];
-        //                 statusText = 'End';
-        //                 disable = true;
-        //                 break;
-        //             case Status.deleted:
-        //                 color = red[500];
-        //                 statusText = 'End';
-        //                 disable = true;
-        //                 break;
-        //             case Status.reopen:
-        //                 color = green[500];
-        //                 statusText = 'Close';
-        //                 icon = <LockOutlined rev={undefined} />;
-        //                 disable = false;
-        //                 break;
-        //             default:
-        //                 break;
-        //         }
-        //         return <Box>
-        //             {valueEnum?.status === 2 && (<><Button onClick={() => handleReopen(value)} type='default' color={color} style={{ color: color, width: '100px' }} disabled={disable} icon={<UnlockOutlined rev={undefined} />}>Re-open</Button> | </>)}
-        //             <Button onClick={() => handleAction(value, valueEnum.status)} type='default' color={color} style={{ color: color, width: '100px' }} disabled={disable} icon={icon}>{statusText}</Button>
-        //         </Box>
-        //     },
-        // },
         {
             title: 'Action',
             width: 100,
             align: 'center',
             hideInSearch: true,
-            dataIndex: 'status',
+            dataIndex: ['status', 'totalUpdateRegisterAmount'],
             valueEnum: {
                 1: {
                     text: 'Pending',
@@ -352,7 +274,8 @@ function useViewRegistrationHook() {
                     status: 'Re-open',
                 },
             },
-            render: (value, valueEnum) => {
+            render: (value, valueEnum, record) => {
+                const totalUpdateRegisterAmount = valueEnum?.totalUpdateRegisterAmount; // Access totalUpdateRegisterAmount from record
                 const items: MenuProps['items'] = [
                     {
                         label: 'Close',
@@ -368,7 +291,6 @@ function useViewRegistrationHook() {
                         onClick: () => handleReopen(value),
                         disabled: Boolean(valueEnum?.status === 1 || valueEnum?.status === 3 || valueEnum?.status === 6),
                     },
-
                     {
                         label: 'End',
                         key: '3',
@@ -377,17 +299,53 @@ function useViewRegistrationHook() {
                         disabled: Boolean(valueEnum?.status === 1 || valueEnum?.status === 6),
                         danger: true
                     },
+                    {
+                        label: 'View request',
+                        key: '4',
+                        icon: <EyeOutlined rev={undefined} />,
+                        itemIcon: <Badge count={totalUpdateRegisterAmount} />,
+                        onClick: () => handleOpenViewRequestModal(value),
+                        disabled: Boolean(totalUpdateRegisterAmount === 0)
+                    },
                 ];
                 const menuProps = {
                     items,
                 };
-                return <Box>
+                return <Badge count={totalUpdateRegisterAmount}><Box>
                     <Dropdown menu={menuProps} trigger={['click']} placement='bottomLeft'>
                         <Button icon={<MoreOutlined rev={undefined} />}></Button>
                     </Dropdown>
                 </Box>
+                </Badge>
             },
         },
+        // {
+        //     title: 'Request',
+        //     width: 100,
+        //     align: 'center',
+        //     hideInSearch: true,
+        //     dataIndex: 'totalUpdateRegisterAmount',
+        //     render: (value) => {
+        //         const items: MenuProps['items'] = [
+        //             {
+        //                 label: 'View request',
+        //                 key: '1',
+        //                 icon: <EyeOutlined rev={undefined} />,
+        //                 // onClick: () => handleAction(value, valueEnum.status),
+        //             },
+        //         ];
+        //         const menuProps = {
+        //             items,
+        //         };
+        //         return <Badge count={5}>
+        //             <Box>
+        //                 <Dropdown menu={menuProps} trigger={['click']} placement='bottomLeft'>
+        //                     <Button icon={<MoreOutlined rev={undefined} />}></Button>
+        //                 </Dropdown>
+        //             </Box>
+        //         </Badge>
+        //     },
+        // },
     ];
     const rowsExpanded: ListPositionI[] = posts.data.map(post => ({
         key: post.postCode,
@@ -497,7 +455,10 @@ function useViewRegistrationHook() {
             message.error(error);
         })
     }
-
+    const handleOpenViewRequestModal = (value: any) => {
+        setPostId(value?.props.record?.key)
+        setOpenViewRequestModal(true);
+    }
     const handleAction = (value: any, status: number) => {
         console.log('value: ', value.props.record);
         console.log('status', status)
@@ -631,7 +592,8 @@ function useViewRegistrationHook() {
         postImg: post?.postImg,
         priority: post?.priority,
         numberOfPosition: post?.postPositions.length,
-        createAt: post?.createAt
+        createAt: post?.createAt,
+        totalUpdateRegisterAmount: post?.totalUpdateRegisterAmount
         // ...
     }));
 
@@ -649,9 +611,11 @@ function useViewRegistrationHook() {
             postCategoryId: searchParams?.postCategoryId
         }))
     }
+
     const fetchPostTitleOption = async () => {
         await dispatch(getPostTitle());
     }
+
     useEffect(() => {
         fetchPostTitleOption()
     }, [])
@@ -672,7 +636,8 @@ function useViewRegistrationHook() {
         setStatusFilter,
         handleSetStatus,
         handleActionChange,
-        handleSearch
+        handleSearch,
+        setOpenViewRequestModal
     }
     const props = {
         openConFirmModal,
@@ -695,7 +660,9 @@ function useViewRegistrationHook() {
         registrationList,
         registerAmount,
         amountUnConfirmed,
-        positionId
+        positionId,
+        openViewRequestModal,
+        postId
     }
     return {
         handler,

@@ -1,0 +1,44 @@
+@media (max-width: 768px) {
+  .ant-table {
+    width: 100%;
+    overflow-x: auto;
+    &-thead > tr,
+    &-tbody > tr {
+      > th,
+      > td {
+        white-space: pre;
+        > span {
+          display: block;
+        }
+      }
+    }
+  }
+}
+.ant-table-content {
+  background-color: white;
+
+  .ant-table-thead {
+    tr {
+      td {
+        background-color: #f9a62a;
+      }
+      th {
+        background-color: #f9a62a;
+      }
+
+      .ant-table-column-sort {
+        background-color: #ffd088 !important;
+      }
+    }
+  }
+  .ant-table-expanded-row {
+    .ant-table-cell {
+      background-color: white;
+    }
+    .ant-table-thead {
+      .ant-table-cell {
+        background-color: #baff6c;
+      }
+    }
+  }
+}
