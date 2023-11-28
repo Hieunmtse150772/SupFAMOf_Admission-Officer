@@ -55,6 +55,7 @@ export type PostCreatedV2 = {
     postPositions: PositionCreatedV2I[],
 }
 export type PositionCreatedV2I = {
+    date: string,
     trainingCertificateId: number,
     documentId: number,
     positionName: string,

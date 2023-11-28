@@ -271,7 +271,15 @@ const useAddNewPostHook = () => {
         const response = await dispatch(geocodingLeafLetApi(geocodingParams))
         const result: AxiosResponse<geocodingLeafLetI[], any> = unwrapResult(response)
         console.log('result: ', result)
-
+        console.log('postPosition.date: ', postPosition.date)
+        const parts = postPosition.date.split('/'); // Tách chuỗi thành mảng các phần tử, sử dụng dấu '/' để tách
+        // Lưu ý: Đối với định dạng 'DD/MM/YYYY', parts[0] là ngày, parts[1] là tháng và parts[2] là năm
+        const day = parseInt(parts[0], 10); // Chuyển phần tử đầu tiên thành số nguyên
+        const month = parseInt(parts[1], 10) - 1; // Chuyển phần tử thứ hai thành số nguyên, trừ đi 1 vì index của tháng trong Date bắt đầu từ 0
+        const year = parseInt(parts[2], 10);
+        const dateObject = new Date(year, month, day);
+        console.log('dateObject: ', dateObject)
+        const formattedDate = moment(dateObject).format('YYYY-MM-DDTHH:mm:ss'); //ToIsoTostring sẽ tự đổi theo UTC nên sẽ chênh lệch múi giờ, thay vào đó sẽ xài moment
         if (result.data.length !== 0) {
             const repsonse = {
                 trainingCertificateId: postPosition.certificateOption,
@@ -287,7 +295,7 @@ const useAddNewPostHook = () => {
                 location: postPosition.location,
                 latitude: result.data[0].lat,
                 longitude: result.data[0].lon,
-                date: new Date(postPosition.date)
+                date: formattedDate
             }
             console.log('respone position: ', repsonse)
             return repsonse;
@@ -363,6 +371,7 @@ const useAddNewPostHook = () => {
         }
     }
     const handleAddPost = async (params: PostCreatedV2) => {
+        console.log('paramssss: ', params);
         await dispatch(createPost(params)).then((response) => {
             const result2 = unwrapResult(response);
             if (result2.status === 200) {
@@ -395,11 +404,12 @@ const useAddNewPostHook = () => {
                 currentDate.setDate(currentDate.getDate() + 1);
             }
             const optionDatePicker: any[] = dateArray?.map((date) => ({
-                value: String(date),
+                value: moment(date).format(Formater),
                 label: moment(date).format(Formater)
             }));
-            console.log('date array: ', dateArray)
-            setOptionDate(optionDatePicker)
+            console.log('optionDatePicker: ', optionDatePicker);
+            console.log('date array: ', dateArray);
+            setOptionDate(optionDatePicker);
         } else setOptionDate([])
     }
 
