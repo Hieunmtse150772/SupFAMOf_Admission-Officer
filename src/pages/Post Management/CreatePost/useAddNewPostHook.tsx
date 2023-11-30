@@ -372,14 +372,16 @@ const useAddNewPostHook = () => {
     }
     const handleAddPost = async (params: PostCreatedV2) => {
         console.log('paramssss: ', params);
-        await dispatch(createPost(params)).then((response) => {
-            const result2 = unwrapResult(response);
-            if (result2.status === 200) {
-                message.success('Create post success!')
+        await dispatch(createPost(params)).then((response: any) => {
+            console.log('response2: ', response)
+            if (response.payload.status === 200) {
+                form.resetFields();
+                message.success('Create post success!');
                 removeImage();
                 setFileList([]);
-                form.resetFields();
                 setLoading(false);
+            } else {
+                message.error(response.payload.message);
             }
         }).catch((error) => {
             message.error('Intenal server error!')
