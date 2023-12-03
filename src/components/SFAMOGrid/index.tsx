@@ -23,8 +23,9 @@ interface SFAMOGridProps {
         filter: Record<string, (string | number)[] | null>
     ) => Promise<Partial<RequestData<any>>>;
     handleSearch: (value: any) => void,
+    setSelectedRows?: React.Dispatch<React.SetStateAction<any[]>>
 }
-const SFAMOGrid = ({ isLoading, rows, columns, rowsExpanded, page, total, pageSize, onPageChange, onChangePageSize, pageSizeOptions, expandedRowRender, action, toolbar, handleTableChange, handleSearch }: SFAMOGridProps) => {
+const SFAMOGrid = ({ isLoading, rows, columns, rowsExpanded, page, total, pageSize, onPageChange, onChangePageSize, pageSizeOptions, expandedRowRender, action, toolbar, handleTableChange, handleSearch, setSelectedRows }: SFAMOGridProps) => {
     let navigate = useNavigate();
     const actionRef = useRef<ActionType>();
     console.log('total: ', total)
@@ -57,6 +58,11 @@ const SFAMOGrid = ({ isLoading, rows, columns, rowsExpanded, page, total, pageSi
                 loading={isLoading}
                 locale={customLocale}
                 pagination={customPagination}
+                rowSelection={setSelectedRows ? {
+                    onChange: (_, selectedRows) => {
+                        setSelectedRows(selectedRows);
+                    },
+                } : false}
             >
             </ProTable>
         </>
