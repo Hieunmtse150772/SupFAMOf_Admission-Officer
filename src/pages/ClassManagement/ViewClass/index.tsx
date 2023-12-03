@@ -1,13 +1,25 @@
+import { CheckCircleOutlined } from "@ant-design/icons";
+import { Button } from "antd";
 import SFAMOGrid from "components/SFAMOGrid";
 import { useNavigate, useParams } from "react-router";
-import useViewClassHook from "./useViewClassHook";
+import AssignClassModal from "../AssignClassModal";
+import UseViewClassHook from "./useViewClassHook";
 
 const Index = () => {
     const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
-    const { props, handler } = useViewClassHook();
+    const { props, handler } = UseViewClassHook();
     // Use the id or perform other logic here
-
+    const AssignRegistration = (
+        <Button
+            type="primary"
+            key="primary"
+            disabled={props.selectedRowsState.length === 0}
+            onClick={handler.hanldeAssignClass}
+        >
+            < CheckCircleOutlined rev={undefined} /> Assign class
+        </Button >
+    )
     return (
         <div
             style={{
@@ -16,10 +28,10 @@ const Index = () => {
                 padding: 24,
             }}
         >
-
             {
-                props?.posts && (
+                props?.certificateRegistrationList && (
                     <SFAMOGrid
+                        toolbar={[AssignRegistration]}
                         handleSearch={handler.handleSearch}
                         handleTableChange={handler.handleActionChange}
                         pageSizeOptions={props.pageSizeOptions}
@@ -31,9 +43,12 @@ const Index = () => {
                         rows={props.rows}
                         columns={props?.columns}
                         isLoading={props.isLoading}
-                        rowsExpanded={props.rowsExpanded} />
+                        setSelectedRows={handler.setSelectedRows}
+                    />
                 )
+
             }
+            {props.openAssignClassModal && <AssignClassModal open={props.openAssignClassModal} setOpenAssignClassModal={handler.setOpenAssignClassModal}></AssignClassModal>}
         </div>
     );
 };

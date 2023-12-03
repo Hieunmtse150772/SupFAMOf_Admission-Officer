@@ -1,22 +1,29 @@
 import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
+import TrainingRegistrationDto from 'dtos/trainingRegistration.dto';
 import CertificateCreated from 'models/certificate.model';
 import CertificateOptionI from 'models/certificateOption.model';
+import TrainingRegistrationI from 'models/trainingRegistrationI.model';
 import { certificateService } from 'services/certificate.service';
 
 interface CertificateState {
     certificateOption: CertificateOptionI[],
+    trainingRegistration: TrainingRegistrationDto,
     loading: boolean,
     error: string | null,
 }
 
 const initialState: CertificateState = {
     certificateOption: [],
+    trainingRegistration: {
+        data: [] as TrainingRegistrationI[],
+    }
+    ,
     loading: false,
     error: ''
 }
 export const getCertificate = createAsyncThunk(
-    'auth/get-certificate',
+    'certificates/get-certificate',
     async (_, { rejectWithValue }) => {
         try {
             const result = await certificateService.getCertificate()
@@ -27,8 +34,20 @@ export const getCertificate = createAsyncThunk(
         }
     },
 );
+export const getCertificateRegistration = createAsyncThunk(
+    'certificates/get-certificate-registration',
+    async (id: string, { rejectWithValue }) => {
+        try {
+            const result = await certificateService.getCertificateRegistration(id)
+            return result.data;
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data);
+        }
+    },
+);
 export const createCertificate = createAsyncThunk(
-    'auth/create-certificate',
+    'certificates/create-certificate',
     async (payload: CertificateCreated, { rejectWithValue }) => {
         try {
             const result = await certificateService.createCertificate(payload)
@@ -40,7 +59,7 @@ export const createCertificate = createAsyncThunk(
     },
 );
 export const updateCertificate = createAsyncThunk(
-    'auth/update-certificate',
+    'certificates/update-certificate',
     async (payload: CertificateCreated, { rejectWithValue }) => {
         try {
             const result = await certificateService.updateCertificate(payload)
@@ -52,7 +71,7 @@ export const updateCertificate = createAsyncThunk(
     },
 );
 export const deleteCertificate = createAsyncThunk(
-    'auth/delete-certificate',
+    'certificates/delete-certificate',
     async (id: number, { rejectWithValue }) => {
         try {
             const result = await certificateService.deleteCertificate(id)
@@ -64,7 +83,7 @@ export const deleteCertificate = createAsyncThunk(
     },
 );
 export const certificateSlice = createSlice({
-    name: 'certificate',
+    name: 'certificates',
     initialState,
     reducers: {},
     extraReducers: (builder) => {
@@ -78,6 +97,18 @@ export const certificateSlice = createSlice({
                 state.loading = false;
             })
             .addCase(getCertificate.rejected, (state, action) => {
+                state.error = String(action.payload);
+                state.loading = false;
+            })
+            .addCase(getCertificateRegistration.pending, (state) => {
+                state.loading = true;
+                state.error = "";
+            })
+            .addCase(getCertificateRegistration.fulfilled, (state, action) => {
+                state.trainingRegistration = action.payload;
+                state.loading = false;
+            })
+            .addCase(getCertificateRegistration.rejected, (state, action) => {
                 state.error = String(action.payload);
                 state.loading = false;
             })

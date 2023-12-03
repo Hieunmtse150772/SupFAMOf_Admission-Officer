@@ -82,6 +82,7 @@ const routes = [
         <Login />
       </GuestGuard>
     ),
+    title: 'Login'
   },
   {
     path: "register",
@@ -90,6 +91,8 @@ const routes = [
         <Register />
       </GuestGuard>
     ),
+    title: 'Register'
+
   },
   {
     path: "forget-password",
@@ -110,6 +113,7 @@ const routes = [
       {
         path: "",
         element: <DashboardSaaS />,
+        title: 'Dashboard'
       },
       {
         path: "user-profile",
@@ -118,40 +122,53 @@ const routes = [
       {
         path: "user-list",
         element: <UserList />,
+        title: 'Collab Management'
       },
       {
         path: "class-list",
         element: <ClassList />,
+        title: 'Certificate Management'
+
       },
       {
         path: "class-list/:id",
         element: <ViewClass />,
+        title: 'Class Management'
+
       },
       {
         path: "post-list",
         element: <ViewPostList />,
+        title: 'Post Management'
       },
       {
         path: "add-post",
         element: <AddNewPost />,
+        title: 'Add Post'
       },
       {
         path: "registration-list",
-        element: <ViewRegistration />
+        element: <ViewRegistration />,
+        title: 'Registration Management'
       },
       {
         path: "contract-list",
-        element: <ViewContract />
+        element: <ViewContract />,
+        title: 'Contract Management'
       }
       ,
       {
         path: "add-contract",
-        element: <AddContract />
+        element: <AddContract />,
+        title: 'Add Contract'
+
       }
       ,
       {
         path: "request-list",
-        element: <ViewRequest />
+        element: <ViewRequest />,
+        title: 'Request Management'
+
       }
       ,
       {

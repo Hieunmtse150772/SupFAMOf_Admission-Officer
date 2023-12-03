@@ -18,7 +18,7 @@ const initialState: LeafLetApiState = {
 }
 
 export const geocodingLeafLetApi = createAsyncThunk(
-    'address/get-location-leaflet',
+    'geocodingLeafLet/get-location-leaflet',
     async (params: paramLeafLetI, { rejectWithValue }) => {
         try {
             const result = await leafLetApiService.geocodingLeafLetAPI(params)

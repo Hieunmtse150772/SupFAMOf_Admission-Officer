@@ -1,11 +1,10 @@
 import {
   AppBar,
   Box,
-  Breadcrumbs,
   styled,
   Theme,
   Toolbar,
-  useMediaQuery,
+  useMediaQuery
 } from "@mui/material";
 import { H2 } from "components/Typography";
 import { TitleContext } from "contexts/TitleContext";
@@ -99,9 +98,11 @@ const DashboardNavbar: FC<DashboardNavBarProps> = ({
     {
       path: `/dashboard/class-list/${id}`,
       title: 'Class Training',
+      pathBack: '/dashboard/class-list',
+      titleBack: 'Certificate Management'
     }
   ];
-  const last = items.find((item) => item.path === location.pathname)?.title
+  const last = items.find((item) => item.path === location.pathname)
 
   if (downSm) {
     return (
@@ -131,9 +132,7 @@ const DashboardNavbar: FC<DashboardNavBarProps> = ({
   return (
     <DashboardNavbarRoot position="sticky">
       <StyledToolBar>
-        <Breadcrumbs aria-label="breadcrumb">
-          <h2 style={{ color: "#F09101" }}>{last}</h2>
-        </Breadcrumbs>
+        {last?.pathBack && <a href={last?.pathBack} style={{ color: "#F09101", fontSize: '20px' }}>{last?.titleBack}/</a>}<a href={last?.path} style={{ color: "#F09101", fontSize: '20px' }}> {last?.title}</a>
         <H2
           fontSize={21}
           lineHeight={0}

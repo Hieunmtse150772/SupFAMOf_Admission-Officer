@@ -16,7 +16,7 @@ const initialState: PostTitleState = {
     error: ''
 }
 export const getPostTitle = createAsyncThunk(
-    'auth/get-post-title',
+    'postTitle/get-post-title',
     async (_, { rejectWithValue }) => {
         try {
             const result = await postTitleService.getPostTitle()
@@ -28,7 +28,7 @@ export const getPostTitle = createAsyncThunk(
     },
 );
 export const createPostTitle = createAsyncThunk(
-    'auth/create-post-title',
+    'postTitle/create-post-title',
     async (payload: PostTitleCreated, { rejectWithValue }) => {
         try {
             const result = await postTitleService.createPostTitle(payload)
@@ -40,7 +40,7 @@ export const createPostTitle = createAsyncThunk(
     },
 );
 export const updatePostTitle = createAsyncThunk(
-    'auth/update-post-title',
+    'postTitle/update-post-title',
     async (payload: PostTitleCreated, { rejectWithValue }) => {
         try {
             const result = await postTitleService.updatePostTitle(payload)
@@ -52,7 +52,7 @@ export const updatePostTitle = createAsyncThunk(
     },
 );
 export const deletePostTitle = createAsyncThunk(
-    'auth/delete-post-title',
+    'postTitle/delete-post-title',
     async (id: number, { rejectWithValue }) => {
         try {
             const result = await postTitleService.deletePostTitle(id)
@@ -64,7 +64,7 @@ export const deletePostTitle = createAsyncThunk(
     },
 );
 export const postTitleSlice = createSlice({
-    name: 'post',
+    name: 'postTitle',
     initialState,
     reducers: {},
     extraReducers: (builder) => {

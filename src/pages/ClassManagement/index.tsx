@@ -13,12 +13,12 @@ import useViewCertificate from './useViewCertificate';
 function ClassManagement() {
     const navigate = useNavigate()
     const { props, handler } = useViewCertificate()
-    type DataItem = (typeof props.certificateList)[number];
+    type DataItem = (typeof props.certificateRegistrationList.data)[number];
     const hanldeClickViewClass = (id: any) => {
         console.log('id: ', id)
         navigate(`/dashboard/class-list/${id}`)
     }
-    const DateRow = props.certificateList.map((item) => {
+    const DateRow = props.certificateRegistrationList.data.map((item) => {
         // Tạo một bản sao của item từ certificateList
         const newItem = { ...item };
         // Thêm trường actions vào newItem
