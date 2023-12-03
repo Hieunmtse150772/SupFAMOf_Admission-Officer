@@ -5,6 +5,8 @@ type CertificateOptionI = {
     isActive: boolean,
     status: number,
     createAt: Date,
-    updateAt: Date
+    updateAt: Date,
+    actions: any[],
+    avatar: any
 }
 export default CertificateOptionI;

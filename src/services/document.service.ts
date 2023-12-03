@@ -14,6 +14,10 @@ export const documentService = {
         const url = '/admission/admission-document/create';
         return axiosClient.post(url, payload);
     },
+    updateDocument: (payload: DocumentCreated): Promise<AxiosResponse<DocumentOptionDto>> => {
+        const url = `/admission/admission-document/update?documentId=${payload.documentId}`;
+        return axiosClient.put(url, payload);
+    },
     deleteDocument: (id: string): Promise<AxiosResponse<DocumentOptionDto>> => {
         const url = '/admission/admission-document';
         return axiosClient.delete(url, {

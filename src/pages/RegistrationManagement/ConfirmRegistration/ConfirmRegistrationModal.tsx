@@ -45,8 +45,6 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
     const rowSelection = {
         selectedRowKeys,
         onChange: (keys: Key[]) => {
-            console.log("pre: ", selectedRowKeys)
-            console.log("af: ", keys)
             if ((percent === 100) && (selectedRowKeys.length < keys.length)) { message.error('The number of participants is sufficient!') } else {
                 setSelectedRowKeys(keys)
             }

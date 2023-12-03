@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import DocumentCreated from 'models/document.model';
 import DocumentOptionI from 'models/documentOption.model';
@@ -39,6 +39,18 @@ export const createDocument = createAsyncThunk(
         }
     },
 );
+export const updateDocument = createAsyncThunk(
+    'auth/update-document',
+    async (payload: DocumentCreated, { rejectWithValue }) => {
+        try {
+            const result = await documentService.updateDocument(payload)
+            return result;
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data);
+        }
+    },
+);
 export const deleteDocument = createAsyncThunk(
     'auth/delete-document',
     async (id: string, { rejectWithValue }) => {
@@ -69,17 +81,6 @@ export const documentSlice = createSlice({
                 state.error = String(action.payload);
                 state.loading = false;
             })
-            .addCase(createDocument.pending, (state) => {
-                state.loading = true;
-                state.error = "";
-            })
-            .addCase(createDocument.fulfilled, (state) => {
-                state.loading = false;
-            })
-            .addCase(createDocument.rejected, (state, action) => {
-                state.error = String(action.payload);
-                state.loading = false;
-            })
             .addCase(deleteDocument.pending, (state) => {
                 state.loading = true;
                 state.error = "";
@@ -91,6 +92,18 @@ export const documentSlice = createSlice({
                 state.error = String(action.payload);
                 state.loading = false;
             })
+            .addMatcher(isAnyOf(createDocument.pending, updateDocument.pending), (state) => {
+                state.loading = true;
+                state.error = "";
+            })
+            .addMatcher(isAnyOf(createDocument.fulfilled, updateDocument.fulfilled), (state) => {
+                state.loading = false;
+            })
+            .addMatcher(isAnyOf(createDocument.rejected, updateDocument.rejected), (state, action) => {
+                state.error = String(action.payload);
+                state.loading = false;
+            })
+
     },
 });
 

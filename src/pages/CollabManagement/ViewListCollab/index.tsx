@@ -75,15 +75,35 @@ const ViewCollabList = () => {
         }
     ];
     const ButtonExportExcel = (
-        <Button
-            type="default"
-            color="green"
-            style={{ color: 'green' }}
-            key="primary"
-            onClick={handler.handleExportExcel}
-        >
-            <FileExcelOutlined rev={undefined} /> Export excel
-        </Button >
+        <Space>
+            <Button
+                type="default"
+                color="green"
+                style={{ color: 'green' }}
+                key="primary"
+                onClick={handler.handleExportAccountReportExcel}
+            >
+                <FileExcelOutlined rev={undefined} /> Account report
+            </Button >
+            <Button
+                type="default"
+                color="green"
+                style={{ color: 'green' }}
+                key="primary"
+                onClick={handler.handleExportMonthlyReportExcel}
+            >
+                <FileExcelOutlined rev={undefined} /> OpenDay report
+            </Button >
+            <Button
+                type="default"
+                color="green"
+                style={{ color: 'green' }}
+                key="primary"
+                onClick={handler.handleExportAccountReportExcel}
+            >
+                <FileExcelOutlined rev={undefined} /> Tuyen Sinh report
+            </Button >
+        </Space>
     )
     return (
         <>

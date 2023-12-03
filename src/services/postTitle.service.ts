@@ -14,4 +14,14 @@ export const postTitleService = {
         const url = '/admission/admission-post-category/create';
         return axiosClient.post(url, payload);
     }
+    ,
+    updatePostTitle: (payload: PostTitleCreated): Promise<AxiosResponse<PostTitleOption>> => {
+        const url = `/admission/admission-post-category/update?postCategoryId=${payload.postCategoryId}`;
+        return axiosClient.put(url, payload);
+    }
+    ,
+    deletePostTitle: (postCategoryId: number): Promise<AxiosResponse<PostTitleOption>> => {
+        const url = `/admission/admission-post-category/disable?postCategoryId=${postCategoryId}`;
+        return axiosClient.put(url);
+    }
 };

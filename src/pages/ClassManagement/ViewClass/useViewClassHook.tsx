@@ -42,7 +42,7 @@ type SearchParamsI = {
     status?: string,
     postCategoryId?: number
 }
-function useViewRegistrationHook() {
+function useViewClassHook() {
     const Formatter = 'DD/MM/YYYY'
     const [currentRow, setCurrentRow] = useState<any>();
     // const [selectedRowsState, setSelectedRows] = useState<boolean>([]);
@@ -657,4 +657,4 @@ function useViewRegistrationHook() {
         expandedRowRender
     }
 }
-export default useViewRegistrationHook;
+export default useViewClassHook;

@@ -143,7 +143,6 @@ const useEditPostModal = () => {
                 latitude: result.data[0].lat,
                 longitude: result.data[0].lon,
             }
-            console.log('respone position: ', repsonse)
             return repsonse;
         } else {
             message.warning('Your address enter was not found, please enter the right address!');
@@ -152,9 +151,6 @@ const useEditPostModal = () => {
         }
     }
     const handleUpdatePost = async (value: any, setOpenEditPostModal: (value: boolean) => void) => {
-        console.log('description', description)
-        console.log('valueeee: ', value)
-
         if (description !== '') {
             setError('');
         }
@@ -178,7 +174,6 @@ const useEditPostModal = () => {
                             postPositions: postPositionsResults,
                             postImg: photoUrl ? photoUrl : 'https://fptcameraiq.vn/storage/festftel25.jpg',
                         }
-                        console.log('params: ', params);
                         setParamsCreatePost(params);
                         setOpenEditPostModal(false);
                     } catch (error) {
@@ -187,7 +182,6 @@ const useEditPostModal = () => {
                     }
                 },
                 onCancel() {
-                    console.log('Cancel');
                 },
             });
         } else {
@@ -202,14 +196,10 @@ const useEditPostModal = () => {
     const handleSearchAddressGeoapifi = async (keyWords: string) => {
         try {
             // Thực hiện gọi API Google ở đây
-            console.log('keyword: ', keyWords)
             const response = await dispatch(getGeoApiFi({ address: keyWords, key: '6f44e55eb27841738cbd3be2852d936c' }));
-            console.log('response: ', response)
             unwrapResult(response)
             if (getGeoApiFi.fulfilled.match(response)) {
-                console.log('result', response.payload.data);  // Access the 'data' property
                 const optionsFromAPI = response.payload.data?.features?.map((feature) => {
-                    console.log('first', feature)
                     return {
                         label: feature.properties.formatted,
                         value: feature.properties.formatted

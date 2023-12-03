@@ -8,14 +8,10 @@ import {
   Tooltip,
   useMediaQuery,
 } from "@mui/material";
-import { unwrapResult } from "@reduxjs/toolkit";
-import { useAppDispatch } from "app/store";
-import AppConstants from "enums/app";
-import { getUserProfile } from "features/authSlice";
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ScrollBar from "simplebar-react";
-import { admissionTopMenu } from "./topMenuList";
+import { administratorMenu } from "./topMenuList";
 
 // root component interface
 interface SideNavBarProps {
@@ -47,35 +43,16 @@ const StyledListItemButton = styled(ListItemButton)(() => ({
 }));
 
 // root component
-const DashboardSideBar: FC<SideNavBarProps> = ({
+const DashboardSideBarAdmin: FC<SideNavBarProps> = ({
   showMobileSideBar,
   closeMobileSideBar,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const dispatch = useAppDispatch();
   const [isExpanded, setIsExpanded] = useState(false);
   const [active, setActive] = useState("Dashboard");
   const downMd = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
-  const accessToken = localStorage.getItem(AppConstants.ACCESS_TOKEN);
-  const userInfo = localStorage.getItem(AppConstants.USER)
 
-  const handleGetProfile = async () => {
-    const result = await dispatch(getUserProfile());
-    unwrapResult(result);
-  };
-  useEffect(() => {
-    if (userInfo) {
-      const user = JSON.parse(userInfo);
-      if (user?.roleId !== null) {
-        if (user?.roleId === 1) {
-          handleGetProfile().catch(() => {
-            navigate('/login');
-          });
-        }
-      }
-    }
-  }, [accessToken]);
   const handleActiveMainMenu = (menuItem: any) => () => {
     setActive(menuItem.title);
     navigate(menuItem.path);
@@ -91,7 +68,7 @@ const DashboardSideBar: FC<SideNavBarProps> = ({
 
       <ScrollBar style={{ maxHeight: "calc(100% - 50px)" }}>
 
-        {admissionTopMenu.map((nav, index) => (
+        {administratorMenu.map((nav, index) => (
           <Tooltip title={nav.title} placement="right" key={index}>
             <StyledListItemButton
               disableRipple
@@ -144,4 +121,4 @@ const DashboardSideBar: FC<SideNavBarProps> = ({
   return <MainMenu>{mainSideBarContent}</MainMenu>;
 };
 
-export default DashboardSideBar;
+export default DashboardSideBarAdmin;

@@ -5,11 +5,10 @@ import PostIDto from 'dtos/Post/Post View/post.dto';
 import PostInfoDto from 'dtos/Post/Post View/postInfo.dto';
 import SearchPostParams from 'dtos/Post/Post View/searchPost.dto';
 import { PostCreatedV2, PostUpdated } from 'models/postCreated.model';
-import LoginUserTokenDto from '../dtos/login.userToken.model';
 import axiosClient from './axiosClient';
 
 export const postService = {
-    createPost: (payload: PostCreatedV2): Promise<AxiosResponse<LoginUserTokenDto>> => {
+    createPost: (payload: PostCreatedV2): Promise<AxiosResponse<PostIDto>> => {
         const url = '/admission/admission-post/create';
         return axiosClient.post(url, { ...payload });
     },
