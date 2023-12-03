@@ -18,7 +18,6 @@ const SaaS: FC = () => {
   useTitle("Saas");
   const dispatch = useAppDispatch();
   const { collabOverview } = useAppSelector(state => state.dashboard)
-  console.log('collabOverview: ', collabOverview)
   const fetchDashboard = async () => {
     await dispatch(getCollabOverview()).catch((error) => {
       message.error('Server internal error!');

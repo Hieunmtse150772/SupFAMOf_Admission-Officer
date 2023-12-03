@@ -58,7 +58,6 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
             submitter={{
                 render: (props) => (
                     <Button color='primary' type="primary" htmlType="submit" onClick={() => {
-                        console.log('props.form?.getFieldValue', props.form?.getFieldValue('description'))
                         if (props.form?.getFieldValue('description')) {
                             handler.setDescription(props.form?.getFieldValue('description') === '<p><br></p>' ? '' : props.form?.getFieldValue('description'))
                         } else {

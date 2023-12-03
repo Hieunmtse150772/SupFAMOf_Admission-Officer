@@ -1,6 +1,7 @@
 
 type CertificateCreated = {
     trainingTypeId: string,
-    certificateName: string
+    certificateName: string,
+    trainingCertificateId?: number
 }
 export default CertificateCreated

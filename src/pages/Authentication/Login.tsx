@@ -55,9 +55,20 @@ const Login: FC = () => {
       username: value.username,
       password: value.password
     }
-    await dispatch(loginAdministrator(payload)).then(() => {
+    await dispatch(loginAdministrator(payload)).then((response: any) => {
       // navigate('/')
-      message.success('Login successful.')
+      console.log('response: ', response);
+      if (response.payload.status === 200) {
+        localStorage.setItem(AppConstants.ACCESS_TOKEN, response.payload.data.data.accessToken);
+        localStorage.setItem(AppConstants.USER, JSON.stringify(response.payload.data.data));
+        message.success('Login successful.');
+        console.log('response.payload.data.data.roleId: ', response.payload.data.data.roleId)
+        if (response.payload.data.data.roleId === 3) {
+          navigate('/administrator/dashboard');
+        }
+      } else {
+        message.error('Username or password is not correct')
+      }
     }).catch((error) => {
       message.error(error)
     })

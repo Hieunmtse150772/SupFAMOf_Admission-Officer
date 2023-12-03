@@ -163,20 +163,15 @@ const useAddNewPostHook = () => {
     const handleSearchAddress = async (keyWords: string) => {
         try {
             // Thực hiện gọi API Google ở đây
-            console.log('keyword: ', keyWords)
             const response = await dispatch(getGoogleAddress({ address: keyWords, key: 'AIzaSyDSEKbLICxkqgw7vIuEbK9-f2oHiuKw-XY' }));
             unwrapResult(response)
             if (getGoogleAddress.fulfilled.match(response)) {
-                console.log('result', response.payload.data);  // Access the 'data' property
                 const optionsFromAPI = response.payload.data?.predictions?.map((prediction) => {
-                    console.log('first', prediction)
                     return {
                         label: prediction.description,
                         value: prediction.description
                     }
                 });
-                console.log('optionsFromAPI: ', optionsFromAPI)
-
                 setOptionAddress(optionsFromAPI);
                 return optionsFromAPI;
             } else {
@@ -190,14 +185,10 @@ const useAddNewPostHook = () => {
     const handleSearchAddressGeoapifi = async (keyWords: string) => {
         try {
             // Thực hiện gọi API Google ở đây
-            console.log('keyword: ', keyWords)
             const response = await dispatch(getGeoApiFi({ address: keyWords, key: '6f44e55eb27841738cbd3be2852d936c' }));
-            console.log('response: ', response)
             unwrapResult(response)
             if (getGeoApiFi.fulfilled.match(response)) {
-                console.log('result', response.payload.data);  // Access the 'data' property
                 const optionsFromAPI = response.payload.data?.features?.map((feature) => {
-                    console.log('first', feature)
                     return {
                         label: feature.properties.formatted,
                         value: feature.properties.formatted
@@ -270,15 +261,12 @@ const useAddNewPostHook = () => {
         }
         const response = await dispatch(geocodingLeafLetApi(geocodingParams))
         const result: AxiosResponse<geocodingLeafLetI[], any> = unwrapResult(response)
-        console.log('result: ', result)
-        console.log('postPosition.date: ', postPosition.date)
         const parts = postPosition.date.split('/'); // Tách chuỗi thành mảng các phần tử, sử dụng dấu '/' để tách
         // Lưu ý: Đối với định dạng 'DD/MM/YYYY', parts[0] là ngày, parts[1] là tháng và parts[2] là năm
         const day = parseInt(parts[0], 10); // Chuyển phần tử đầu tiên thành số nguyên
         const month = parseInt(parts[1], 10) - 1; // Chuyển phần tử thứ hai thành số nguyên, trừ đi 1 vì index của tháng trong Date bắt đầu từ 0
         const year = parseInt(parts[2], 10);
         const dateObject = new Date(year, month, day);
-        console.log('dateObject: ', dateObject)
         const formattedDate = moment(dateObject).format('YYYY-MM-DDTHH:mm:ss'); //ToIsoTostring sẽ tự đổi theo UTC nên sẽ chênh lệch múi giờ, thay vào đó sẽ xài moment
         if (result.data.length !== 0) {
             const repsonse = {
@@ -297,7 +285,6 @@ const useAddNewPostHook = () => {
                 longitude: result.data[0].lon,
                 date: formattedDate
             }
-            console.log('respone position: ', repsonse)
             return repsonse;
         } else {
             message.warning('Your address enter was not found, please enter the right address!');
@@ -320,7 +307,6 @@ const useAddNewPostHook = () => {
     };
 
     const handleSubmitAnt = async (value: any) => {
-        console.log('description: ', description)
         if (description !== '') {
             setError('');
         }
@@ -348,7 +334,6 @@ const useAddNewPostHook = () => {
                             postPositions: postPositionsResults,
                             postImg: photoUrl
                         }
-                        console.log('params: ', params);
                         setParamsCreatePost(params);
                     } catch (error) {
                         console.error('Error in handlePostPosition:', error);
@@ -356,7 +341,6 @@ const useAddNewPostHook = () => {
                     }
                 },
                 onCancel() {
-                    console.log('Cancel');
                 },
             });
         } else {
@@ -371,9 +355,7 @@ const useAddNewPostHook = () => {
         }
     }
     const handleAddPost = async (params: PostCreatedV2) => {
-        console.log('paramssss: ', params);
         await dispatch(createPost(params)).then((response: any) => {
-            console.log('response2: ', response)
             if (response.payload.status === 200) {
                 form.resetFields();
                 message.success('Create post success!');
@@ -391,13 +373,9 @@ const useAddNewPostHook = () => {
     }
 
     const handleChangeDateRangePicker = (event: any) => {
-        console.log('event: ', event)
         if (event !== null) {
             const dateFrom = new Date(event[0]);
             const dateTo = new Date(event[1]);
-            console.log('dateFrom: ', dateFrom)
-            console.log('dateTo: ', dateTo)
-
             let dateArray = [];
             let currentDate = new Date(dateFrom);
 
@@ -409,15 +387,10 @@ const useAddNewPostHook = () => {
                 value: moment(date).format(Formater),
                 label: moment(date).format(Formater)
             }));
-            console.log('optionDatePicker: ', optionDatePicker);
-            console.log('date array: ', dateArray);
             setOptionDate(optionDatePicker);
         } else setOptionDate([])
     }
 
-    useEffect(() => {
-        console.log('optionDate: ', optionDate)
-    }, [optionDate])
 
     const fetchPostTitleOption = async () => {
         await dispatch(getPostTitle());
@@ -434,11 +407,18 @@ const useAddNewPostHook = () => {
     const handleChangePosition = (value: PostOptionI | null) => {
         setValue('postTitle', value?.id)
     }
+
     useEffect(() => {
-        fetchPostTitleOption();
-        fetchDocumentOption();
-        fetchCertificateOption();
+        const fetchDate = async () => {
+            await fetchPostTitleOption();
+            await fetchDocumentOption();
+            await fetchCertificateOption();
+        }
+        fetchDate();
     }, [])
+    useEffect(() => {
+    }, [optionDate])
+
     useEffect(() => {
         setLoading(loading)
     }, [loading])

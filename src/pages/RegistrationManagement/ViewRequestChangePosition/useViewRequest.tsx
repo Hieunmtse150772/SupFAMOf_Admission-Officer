@@ -44,7 +44,6 @@ type SearchParamsI = {
     postCategoryId?: number
 }
 function useViewRequest(postId: number, fetchPost: () => void) {
-    console.log('postId: ', postId)
     const Formatter = 'DD/MM/YYYY'
     const [currentRow, setCurrentRow] = useState<any>();
     const { confirm } = Modal;
@@ -82,8 +81,6 @@ function useViewRequest(postId: number, fetchPost: () => void) {
                     // eslint-disable-next-line jsx-a11y/anchor-is-valid
                     <a
                         onClick={() => {
-                            console.log('dom', dom)
-                            console.log('entity', entity)
                             setCurrentRow(entity);
                             setShowDetail(true);
                         }}
@@ -226,7 +223,6 @@ function useViewRequest(postId: number, fetchPost: () => void) {
             },
         },
     ];
-    console.log('currentRow: ', currentRow)
     const drawerDetail = () => {
         return (
             <Drawer
@@ -263,7 +259,6 @@ function useViewRequest(postId: number, fetchPost: () => void) {
     const dispatch = useAppDispatch();
 
     const handleUpdateRequest = async (value: any, IsApproved: boolean) => {
-        console.log('value.id ', value?.props?.record.key)
         const title = IsApproved ? 'approve' : 'reject';
         confirm({
             title: `Do you want to ${title} the request?`,
@@ -299,15 +294,12 @@ function useViewRequest(postId: number, fetchPost: () => void) {
     const handleActionChange = async (params: any,
         sorter: Record<string, SortOrder>,
         filter: Record<string, (string | number)[] | null>): Promise<Partial<RequestData<any>>> => {
-        console.log('params: ', params)
-
         if (JSON.stringify(params) !== JSON.stringify({ current: 1, pageSize: 10 })) {
             setSearchParams(params);
         }
         if (sorter && Object.keys(sorter).length > 0) {
             const keys = Object.keys(sorter);
             const fieldName = keys[0];
-            console.log('sorter[fieldName]: ', sorter[fieldName])
             const sortOrder = sorter[fieldName] === 'ascend' ? 'asc' : 'desc';
             if (sorter[fieldName] !== sortModel.Sort && fieldName !== sortModel.Order) {
                 setSortModel({ Sort: fieldName, Order: String(sortOrder) })
@@ -324,7 +316,6 @@ function useViewRequest(postId: number, fetchPost: () => void) {
         setPage(value)
     }
     const onChangePageSize = (value: any) => {
-        console.log('pagesize: ', value)
         setPageSize(value)
     }
     const rows = requests.data.map(request => ({

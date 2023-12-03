@@ -4,7 +4,7 @@ import { SortOrder } from "antd/es/table/interface";
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import { getCollabList } from "features/collabSlice";
-import { handleDownloadReport } from "features/reportSlice";
+import { handleDownloadMonthLyReport, handleDownloadReport } from "features/reportSlice";
 import CertificateOptionI from "models/certificateOption.model";
 import { useEffect, useState } from "react";
 
@@ -135,8 +135,11 @@ const useViewCollablistHook = () => {
     const handleSearch = (value: any) => {
 
     }
-    const handleExportExcel = async () => {
+    const handleExportAccountReportExcel = async () => {
         await dispatch(handleDownloadReport())
+    }
+    const handleExportMonthlyReportExcel = async () => {
+        await dispatch(handleDownloadMonthLyReport())
     }
     const handleOpenCertificateModal = (value: any) => {
         console.log('value: ', value)
@@ -208,7 +211,7 @@ const useViewCollablistHook = () => {
     //     }
     // }, [excelFile]);
 
-    const handler = { onPageChange, handleExportExcel, onChangePageSize, setCurrentRow, setShowDetail, setOpenCertificateModal, handleActionChange, handleSearch, downloadExcelFile }
+    const handler = { onPageChange, handleExportAccountReportExcel, handleExportMonthlyReportExcel, onChangePageSize, setCurrentRow, setShowDetail, setOpenCertificateModal, handleActionChange, handleSearch, downloadExcelFile }
     const props = { columns, collabList, pageSizeOptions, total, page, pageSize, rows, loading, showDetail, currentRow, openCertificateModal, certificateList, excelFile }
     return {
         handler,

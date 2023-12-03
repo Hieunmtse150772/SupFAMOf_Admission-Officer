@@ -11,7 +11,7 @@ import { H2 } from "components/Typography";
 import { TitleContext } from "contexts/TitleContext";
 import UserInfo from "models/userInfor.model";
 import { FC, useContext } from "react";
-import { useLocation, useParams } from "react-router";
+import { useLocation } from "react-router";
 import NotificationsPopover from "./popovers/NotificationsPopover";
 import ProfilePopover from "./popovers/ProfilePopover";
 import ServicePopover from "./popovers/ServicePopover";
@@ -49,7 +49,7 @@ const ToggleIcon = styled(Box)(({ theme }) => ({
 }));
 
 // root component
-const DashboardNavbar: FC<DashboardNavBarProps> = ({
+const DashboardNavbarAdmin: FC<DashboardNavBarProps> = ({
   setShowMobileSideBar, userInfo
 }) => {
   const { title } = useContext(TitleContext);
@@ -57,8 +57,6 @@ const DashboardNavbar: FC<DashboardNavBarProps> = ({
   const upSm = useMediaQuery((theme: Theme) => theme.breakpoints.up("sm"));
   const downSm = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   const path = location.pathname
-  const { id } = useParams<{ id: string }>(); // Get the 'id' parameter from the URL
-
   const items = [
     {
       path: '/dashboard',
@@ -94,11 +92,7 @@ const DashboardNavbar: FC<DashboardNavBarProps> = ({
     },
     {
       path: '/dashboard/class-list',
-      title: 'Certificate Management',
-    },
-    {
-      path: `/dashboard/class-list/${id}`,
-      title: 'Class Training',
+      title: 'Class Management',
     }
   ];
   const last = items.find((item) => item.path === location.pathname)?.title
@@ -158,4 +152,4 @@ const DashboardNavbar: FC<DashboardNavBarProps> = ({
   );
 };
 
-export default DashboardNavbar;
+export default DashboardNavbarAdmin;

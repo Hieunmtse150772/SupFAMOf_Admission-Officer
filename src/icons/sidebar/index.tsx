@@ -10,6 +10,7 @@ import {
   AppRegistration as RegistrationList,
   GridView as UserGridIcon
 } from "@mui/icons-material";
+import SchoolIcon from '@mui/icons-material/School';
 import DashboardIcon from "./Dashboard";
 import SessionsIcon from "./Sessions";
 import UserManagementIcon from "./UserManagement";
@@ -31,5 +32,6 @@ export default {
   DocumentIcon,
   MapIcon,
   AddToPhotosOutlined,
-  Assignment
+  Assignment,
+  SchoolIcon
 };

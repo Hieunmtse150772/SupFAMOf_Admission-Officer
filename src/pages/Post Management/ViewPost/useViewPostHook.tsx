@@ -86,8 +86,6 @@ function useViewPostList() {
           // eslint-disable-next-line jsx-a11y/anchor-is-valid
           <a
             onClick={() => {
-              console.log('dom', dom)
-              console.log('entity', entity)
               setCurrentRow(entity);
               setShowDetail(true);
             }}
@@ -348,10 +346,9 @@ function useViewPostList() {
     ];
 
     const data = rowsExpanded.find((value) => value.key === record?.id);
-    console.log('data: ', data)
     return <Table columns={columnsExpanded} dataSource={data?.position} pagination={false} />;
   };
-  console.log('currentRow: ', currentRow)
+
   const drawerDetail = () => {
     return (
       <Drawer
@@ -387,14 +384,12 @@ function useViewPostList() {
   }
   const dispatch = useAppDispatch();
   const handleOpenEditPostModal = (value: any) => {
-    console.log('open modal: ', value)
     const result = fetchPost(value.id);
     setPostInfo(result);
     setOpenEditPostModal(true);
     setEditPostModalId(value?.id)
   }
   const handleDeletePosition = async (value: any) => {
-    console.log('value: ', value.id)
     await dispatch(deletePositionById(value?.id)).then((response: any) => {
       if (response?.payload?.errorCode === 4006) {
         message.warning(response?.payload?.message)
@@ -422,15 +417,12 @@ function useViewPostList() {
   const handleActionChange = async (params: any,
     sorter: Record<string, SortOrder>,
     filter: Record<string, (string | number)[] | null>): Promise<Partial<RequestData<any>>> => {
-    console.log('params: ', params)
-
     if (JSON.stringify(params) !== JSON.stringify({ current: 1, pageSize: 10 })) {
       setSearchParams(params);
     }
     if (sorter && Object.keys(sorter).length > 0) {
       const keys = Object.keys(sorter);
       const fieldName = keys[0];
-      console.log('sorter[fieldName]: ', sorter[fieldName])
       const sortOrder = sorter[fieldName] === 'ascend' ? 'asc' : 'desc';
       if (sorter[fieldName] !== sortModel.Sort && fieldName !== sortModel.Order) {
         setSortModel({ Sort: fieldName, Order: String(sortOrder) })
@@ -447,7 +439,6 @@ function useViewPostList() {
     setPage(value)
   }
   const onChangePageSize = (value: any) => {
-    console.log('pagesize: ', value)
     setPageSize(value)
   }
 
@@ -473,7 +464,6 @@ function useViewPostList() {
     totalUpdateRegisterAmount: post?.totalUpdateRegisterAmount
     // ...
   }));
-  console.log('trainingposition: ', rowsExpanded)
   const fetchPostList = async () => {
     await dispatch(getPostByAccountId({
       page: page,

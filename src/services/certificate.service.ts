@@ -14,4 +14,14 @@ export const certificateService = {
         const url = '/admission/admission-training-certificate/create';
         return axiosClient.post(url, payload);
     }
+    ,
+    updateCertificate: (payload: CertificateCreated): Promise<AxiosResponse<CertificateOption>> => {
+        const url = `/admission/admission-training-certificate/update?trainingCertificateId=${payload.trainingCertificateId}`;
+        return axiosClient.put(url, payload);
+    }
+    ,
+    deleteCertificate: (trainingCertificateId: number): Promise<AxiosResponse<CertificateOption>> => {
+        const url = `/admission/admission-training-certificate/disable?trainingCertificateId=${trainingCertificateId}`;
+        return axiosClient.delete(url);
+    }
 };
