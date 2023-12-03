@@ -2,6 +2,7 @@
 import { AxiosResponse } from 'axios';
 
 import CertificateOption from 'dtos/certificateOption.dto';
+import TrainingRegistrationDto from 'dtos/trainingRegistration.dto';
 import CertificateCreated from 'models/certificate.model';
 import axiosClient from './axiosClient';
 
@@ -23,5 +24,9 @@ export const certificateService = {
     deleteCertificate: (trainingCertificateId: number): Promise<AxiosResponse<CertificateOption>> => {
         const url = `/admission/admission-training-certificate/disable?trainingCertificateId=${trainingCertificateId}`;
         return axiosClient.delete(url);
-    }
+    },
+    getCertificateRegistration: (id: string): Promise<AxiosResponse<TrainingRegistrationDto>> => {
+        const url = `/admission/admission-training-certificate/view-certificate-registration?Id=${id}`;
+        return axiosClient.get(url);
+    },
 };

@@ -16,7 +16,7 @@ const initialState: DocumentState = {
     error: ''
 }
 export const getDocument = createAsyncThunk(
-    'auth/get-document',
+    'documents/get-document',
     async (_, { rejectWithValue }) => {
         try {
             const result = await documentService.getDocument()
@@ -28,7 +28,7 @@ export const getDocument = createAsyncThunk(
     },
 );
 export const createDocument = createAsyncThunk(
-    'auth/create-document',
+    'documents/create-document',
     async (payload: DocumentCreated, { rejectWithValue }) => {
         try {
             const result = await documentService.createDocument(payload)
@@ -40,7 +40,7 @@ export const createDocument = createAsyncThunk(
     },
 );
 export const updateDocument = createAsyncThunk(
-    'auth/update-document',
+    'documents/update-document',
     async (payload: DocumentCreated, { rejectWithValue }) => {
         try {
             const result = await documentService.updateDocument(payload)
@@ -52,7 +52,7 @@ export const updateDocument = createAsyncThunk(
     },
 );
 export const deleteDocument = createAsyncThunk(
-    'auth/delete-document',
+    'documents/delete-document',
     async (id: string, { rejectWithValue }) => {
         try {
             const result = await documentService.deleteDocument(id)
@@ -64,7 +64,7 @@ export const deleteDocument = createAsyncThunk(
     },
 );
 export const documentSlice = createSlice({
-    name: 'document',
+    name: 'documents',
     initialState,
     reducers: {},
     extraReducers: (builder) => {

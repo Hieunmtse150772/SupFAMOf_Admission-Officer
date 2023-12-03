@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import addressReducer from '../features/addressSlice';
 import authReducer from '../features/authSlice';
 import certificateReducer from '../features/certificateSlice';
+import classReducer from '../features/classSlice';
 import collabReducer from '../features/collabSlice';
 import contractReducer from '../features/contractSlice';
 import documentReducer from '../features/documentSlice';
@@ -33,7 +34,8 @@ export const store = configureStore({
     location: rgoogleApiReducer,
     locationLeafLet: leafLetReducer,
     request: requestReducer,
-    report: reportReducer
+    report: reportReducer,
+    class: classReducer
   },
 });
 

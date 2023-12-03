@@ -27,7 +27,7 @@ const initialState: ContractState = {
         data: {} as ContractInfo
     },
 }
-export const getContractList = createAsyncThunk('contract/get-contract-list',
+export const getContractList = createAsyncThunk('contracts/get-contract-list',
     async (params: SearchContractDto, { rejectWithValue }) => {
         try {
             const result = await contractService.getContractList(params);
@@ -37,7 +37,7 @@ export const getContractList = createAsyncThunk('contract/get-contract-list',
             return rejectWithValue(axiosError.response?.data)
         }
     })
-export const createContract = createAsyncThunk('contract/create-contract',
+export const createContract = createAsyncThunk('contracts/create-contract',
     async (params: ContractCreated, { rejectWithValue }) => {
         try {
             const result = await contractService.createContract(params);
@@ -47,7 +47,7 @@ export const createContract = createAsyncThunk('contract/create-contract',
             return rejectWithValue(axiosError.response?.data)
         }
     })
-export const sendContractEmail = createAsyncThunk('contract/send-contract-email',
+export const sendContractEmail = createAsyncThunk('contracts/send-contract-email',
     async (params: SendContractParams, { rejectWithValue }) => {
         try {
             const result = await contractService.sendContractEmail(params);
