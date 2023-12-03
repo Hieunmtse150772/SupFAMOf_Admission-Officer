@@ -1,5 +1,4 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { AxiosError } from 'axios';
 import { reportService } from 'services/report.service';
 
 interface ReportState {
@@ -13,29 +12,70 @@ const initialState: ReportState = {
     loading: false,
     error: '',
 }
-
-export const getReportAccountExcel = createAsyncThunk('reports/get-collab-list',
-    async (_, { rejectWithValue }) => {
+export const handleDownloadAccountReport = createAsyncThunk(
+    'reports/download-excel',
+    async () => {
         try {
-            const result = await reportService.getReportAccountExcel();
-            return result
+
+            const response = await reportService.getReportAccountExcel(); // Gọi service để nhận dữ liệu từ server
+            const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            // Tạo một URL tạm thời cho blob
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'account_report.xlsx');
+            document.body.appendChild(link);
+            link.click();
+
+            // Xóa đường link và URL tạm thời
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
         } catch (error) {
-            const axiosError = error as AxiosError;
-            return rejectWithValue(axiosError.response?.data)
+            // Xử lý lỗi nếu cần
         }
-    })
+    }
+);
+export const handleDownloadMonthLyReport = createAsyncThunk(
+    'reports/download-monthly-excel',
+    async () => {
+        try {
+
+            const response = await reportService.getMonthlyReportExcel(); // Gọi service để nhận dữ liệu từ server
+            const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            // Tạo một URL tạm thời cho blob
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'monthly_report.xlsx');
+            document.body.appendChild(link);
+            link.click();
+
+            // Xóa đường link và URL tạm thời
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            // Xử lý lỗi nếu cần
+        }
+    }
+);
 export const handleDownloadReport = createAsyncThunk(
     'reports/download-excel',
     async () => {
         try {
-            const response = await reportService.getReportAccountExcel();
-            const href = window.URL.createObjectURL(response.data);
+
+            const response = await reportService.getReportAccountExcel(); // Gọi service để nhận dữ liệu từ server
+            const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            // Tạo một URL tạm thời cho blob
+            const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
-            link.href = href;
-            link.setAttribute('download', 'config.json'); //or any other extension
+            link.href = url;
+            link.setAttribute('download', 'account_report.xlsx');
             document.body.appendChild(link);
             link.click();
+
+            // Xóa đường link và URL tạm thời
             document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
         } catch (error) {
             // Xử lý lỗi nếu cần
         }
@@ -47,15 +87,14 @@ export const collabSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(getReportAccountExcel.pending, (state) => {
+            .addCase(handleDownloadAccountReport.pending, (state) => {
                 state.loading = true;
                 state.error = "";
             })
-            .addCase(getReportAccountExcel.fulfilled, (state, action) => {
+            .addCase(handleDownloadAccountReport.fulfilled, (state, action) => {
                 state.loading = false;
-                state.excelFile = action.payload.data;
             })
-            .addCase(getReportAccountExcel.rejected, (state, action) => {
+            .addCase(handleDownloadAccountReport.rejected, (state, action) => {
                 state.error = String(action.payload);
                 state.loading = false;
             })

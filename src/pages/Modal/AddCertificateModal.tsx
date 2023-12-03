@@ -7,11 +7,11 @@ import {
 import { unwrapResult } from '@reduxjs/toolkit';
 import { Space, Tag, message } from 'antd';
 import { useAppDispatch } from 'app/store';
-import { createCertificate } from 'features/certificateSlice';
+import { createCertificate, deleteCertificate, updateCertificate } from 'features/certificateSlice';
 import CertificateCreated from 'models/certificate.model';
 import CertificateOptionI from 'models/certificateOption.model';
 import moment from 'moment';
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 
 interface AddCertificateModalProps {
     open: boolean,
@@ -20,24 +20,21 @@ interface AddCertificateModalProps {
     data: CertificateOptionI[]
 }
 const AddCertificateModal: FC<AddCertificateModalProps> = ({ open, setOpenCertificateModal, fetchCertificateOption, data }) => {
-    console.log('con c', open)
     const Formatter = 'DD/MM/YYYY';
     const dispatch = useAppDispatch();
     type DataItem = (typeof data)[number];
     const [dataSource, setDataSource] = useState<DataItem[]>(data);
-
+    const [editingDocumentId, setEditingDocumentId] = useState<number | null>(null);
 
     const handleCreatePostTitle = async (value: any) => {
         const payload: CertificateCreated = {
             trainingTypeId: value?.trainingTypeId,
-            certificateName: value?.certificateName
+            certificateName: value?.certificateName,
         }
         let result = false;
         try {
             await dispatch(createCertificate(payload)).then((response) => {
-                console.log('response111: ', response.meta.requestStatus)
                 const result2 = unwrapResult(response);
-                console.log('first: ', result2)
                 if (result2.status === 200) {
                     fetchCertificateOption();
                     message.success('Add certificate success!');
@@ -45,7 +42,6 @@ const AddCertificateModal: FC<AddCertificateModalProps> = ({ open, setOpenCertif
                 }
             }
             ).catch((error) => {
-                console.log('error: ', error)
                 message.error(error);
                 result = false;
             })
@@ -56,7 +52,33 @@ const AddCertificateModal: FC<AddCertificateModalProps> = ({ open, setOpenCertif
 
         return result;
     }
-
+    const handleDeleteCertificate = async (row: DataItem) => {
+        const result = await dispatch(deleteCertificate(row.id))
+        const response = unwrapResult(result)
+        if (response.data.status?.success) {
+            message.success(response.data.status?.message);
+        } else {
+            message.error(response.data.status?.message);
+        }
+    }
+    const handlerSaveChange = async (row: DataItem) => {
+        const params = {
+            trainingTypeId: row.trainingTypeId,
+            certificateName: row.certificateName,
+            trainingCertificateId: row?.id
+        }
+        await dispatch(updateCertificate(params)).then((response: any) => {
+            if (response?.payload?.data?.status?.success) {
+                message.success('Update certificate success!');
+                fetchCertificateOption();
+            } else {
+                message.error(response?.payload?.message)
+            }
+        })
+    }
+    useEffect(() => {
+        setDataSource(data)
+    }, [data])
     return (
         <>
             <ModalForm
@@ -74,17 +96,27 @@ const AddCertificateModal: FC<AddCertificateModalProps> = ({ open, setOpenCertif
             >
                 <ProList<DataItem>
                     rowKey="id"
-                    headerTitle="List Document"
+                    headerTitle="List Certificate"
                     dataSource={dataSource}
-                    // editable={{ onDelete: async (rows) => { handleDeleteDocument(rows) } }}
+                    editable={{
+                        onDelete: async (rows, row) => {
+                            setEditingDocumentId(null);
+                            handleDeleteCertificate(row);
+                        },
+                        onSave: async (rows, row) => {
+                            setEditingDocumentId(null);
+                            handlerSaveChange(row);
+                        },
+                        onCancel: async (rows) => {
+                            setEditingDocumentId(null);
+                        },
+                    }}
                     metas={{
                         title: {
                             dataIndex: 'certificateName',
-                            editable: false
                         },
                         description: {
                             dataIndex: 'trainingTypeId',
-                            editable: false
                         },
                         content: {
                             dataIndex: 'createAt',
@@ -99,12 +131,18 @@ const AddCertificateModal: FC<AddCertificateModalProps> = ({ open, setOpenCertif
                                     </Space>
                                 );
                             },
+                            editable: false
                         },
                         actions: {
                             render: (text, row, index, action) => [
                                 <span
                                     onClick={() => {
-                                        action?.startEditable(row.id);
+                                        if (editingDocumentId === null) {
+                                            setEditingDocumentId(row.id);
+                                            action?.startEditable(row.id);
+                                        } else {
+                                            message.warning('Only one row can be edited at a time!');
+                                        }
                                     }}
                                     key="link"
                                 >

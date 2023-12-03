@@ -1,6 +1,6 @@
 import Icons from "icons/sidebar";
 
-const index = [
+const admissionTopMenu = [
   {
     title: "Dashboard",
     Icon: Icons.DashboardIcon,
@@ -10,6 +10,11 @@ const index = [
     title: "Collaborator Management",
     Icon: Icons.UserManagementIcon,
     path: "/dashboard/user-list",
+  },
+  {
+    title: "Class Management",
+    Icon: Icons.SchoolIcon,
+    path: "/dashboard/class-list",
   },
   {
     title: "Post Management",
@@ -41,5 +46,23 @@ const index = [
     path: "/dashboard/add-contract",
   }
 ];
+const administratorMenu = [
+  {
+    title: "Dashboard",
+    Icon: Icons.DashboardIcon,
+    path: "/administrator/dashboard",
+  },
+  {
+    title: "Collaborator Management",
+    Icon: Icons.UserManagementIcon,
+    path: "/administrator/dashboard/user-list",
+  },
+  {
+    title: "Class Management",
+    Icon: Icons.SchoolIcon,
+    path: "/administrator/dashboard/class-list",
+  },
+];
 
-export default index;
+export { administratorMenu, admissionTopMenu };
+

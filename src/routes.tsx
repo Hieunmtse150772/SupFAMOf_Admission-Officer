@@ -1,7 +1,9 @@
 import AuthGuard from "components/authentication/AuthGuard";
+import AuthGuardAdmin from "components/authentication/AuthGuardAdmin";
 import GuestGuard from "components/authentication/GuestGuard";
-import DashboardLayout2 from "components/Layouts/antdesgin";
 import DashboardLayout from "components/Layouts/DashboardLayout";
+import DashboardLayoutAdmin from "components/Layouts/DashboardLayoutAdmin";
+
 import LoadingScreen from "components/LoadingScreen";
 import { FC, lazy, LazyExoticComponent, Suspense } from "react";
 import { Navigate } from "react-router-dom";
@@ -23,14 +25,16 @@ const ForgetPassword = Loadable(
 );
 
 // Dashboard pages
-const DashboardSaaS = Loadable(lazy(() => import("./pages/Dashboards/SaaS")));
-
+const DashboardSaaS = Loadable(lazy(() => import("./pages/DashboardsAdmission/SaaS")));
 // user profile
 const UserProfile = Loadable(lazy(() => import("./pages/UserProfile")));
 
 // user management
 const UserList = Loadable(
   lazy(() => import("./pages/CollabManagement/ViewListCollab"))
+);
+const ClassList = Loadable(
+  lazy(() => import("./pages/ClassManagement/index"))
 );
 const UserGrid = Loadable(
   lazy(() => import("./pages/UserManagement/UserGrid"))
@@ -58,6 +62,9 @@ const Map = Loadable(
 );
 const ViewRequest = Loadable(
   lazy(() => import("./pages/Request Management/ViewRequest"))
+);
+const ViewClass = Loadable(
+  lazy(() => import("./pages/ClassManagement/ViewClass"))
 );
 // error
 const Error = Loadable(lazy(() => import("./pages/404")));
@@ -108,18 +115,17 @@ const routes = [
         path: "user-profile",
         element: <UserProfile />,
       },
-
       {
         path: "user-list",
         element: <UserList />,
       },
       {
-        path: "user-grid",
-        element: <UserGrid />,
+        path: "class-list",
+        element: <ClassList />,
       },
       {
-        path: "add-user",
-        element: <AddNewUser />,
+        path: "class-list/:id",
+        element: <ViewClass />,
       },
       {
         path: "post-list",
@@ -155,11 +161,11 @@ const routes = [
     ],
   },
   {
-    path: "dashboard2",
+    path: "administrator/dashboard",
     element: (
-      <AuthGuard>
-        <DashboardLayout2 />
-      </AuthGuard>
+      <AuthGuardAdmin>
+        <DashboardLayoutAdmin />
+      </AuthGuardAdmin>
     ),
     children: [
       {

@@ -3,17 +3,13 @@ import { LocalizationProvider } from "@mui/lab";
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import { CssBaseline, IconButton, ThemeProvider } from "@mui/material";
 import { StyledEngineProvider } from "@mui/material/styles";
-import { unwrapResult } from "@reduxjs/toolkit";
 import { Spin } from "antd";
 import { useAppSelector } from "app/hooks";
-import { useAppDispatch } from "app/store";
-import AppConstants from "enums/app";
-import { getUserProfile } from "features/authSlice";
 import { getToken } from "firebase/messaging";
 import { SnackbarProvider } from "notistack";
 import React, { FC, RefObject, useEffect } from "react";
 import { Toaster } from "react-hot-toast";
-import { useNavigate, useRoutes } from "react-router-dom";
+import { useRoutes } from "react-router-dom";
 import './app.scss';
 import { messaging } from "./firebase";
 import routes from "./routes";
@@ -21,12 +17,9 @@ import { ukoTheme } from "./theme";
 
 const App: FC = () => {
   const allPages = useRoutes(routes);
-  let navigate = useNavigate();
-  const dispatch = useAppDispatch();
   // App theme
   const appTheme = ukoTheme();
   const isLoading = useAppSelector(state => state.auth.loading)
-  const accessToken = localStorage.getItem(AppConstants.ACCESS_TOKEN);
 
   // toaster options
   const toasterOptions = {
@@ -35,10 +28,7 @@ const App: FC = () => {
       fontFamily: "'Montserrat', sans-serif",
     },
   };
-  const handleGetProfile = async () => {
-    const result = await dispatch(getUserProfile());
-    unwrapResult(result);
-  };
+
   async function requestPermission() {
     const permission = await Notification.requestPermission();
     if (permission === "granted") {
@@ -53,14 +43,7 @@ const App: FC = () => {
       alert("You denied for the notification");
     }
   }
-  useEffect(() => {
-    if (accessToken) {
-      handleGetProfile().catch(() => {
-        navigate('/login');
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accessToken]);
+
   useEffect(() => {
     // Req user for notification permission
     requestPermission();

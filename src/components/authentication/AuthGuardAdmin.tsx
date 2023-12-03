@@ -1,4 +1,3 @@
-import { useAppSelector } from "app/hooks";
 import AppConstants from "enums/app";
 import Login from "pages/Authentication/Login";
 import { Fragment, ReactNode, useState } from "react";
@@ -9,8 +8,7 @@ interface AuthGuardProps extends RouteProps {
   children: ReactNode;
 }
 
-const AuthGuard = ({ children, ...routeProps }: AuthGuardProps) => {
-  const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
+const AuthGuardAdmin = ({ children, ...routeProps }: AuthGuardProps) => {
   const isLogin = localStorage.getItem(AppConstants.ACCESS_TOKEN) ? true : false;
   const storedValue = localStorage.getItem(AppConstants.USER);
 
@@ -26,19 +24,20 @@ const AuthGuard = ({ children, ...routeProps }: AuthGuardProps) => {
     }
     return <Login />;
   }
+  console.log('storedValue: ', storedValue)
   if (storedValue) {
     const userInfo = JSON.parse(storedValue);
     if (userInfo?.roleId !== null) {
-      if (userInfo?.roleId === 1) {
+      if (userInfo?.roleId === 3) {
         if (requestedLocation && pathname !== requestedLocation) {
           setRequestedLocation(null);
           return <Navigate to={requestedLocation} />;
         }
-      } else return <Navigate to={'/administrator/dashboard'} />
+      } else return <Navigate to={'/dashboard'} />
     }
   }
 
   return <Fragment>{children}</Fragment>;
 };
 
-export default AuthGuard;
+export default AuthGuardAdmin;
