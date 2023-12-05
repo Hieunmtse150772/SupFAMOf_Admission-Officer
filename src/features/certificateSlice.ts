@@ -1,6 +1,8 @@
 import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
+import SearchTrainingRegistrationParamsDto from 'dtos/searchTrainingRegistration.dto';
 import TrainingRegistrationDto from 'dtos/trainingRegistration.dto';
+import AssignTrainingClass from 'models/assignTraining.model';
 import CertificateCreated from 'models/certificate.model';
 import CertificateOptionI from 'models/certificateOption.model';
 import TrainingRegistrationI from 'models/trainingRegistrationI.model';
@@ -36,9 +38,9 @@ export const getCertificate = createAsyncThunk(
 );
 export const getCertificateRegistration = createAsyncThunk(
     'certificates/get-certificate-registration',
-    async (id: string, { rejectWithValue }) => {
+    async (params: SearchTrainingRegistrationParamsDto, { rejectWithValue }) => {
         try {
-            const result = await certificateService.getCertificateRegistration(id)
+            const result = await certificateService.getCertificateRegistration(params)
             return result.data;
         } catch (error) {
             const axiosError = error as AxiosError;
@@ -82,6 +84,19 @@ export const deleteCertificate = createAsyncThunk(
         }
     },
 );
+export const assignTrainingClass = createAsyncThunk(
+    'certificates/assign-training-class',
+    async (params: AssignTrainingClass[], { rejectWithValue }) => {
+        try {
+            const result = await certificateService.assignTrainingClass(params)
+            return result;
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data);
+        }
+    },
+);
+
 export const certificateSlice = createSlice({
     name: 'certificates',
     initialState,

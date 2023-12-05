@@ -15,7 +15,7 @@ const Index = () => {
             type="primary"
             key="primary"
             disabled={props.selectedRowsState.length === 0}
-            onClick={handler.hanldeAssignClass}
+            onClick={handler.hanldeOpenAssignClass}
         >
             < CheckCircleOutlined rev={undefined} /> Assign class
         </Button >
@@ -48,7 +48,11 @@ const Index = () => {
                 )
 
             }
-            {props.openAssignClassModal && <AssignClassModal open={props.openAssignClassModal} setOpenAssignClassModal={handler.setOpenAssignClassModal}></AssignClassModal>}
+            {props.openAssignClassModal && <AssignClassModal
+                hanldeAssignClass={handler.handleAssignClass}
+                open={props.openAssignClassModal}
+                setOpenAssignClassModal={handler.setOpenAssignClassModal}>
+            </AssignClassModal>}
         </div>
     );
 };

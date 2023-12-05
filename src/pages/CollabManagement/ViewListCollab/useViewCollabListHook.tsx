@@ -4,7 +4,7 @@ import { SortOrder } from "antd/es/table/interface";
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import { getCollabList } from "features/collabSlice";
-import { handleDownloadMonthLyReport, handleDownloadReport } from "features/reportSlice";
+import { handleDownloadMonthLyReport, handleDownloadMonthLyReportTuyenSinh, handleDownloadReport } from "features/reportSlice";
 import CertificateOptionI from "models/certificateOption.model";
 import { useEffect, useState } from "react";
 
@@ -141,6 +141,9 @@ const useViewCollablistHook = () => {
     const handleExportMonthlyReportExcel = async () => {
         await dispatch(handleDownloadMonthLyReport())
     }
+    const handleExportMonthlyReportExcelTuyenSinh = async () => {
+        await dispatch(handleDownloadMonthLyReportTuyenSinh())
+    }
     const handleOpenCertificateModal = (value: any) => {
         console.log('value: ', value)
         setCertificateList(value?.certificates)
@@ -211,8 +214,34 @@ const useViewCollablistHook = () => {
     //     }
     // }, [excelFile]);
 
-    const handler = { onPageChange, handleExportAccountReportExcel, handleExportMonthlyReportExcel, onChangePageSize, setCurrentRow, setShowDetail, setOpenCertificateModal, handleActionChange, handleSearch, downloadExcelFile }
-    const props = { columns, collabList, pageSizeOptions, total, page, pageSize, rows, loading, showDetail, currentRow, openCertificateModal, certificateList, excelFile }
+    const handler = {
+        onPageChange,
+        handleExportAccountReportExcel,
+        handleExportMonthlyReportExcel,
+        onChangePageSize,
+        setCurrentRow,
+        setShowDetail,
+        setOpenCertificateModal,
+        handleActionChange,
+        handleSearch,
+        downloadExcelFile,
+        handleExportMonthlyReportExcelTuyenSinh
+    }
+    const props = {
+        columns,
+        collabList,
+        pageSizeOptions,
+        total,
+        page,
+        pageSize,
+        rows,
+        loading,
+        showDetail,
+        currentRow,
+        openCertificateModal,
+        certificateList,
+        excelFile
+    }
     return {
         handler,
         props,

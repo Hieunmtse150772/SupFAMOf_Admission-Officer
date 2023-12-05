@@ -133,7 +133,7 @@ const AddDocumentModal: FC<AddDocumentModalProps> = ({ open, setOpenAddDocumentM
             <Spin spinning={isLoading} tip="Loading...">
                 <ModalForm
                     form={form}
-                    title="Document Management"
+                    title="Document management"
                     open={open}
                     onFinish={(value) => handleCreateDocument(value)}
                     onOpenChange={setOpenAddDocumentModal}

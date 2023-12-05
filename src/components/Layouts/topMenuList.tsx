@@ -12,9 +12,9 @@ const admissionTopMenu = [
     path: "/dashboard/user-list",
   },
   {
-    title: "Class Management",
+    title: "Certificate Management",
     Icon: Icons.SchoolIcon,
-    path: "/dashboard/class-list",
+    path: "/dashboard/certificate-list",
   },
   {
     title: "Post Management",

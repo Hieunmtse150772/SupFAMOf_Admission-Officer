@@ -16,14 +16,14 @@ function ClassManagement() {
     type DataItem = (typeof props.certificateRegistrationList.data)[number];
     const hanldeClickViewClass = (id: any) => {
         console.log('id: ', id)
-        navigate(`/dashboard/class-list/${id}`)
+        navigate(`/dashboard/certificate-list/${id}`)
     }
     const DateRow = props.certificateRegistrationList.data.map((item) => {
         // Tạo một bản sao của item từ certificateList
         const newItem = { ...item };
         // Thêm trường actions vào newItem
         newItem.actions = [
-            <a key="run" onClick={() => { hanldeClickViewClass(item.id) }}>View Class</a>,
+            <a key="run" onClick={() => { hanldeClickViewClass(item.id) }}>View Registration</a>,
             <a key="delete">Delete</a>
         ];
         newItem.avatar = <ClassIcon color='success' />;
@@ -44,6 +44,7 @@ function ClassManagement() {
             }}
         >
             <ProList<DataItem>
+                loading={props.loading}
                 pagination={{
                     defaultPageSize: 8,
                     showSizeChanger: false,
@@ -83,7 +84,6 @@ function ClassManagement() {
                         dataIndex: 'certificateName',
                         search: false,
                         render: (text, row, index, action) => {
-                            console.log('row: ', row.certificateName)
                             return (
                                 <>{row.certificateName}</>
                             )

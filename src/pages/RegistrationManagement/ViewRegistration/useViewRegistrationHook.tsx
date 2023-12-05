@@ -73,6 +73,7 @@ function useViewRegistrationHook() {
     const [status, setStatus] = useState<number>(1);
     const [postId, setPostId] = useState<number | null>(null);
     const [openViewRequestModal, setOpenViewRequestModal] = useState<boolean>(false);
+    const [openViewAttendenceModal, setOpenViewAttendenceModal] = useState<boolean>(false);
     const [sortModel, setSortModel] = useState<SortModalI>({
         Sort: 'createAt',
         Order: 'desc'
@@ -367,6 +368,12 @@ function useViewRegistrationHook() {
                 key: 'action',
                 width: 200,
                 render: (value) => <Button icon={<FolderViewOutlined rev={undefined} />} onClick={() => handleOpenConfirmModal(value)} color="primary">View registration</Button>,
+            },
+            {
+                title: 'Attendence',
+                key: 'action',
+                width: 200,
+                render: (value) => <Button icon={<FolderViewOutlined rev={undefined} />} onClick={() => handleOpenCheckAttendence(value)} color="primary">View attendence</Button>,
             }
         ];
         const data = rowsExpanded.find((value) => value.key === record?.id);
@@ -398,6 +405,10 @@ function useViewRegistrationHook() {
     const handleButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         message.info('Click on left button.');
     };
+    const handleOpenCheckAttendence = async (value: any) => {
+        setPositionId(value.id);
+        setOpenViewAttendenceModal(true);
+    }
     const handleOpenConfirmModal = async (value: any) => {
         setTotalCollab(value?.amount)
         setAmountConfirmed(value?.positionRegisterAmount)
@@ -624,7 +635,8 @@ function useViewRegistrationHook() {
         handleActionChange,
         handleSearch,
         setOpenViewRequestModal,
-        fetchPostList
+        fetchPostList,
+        setOpenViewAttendenceModal
     }
     const props = {
         openConFirmModal,
@@ -649,7 +661,8 @@ function useViewRegistrationHook() {
         amountUnConfirmed,
         positionId,
         openViewRequestModal,
-        postId
+        postId,
+        openViewAttendenceModal
     }
     return {
         handler,
