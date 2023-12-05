@@ -1,10 +1,12 @@
+import { EditOutlined, LockOutlined, MoreOutlined, UnlockOutlined } from "@ant-design/icons";
 import { ProColumns, RequestData } from "@ant-design/pro-components";
-import { Avatar, Button, Space, Tag } from "antd";
+import { Box } from "@mui/material";
+import { Avatar, Badge, Button, Dropdown, MenuProps, Modal, Space, Tag } from "antd";
 import { SortOrder } from "antd/es/table/interface";
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import { getCollabList } from "features/collabSlice";
-import { handleDownloadMonthLyReport, handleDownloadMonthLyReportTuyenSinh, handleDownloadReport } from "features/reportSlice";
+import { handleDownloadReport } from "features/reportSlice";
 import CertificateOptionI from "models/certificateOption.model";
 import { useEffect, useState } from "react";
 
@@ -21,8 +23,17 @@ const useViewCollablistHook = () => {
     const total = collabList?.metadata?.total;
     const [totalCollab, setTotalCollab] = useState<number>(0);
     const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
-    const excelFile = useAppSelector(state => state.report.excelFile)
-    const option = [{ label: 'true', value: true }, { label: 'false', value: false }]
+    const excelFile = useAppSelector(state => state.report.excelFile);
+    const option = [{ label: 'true', value: true }, { label: 'false', value: false }];
+    const [openDisableAccountModal, setOpendisableAccountModal] = useState<boolean>(false);
+    const [openUnbanAccountModal, setOpenUnbanAccountModal] = useState<boolean>(false);
+
+    const [accountIdBan, setAccountIdBan] = useState<number>();
+    const [accountName, setAccountName] = useState<string>();
+    const [openExportModal, setOpenExportModal] = useState<boolean>(false);
+    const [nameFileExport, setNameFileExport] = useState<string>('false');
+
+    const { confirm } = Modal;
     const columns: ProColumns[] = [
         {
             title: 'Avatar',
@@ -118,11 +129,56 @@ const useViewCollablistHook = () => {
         },
         {
             title: 'Action',
+            width: 100,
+            align: 'center',
             hideInSearch: true,
-            key: 'action',
-            render: (value) => (<Button onClick={() => handleOpenCertificateModal(value)} color="primary">View certificate</Button>
-            )
-        }
+            dataIndex: ['isActive'],
+            valueEnum: {
+                1: {
+                    text: 'Is active',
+                    status: 'Pending',
+                },
+                2: {
+                    text: 'Banned',
+                    status: 'Banned',
+                },
+            },
+            render: (value, valueEnum, record) => {
+                const totalUpdateRegisterAmount = valueEnum?.totalUpdateRegisterAmount; // Access totalUpdateRegisterAmount from record
+                const items: MenuProps['items'] = [
+                    {
+                        label: 'Ban account',
+                        key: '1',
+                        icon: <LockOutlined rev={undefined} />,
+                        onClick: () => handleOpenDisableAccountModal(valueEnum),
+                        // disabled: Boolean(!valueEnum.isActive),
+                        danger: true
+                    },
+                    {
+                        label: 'Unban',
+                        key: '2',
+                        icon: <UnlockOutlined rev={undefined} />,
+                        onClick: () => handleOpenUnBanAccountModal(valueEnum),
+                        disabled: Boolean(valueEnum.isActive),
+                    },
+                    {
+                        label: 'Edit certificate',
+                        key: '3',
+                        icon: <EditOutlined rev={undefined} />,
+                        onClick: () => handleOpenCertificateModal(valueEnum),
+                    },
+                ];
+                const menuProps = {
+                    items,
+                };
+                return <Badge count={totalUpdateRegisterAmount}><Box>
+                    <Dropdown menu={menuProps} trigger={['click']} placement='bottomLeft'>
+                        <Button icon={<MoreOutlined rev={undefined} />}></Button>
+                    </Dropdown>
+                </Box>
+                </Badge>
+            },
+        },
     ];
     const dispatch = useAppDispatch();
     const onPageChange = (value: any) => {
@@ -135,19 +191,31 @@ const useViewCollablistHook = () => {
     const handleSearch = (value: any) => {
 
     }
+    const handleOpenExportExcel = (name: string) => {
+        setNameFileExport(name);
+        setOpenExportModal(true);
+    }
     const handleExportAccountReportExcel = async () => {
         await dispatch(handleDownloadReport())
     }
-    const handleExportMonthlyReportExcel = async () => {
-        await dispatch(handleDownloadMonthLyReport())
-    }
-    const handleExportMonthlyReportExcelTuyenSinh = async () => {
-        await dispatch(handleDownloadMonthLyReportTuyenSinh())
-    }
+
     const handleOpenCertificateModal = (value: any) => {
         console.log('value: ', value)
         setCertificateList(value?.certificates)
         setOpenCertificateModal(true)
+    }
+
+    const handleOpenUnBanAccountModal = async (value: any) => {
+        console.log('value:', value)
+        setAccountIdBan(value?.key);
+        setAccountName(value?.name);
+        setOpenUnbanAccountModal(true);
+    }
+    const handleOpenDisableAccountModal = async (value: any) => {
+        console.log('value:', value)
+        setAccountIdBan(value?.key);
+        setAccountName(value?.name);
+        setOpendisableAccountModal(true);
     }
     const handleActionChange = async (params: any,
         sorter: Record<string, SortOrder>,
@@ -183,9 +251,7 @@ const useViewCollablistHook = () => {
     const downloadExcelFile = () => {
         if (excelFile) {
             const url = window.URL.createObjectURL(excelFile);
-            console.log('url: ', url)
             const link = document.createElement('a');
-            console.log('link: ', link)
             link.href = url;
             link.setAttribute('download', 'account_report.xlsx');
             document.body.appendChild(link);
@@ -217,7 +283,6 @@ const useViewCollablistHook = () => {
     const handler = {
         onPageChange,
         handleExportAccountReportExcel,
-        handleExportMonthlyReportExcel,
         onChangePageSize,
         setCurrentRow,
         setShowDetail,
@@ -225,7 +290,11 @@ const useViewCollablistHook = () => {
         handleActionChange,
         handleSearch,
         downloadExcelFile,
-        handleExportMonthlyReportExcelTuyenSinh
+        setOpendisableAccountModal,
+        handleOpenDisableAccountModal,
+        setOpenUnbanAccountModal,
+        handleOpenExportExcel,
+        setOpenExportModal
     }
     const props = {
         columns,
@@ -240,7 +309,13 @@ const useViewCollablistHook = () => {
         currentRow,
         openCertificateModal,
         certificateList,
-        excelFile
+        excelFile,
+        openDisableAccountModal,
+        accountIdBan,
+        accountName,
+        openUnbanAccountModal,
+        openExportModal,
+        nameFileExport
     }
     return {
         handler,
