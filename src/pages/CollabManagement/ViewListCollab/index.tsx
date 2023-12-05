@@ -1,7 +1,10 @@
 import { FileExcelOutlined } from "@ant-design/icons";
 import { Button, Descriptions, DescriptionsProps, Drawer, Image, Space, Tag } from "antd";
 import SFAMOGrid from "components/SFAMOGrid";
+import BanCollaboratorModal from "../BanCollaboratorModal";
 import CertificateModal from "../CertificateModal/CertificateModal";
+import ExportModal from "../ExportModal";
+import UnBanCollaboratorModal from "../UnBanCollaboratorModal";
 import useViewCollabListHook from "./useViewCollabListHook";
 
 const ViewCollabList = () => {
@@ -90,7 +93,7 @@ const ViewCollabList = () => {
                 color="green"
                 style={{ color: 'green' }}
                 key="primary"
-                onClick={handler.handleExportMonthlyReportExcel}
+                onClick={() => handler.handleOpenExportExcel('openday')}
             >
                 <FileExcelOutlined rev={undefined} /> OpenDay report
             </Button >
@@ -99,7 +102,7 @@ const ViewCollabList = () => {
                 color="green"
                 style={{ color: 'green' }}
                 key="primary"
-                onClick={handler.handleExportMonthlyReportExcelTuyenSinh}
+                onClick={() => handler.handleOpenExportExcel('tuyen-sinh')}
             >
                 <FileExcelOutlined rev={undefined} /> Tuyen Sinh report
             </Button >
@@ -144,7 +147,32 @@ const ViewCollabList = () => {
                 )}
 
             </Drawer >
-            <CertificateModal open={props.openCertificateModal} setOpenCertificateModal={handler.setOpenCertificateModal} certificateList={props.certificateList}></CertificateModal>
+            {props.accountIdBan && props.accountName && <BanCollaboratorModal
+                accountName={props.accountName}
+                accountId={props.accountIdBan}
+                open={props.openDisableAccountModal}
+                setOpenBanCollaborator={handler.setOpendisableAccountModal}
+            ></BanCollaboratorModal>}
+            {props.accountIdBan && props.accountName && <UnBanCollaboratorModal
+                accountName={props.accountName}
+                accountId={props.accountIdBan}
+                open={props.openUnbanAccountModal}
+                setOpenUnBanCollaborator={handler.setOpenUnbanAccountModal}
+            ></UnBanCollaboratorModal>}
+            <CertificateModal
+                open={props.openCertificateModal}
+                setOpenCertificateModal={handler.setOpenCertificateModal}
+                certificateList={props.certificateList}>
+
+            </CertificateModal>
+            {props.nameFileExport && <ExportModal
+                open={props.openExportModal}
+                setOpenExportModal={handler.setOpenExportModal}
+                nameFile={props.nameFileExport}
+            >
+
+            </ExportModal>}
+
         </>
     )
 }
