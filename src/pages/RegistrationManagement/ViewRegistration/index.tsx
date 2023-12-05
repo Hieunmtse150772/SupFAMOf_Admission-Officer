@@ -2,6 +2,7 @@ import { FilterOutlined } from '@ant-design/icons';
 import { LightFilter, ProFormRadio } from '@ant-design/pro-components';
 import SFAMOGrid from 'components/SFAMOGrid';
 import { useEffect, useRef } from 'react';
+import ViewAttendanceModal from '../ConfirmAttendance';
 import ConfirmRegistrationModal from '../ConfirmRegistration/ConfirmRegistrationModal';
 import ViewRequestChangePositionModal from '../ViewRequestChangePosition';
 import useViewRegistrationHook from './useViewRegistrationHook';
@@ -95,6 +96,14 @@ const ViewPostList = () => {
                     open={props.openViewRequestModal}
                     setOpenViewRequestModal={handler.setOpenViewRequestModal}
                     postId={props.postId}
+                />
+            }
+            {(props.openViewAttendenceModal && props.positionId !== null) &&
+                <ViewAttendanceModal
+                    fetchPost={handler.fetchPostList}
+                    open={props.openViewAttendenceModal}
+                    setOpenViewRequestModal={handler.setOpenViewAttendenceModal}
+                    positionId={props.positionId}
                 />
             }
         </>

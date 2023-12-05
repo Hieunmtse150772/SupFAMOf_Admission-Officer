@@ -3,6 +3,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
 import addressReducer from '../features/addressSlice';
+import attendenceReducer from '../features/attendenceSlice';
 import authReducer from '../features/authSlice';
 import certificateReducer from '../features/certificateSlice';
 import classReducer from '../features/classSlice';
@@ -35,7 +36,8 @@ export const store = configureStore({
     locationLeafLet: leafLetReducer,
     request: requestReducer,
     report: reportReducer,
-    class: classReducer
+    class: classReducer,
+    attendence: attendenceReducer
   },
 });
 

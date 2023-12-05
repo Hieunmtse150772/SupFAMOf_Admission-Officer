@@ -58,6 +58,29 @@ export const handleDownloadMonthLyReport = createAsyncThunk(
         }
     }
 );
+export const handleDownloadMonthLyReportTuyenSinh = createAsyncThunk(
+    'reports/download-monthly-excel-tuyensinh',
+    async () => {
+        try {
+
+            const response = await reportService.getMonthlyReportExcel(); // Gọi service để nhận dữ liệu từ server
+            const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+            // Tạo một URL tạm thời cho blob
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'monthly_report.xlsx');
+            document.body.appendChild(link);
+            link.click();
+
+            // Xóa đường link và URL tạm thời
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            // Xử lý lỗi nếu cần
+        }
+    }
+);
 export const handleDownloadReport = createAsyncThunk(
     'reports/download-excel',
     async () => {

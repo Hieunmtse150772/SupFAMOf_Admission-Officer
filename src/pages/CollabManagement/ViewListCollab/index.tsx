@@ -99,7 +99,7 @@ const ViewCollabList = () => {
                 color="green"
                 style={{ color: 'green' }}
                 key="primary"
-                onClick={handler.handleExportAccountReportExcel}
+                onClick={handler.handleExportMonthlyReportExcelTuyenSinh}
             >
                 <FileExcelOutlined rev={undefined} /> Tuyen Sinh report
             </Button >

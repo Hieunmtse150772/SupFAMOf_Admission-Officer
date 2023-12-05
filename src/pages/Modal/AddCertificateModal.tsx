@@ -82,7 +82,7 @@ const AddCertificateModal: FC<AddCertificateModalProps> = ({ open, setOpenCertif
     return (
         <>
             <ModalForm
-                title="Add more post category"
+                title="Certificate management"
                 open={open}
                 onFinish={(value) => handleCreatePostTitle(value)}
                 onOpenChange={setOpenCertificateModal}

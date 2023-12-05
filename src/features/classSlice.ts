@@ -1,9 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import ClassTrainingDto from 'dtos/class.dto';
-import CertificateCreated from 'models/certificate.model';
+import ClassCreated from 'models/classCreated.model';
 import { ClassTrainingViewI } from 'models/classTraining.model';
-import { certificateService } from 'services/certificate.service';
 import { classTrainingService } from 'services/classTraining.service';
 
 interface ClassState {
@@ -33,11 +32,11 @@ export const getClassTraining = createAsyncThunk(
     },
 );
 
-export const createCertificate = createAsyncThunk(
-    'class/create-certificate',
-    async (payload: CertificateCreated, { rejectWithValue }) => {
+export const createClass = createAsyncThunk(
+    'class/create-class',
+    async (payload: ClassCreated, { rejectWithValue }) => {
         try {
-            const result = await certificateService.createCertificate(payload)
+            const result = await classTrainingService.createClass(payload)
             return result;
         } catch (error) {
             const axiosError = error as AxiosError;
@@ -61,6 +60,17 @@ export const classSlice = createSlice({
                 state.loading = false;
             })
             .addCase(getClassTraining.rejected, (state, action) => {
+                state.error = String(action.payload);
+                state.loading = false;
+            })
+            .addCase(createClass.pending, (state) => {
+                state.loading = true;
+                state.error = "";
+            })
+            .addCase(createClass.fulfilled, (state, action) => {
+                state.loading = false;
+            })
+            .addCase(createClass.rejected, (state, action) => {
                 state.error = String(action.payload);
                 state.loading = false;
             })

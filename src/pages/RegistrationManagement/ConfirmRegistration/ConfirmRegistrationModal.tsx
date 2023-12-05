@@ -100,6 +100,7 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
                 await dispatch(confirmPositionByCollabList(params))
                     .then((result) => {
                         unwrapResult(result)
+                        console.log('result: ', result)
                         if (result.meta.requestStatus === "rejected") {
                             message.warning('Slot already full!');
                             setLoading(false)

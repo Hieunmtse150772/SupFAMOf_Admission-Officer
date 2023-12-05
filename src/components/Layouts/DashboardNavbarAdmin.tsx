@@ -91,8 +91,8 @@ const DashboardNavbarAdmin: FC<DashboardNavBarProps> = ({
       title: 'Add Contract',
     },
     {
-      path: '/dashboard/class-list',
-      title: 'Class Management',
+      path: '/dashboard/certificate-list',
+      title: 'Certificate Management',
     }
   ];
   const last = items.find((item) => item.path === location.pathname)?.title

@@ -83,7 +83,7 @@ const AddPostTitleModal: FC<AddPostTitleModalProps> = ({ open, setOpenAddTitleMo
     return (
         <>
             <ModalForm
-                title="Add more post category"
+                title="Category management"
                 open={open}
                 onFinish={(value) => handleCreatePostTitle(value)}
                 onOpenChange={setOpenAddTitleModal}

@@ -23,4 +23,14 @@ export const reportService = {
             }
         );
     },
+    getMonthlyReportExcelTuyenSinh: (): Promise<AxiosResponse> => {
+        const url = 'https://dev.supfamof.id.vn/api/admission/admission-financial-report/get-tuyen-sinh-monthly-excel';
+        return axiosClient.post(
+            url,
+            '',
+            {
+                responseType: 'blob',
+            }
+        );
+    },
 };
