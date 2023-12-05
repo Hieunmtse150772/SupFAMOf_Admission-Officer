@@ -1,9 +1,8 @@
 // AuthService.ts
 import { AxiosResponse } from 'axios';
 
-import CertificateOption from 'dtos/certificateOption.dto';
 import ClassTrainingDto from 'dtos/class.dto';
-import CertificateCreated from 'models/certificate.model';
+import ClassCreated from 'models/classCreated.model';
 import axiosClient from './axiosClient';
 
 export const classTrainingService = {
@@ -11,8 +10,8 @@ export const classTrainingService = {
         const url = '/admission/admission-training-certificate/view-collaborator-class';
         return axiosClient.get(url);
     },
-    createCertificate: (payload: CertificateCreated): Promise<AxiosResponse<CertificateOption>> => {
-        const url = '/admission/admission-training-certificate/create';
+    createClass: (payload: ClassCreated): Promise<AxiosResponse<ClassTrainingDto>> => {
+        const url = '/admission/admission-training-certificate/create-class-interview';
         return axiosClient.post(url, payload);
     }
 };

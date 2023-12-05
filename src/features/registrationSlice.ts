@@ -41,6 +41,7 @@ export const getRegistrationByPositionId = createAsyncThunk(
         }
     },
 );
+
 export const confirmPositionByCollabList = createAsyncThunk(
     'registration/update-registration',
     async (params: paramUpdate, { rejectWithValue }) => {

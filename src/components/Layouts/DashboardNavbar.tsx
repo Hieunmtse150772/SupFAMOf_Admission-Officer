@@ -92,13 +92,13 @@ const DashboardNavbar: FC<DashboardNavBarProps> = ({
       title: 'Add Contract',
     },
     {
-      path: '/dashboard/class-list',
+      path: '/dashboard/certificate-list',
       title: 'Certificate Management',
     },
     {
-      path: `/dashboard/class-list/${id}`,
-      title: 'Class Training',
-      pathBack: '/dashboard/class-list',
+      path: `/dashboard/certificate-list/${id}`,
+      title: 'Training Room',
+      pathBack: '/dashboard/certificate-list',
       titleBack: 'Certificate Management'
     }
   ];

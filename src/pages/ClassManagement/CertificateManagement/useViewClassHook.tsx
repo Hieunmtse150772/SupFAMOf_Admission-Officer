@@ -1,11 +1,13 @@
 import { ProColumns, RequestData } from "@ant-design/pro-components";
-import { Avatar, Modal, Popover, Space, StepsProps, Tag } from 'antd';
+import { Avatar, Modal, Popover, Space, StepsProps, Tag, message } from 'antd';
 import { SortOrder } from 'antd/es/table/interface';
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
-import { getCertificateRegistration } from 'features/certificateSlice';
+import SearchTrainingRegistrationParamsDto from "dtos/searchTrainingRegistration.dto";
+import { assignTrainingClass, getCertificateRegistration } from 'features/certificateSlice';
 import { getPostByAccountId } from "features/postSlice";
-import { useEffect, useState } from "react";
+import AssignTrainingClass from "models/assignTraining.model";
+import { Key, useEffect, useState } from "react";
 import { useParams } from 'react-router';
 
 
@@ -46,7 +48,11 @@ function UseViewClassHook() {
     const [openAssignClassModal, setOpenAssignClassModal] = useState<boolean>(false);
     const fetchCertificateRegistration = async () => {
         try {
-            await dispatch(getCertificateRegistration(id ? id : ''))
+            const params: SearchTrainingRegistrationParamsDto = {
+                id: Number(id),
+                isActive: true
+            }
+            await dispatch(getCertificateRegistration(params))
 
         } catch (error) {
             console.error(error)
@@ -129,13 +135,19 @@ function UseViewClassHook() {
                 </Space>
             }
         },
+        {
+            title: 'Status',
+            dataIndex: 'status',
+            key: 'status',
+            hideInSearch: true,
+        },
     ];
     const dispatch = useAppDispatch();
     const { confirm } = Modal;
 
     const handleSubmit = async (value: any) => {
     }
-    const hanldeAssignClass = () => {
+    const hanldeOpenAssignClass = () => {
         setOpenAssignClassModal(true);
     }
     const handleSearch = async (value: any) => {
@@ -154,6 +166,22 @@ function UseViewClassHook() {
                 postCategoryId: value?.postCategoryId
             }))
         }
+    }
+    const handleAssignClass = (evenDayId: Key[]) => {
+        console.log('evenDayId: ', evenDayId)
+
+        const params: AssignTrainingClass[] = selectedRowsState.map((row) => (
+            {
+                trainingRegistrationId: row.key,
+                eventDayId: Number(evenDayId[0])
+            }))
+        console.log('params: ', params)
+        dispatch(assignTrainingClass(params)).then((response: any) => {
+            if (response?.payload?.data?.status?.success) {
+                message.success('Assign success');
+                setOpenAssignClassModal(false);
+            } else message.error(response?.payload?.message)
+        })
     }
     const handleActionChange = async (params: any,
         sorter: Record<string, SortOrder>,
@@ -189,27 +217,9 @@ function UseViewClassHook() {
         // ...
     }));
 
-    const fetchPostList = async () => {
-        await dispatch(getPostByAccountId({
-            page: page,
-            PageSize: pageSize,
-            Status: statusFilter,
-            Sort: sortModel?.Sort,
-            Order: sortModel?.Order,
-            dateFrom: searchParams?.dateFrom,
-            dateTo: searchParams?.dateTo,
-            postCode: searchParams?.postCode,
-            postName: searchParams?.postName,
-            postCategoryId: searchParams?.postCategoryId
-        }))
-    }
-
-
-
     useEffect(() => {
         fetchCertificateRegistration()
     }, [page, pageSize, sortModel])
-
 
     const handler = {
         setCurrentRow,
@@ -221,10 +231,10 @@ function UseViewClassHook() {
         setStatusFilter,
         handleActionChange,
         handleSearch,
-        fetchPostList,
         setSelectedRows,
-        hanldeAssignClass,
-        setOpenAssignClassModal
+        handleAssignClass,
+        setOpenAssignClassModal,
+        hanldeOpenAssignClass
     }
     const props = {
         openConFirmModal,

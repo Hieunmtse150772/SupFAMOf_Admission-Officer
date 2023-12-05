@@ -1,3 +1,5 @@
+import { Moment } from "moment"
+
 export type ClassTrainingI = {
     id: string | number,
     date: Date,
@@ -36,4 +38,13 @@ export type ClassTrainingViewI = {
     timeFrom?: Date | string,
     timeTo?: Date | string,
     status?: string,
+    timeFrom_timeTo?: Moment[]
+}
+export type ClassTrainingViewI2 = {
+    date: Date | string,
+    class: string,
+    timeFrom: Date | string,
+    timeTo: Date | string,
+    status: string,
+    timeFrom_timeTo: Moment[]
 }

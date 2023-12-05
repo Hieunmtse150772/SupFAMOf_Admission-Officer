@@ -63,8 +63,8 @@ const Map = Loadable(
 const ViewRequest = Loadable(
   lazy(() => import("./pages/Request Management/ViewRequest"))
 );
-const ViewClass = Loadable(
-  lazy(() => import("./pages/ClassManagement/ViewClass"))
+const ViewCertificate = Loadable(
+  lazy(() => import("./pages/ClassManagement/CertificateManagement"))
 );
 // error
 const Error = Loadable(lazy(() => import("./pages/404")));
@@ -125,15 +125,15 @@ const routes = [
         title: 'Collab Management'
       },
       {
-        path: "class-list",
+        path: "certificate-list",
         element: <ClassList />,
         title: 'Certificate Management'
 
       },
       {
-        path: "class-list/:id",
-        element: <ViewClass />,
-        title: 'Class Management'
+        path: "certificate-list/:id",
+        element: <ViewCertificate />,
+        title: 'Registration Interview'
 
       },
       {

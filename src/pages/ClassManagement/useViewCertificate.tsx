@@ -1,19 +1,23 @@
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
+import SearchTrainingRegistrationParamsDto from "dtos/searchTrainingRegistration.dto";
 import { getCertificate, getCertificateRegistration } from "features/certificateSlice";
 import { useEffect, useState } from "react";
 
 function useViewCertificate() {
-    const dispatch = useAppDispatch()
-    const certificateRegistrationList = useAppSelector(state => state.certificate.trainingRegistration)
-    const certificateList = useAppSelector(state => state.certificate.certificateOption)
-
+    const dispatch = useAppDispatch();
+    const certificateRegistrationList = useAppSelector(state => state.certificate.trainingRegistration);
+    const loading = useAppSelector(state => state.certificate.loading);
+    const certificateList = useAppSelector(state => state.certificate.certificateOption);
     const [openAddCertificateModal, setOpenAddCertificateModal] = useState(false);
 
 
     const fetchCertificateRegistration = async () => {
         try {
-            await dispatch(getCertificateRegistration(''))
+            const params: SearchTrainingRegistrationParamsDto = {
+                isActive: true
+            }
+            await dispatch(getCertificateRegistration(params))
 
         } catch (error) {
             console.error(error)
@@ -32,7 +36,6 @@ function useViewCertificate() {
     };
     useEffect(() => {
         const fetchData = async () => {
-            await fetchCertificate();
             await fetchCertificateRegistration()
         }
         fetchData();
@@ -45,7 +48,8 @@ function useViewCertificate() {
     const props = {
         certificateRegistrationList,
         openAddCertificateModal,
-        certificateList
+        certificateList,
+        loading
     }
     return { handler, props }
 }
