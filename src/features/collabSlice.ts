@@ -3,6 +3,7 @@ import { AxiosError } from 'axios';
 import SearchCollabParamDto from 'dtos/Collab/searchCollab.dto';
 import { CollabDto } from 'dtos/collab.dto';
 import { CollabListDto } from 'dtos/collabList.dto';
+import { BanParamsI, UnBanParamsI } from 'models/banParamsI.model';
 import CollabInfo from 'models/collab.model';
 import CollabListInfo from 'models/collabListInfo.model';
 import { collabService } from 'services/collab.service';
@@ -47,6 +48,26 @@ export const getCollabByPositionId = createAsyncThunk('collabs/get-collab-byPosi
             return rejectWithValue(axiosError.response?.data)
         }
     })
+export const banCollaboratorById = createAsyncThunk('collabs/ban-collab-accountId',
+    async (params: BanParamsI, { rejectWithValue }) => {
+        try {
+            const result = await collabService.banCollaboratorById(params);
+            return result
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data)
+        }
+    })
+export const updateBanCollaboratorById = createAsyncThunk('collabs/ban-collab-accountId',
+    async (params: UnBanParamsI, { rejectWithValue }) => {
+        try {
+            const result = await collabService.updateBanCollaboratorById(params);
+            return result
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data)
+        }
+    })
 export const collabSlice = createSlice({
     name: 'collabs',
     initialState,
@@ -74,6 +95,17 @@ export const collabSlice = createSlice({
                 state.collabs = action.payload.data
             })
             .addCase(getCollabByPositionId.rejected, (state, action) => {
+                state.error = String(action.payload);
+                state.loading = false;
+            })
+            .addCase(banCollaboratorById.pending, (state) => {
+                state.loading = true;
+                state.error = "";
+            })
+            .addCase(banCollaboratorById.fulfilled, (state, action) => {
+                state.loading = false;
+            })
+            .addCase(banCollaboratorById.rejected, (state, action) => {
                 state.error = String(action.payload);
                 state.loading = false;
             })

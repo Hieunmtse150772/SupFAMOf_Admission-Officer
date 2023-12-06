@@ -4,6 +4,7 @@ import { AxiosResponse } from 'axios';
 import SearchCollabParamDto from 'dtos/Collab/searchCollab.dto';
 import { CollabDto } from 'dtos/collab.dto';
 import { CollabListDto } from 'dtos/collabList.dto';
+import { BanParamsI, UnBanParamsI } from 'models/banParamsI.model';
 import axiosClient from './axiosClient';
 
 export const collabService = {
@@ -18,6 +19,14 @@ export const collabService = {
                 positionId: id,
             },
         })
+    },
+    banCollaboratorById: (params: BanParamsI): Promise<AxiosResponse<CollabDto>> => {
+        const url = '/admin/admission-ban-account/create';
+        return axiosClient.post(url, params)
+    },
+    updateBanCollaboratorById: (params: UnBanParamsI): Promise<AxiosResponse<CollabDto>> => {
+        const url = '/admin/admission-ban-account/update';
+        return axiosClient.put(url, params)
     },
 
 };

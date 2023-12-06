@@ -1,4 +1,5 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
+import { ParamsExportI } from 'models/paramsExport.model';
 import { reportService } from 'services/report.service';
 
 interface ReportState {
@@ -26,21 +27,21 @@ export const handleDownloadAccountReport = createAsyncThunk(
             link.setAttribute('download', 'account_report.xlsx');
             document.body.appendChild(link);
             link.click();
-
             // Xóa đường link và URL tạm thời
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
+            return response;
+
         } catch (error) {
             // Xử lý lỗi nếu cần
         }
     }
 );
-export const handleDownloadMonthLyReport = createAsyncThunk(
-    'reports/download-monthly-excel',
-    async () => {
+export const handleDownloadMonthLyReportOpenDay = createAsyncThunk(
+    'reports/download-monthly-excel-openday',
+    async (parmas: ParamsExportI) => {
         try {
-
-            const response = await reportService.getMonthlyReportExcel(); // Gọi service để nhận dữ liệu từ server
+            const response = await reportService.getMonthlyReportExcelOpenDay(parmas); // Gọi service để nhận dữ liệu từ server
             const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
             // Tạo một URL tạm thời cho blob
             const url = window.URL.createObjectURL(blob);
@@ -49,10 +50,10 @@ export const handleDownloadMonthLyReport = createAsyncThunk(
             link.setAttribute('download', 'monthly_report.xlsx');
             document.body.appendChild(link);
             link.click();
-
             // Xóa đường link và URL tạm thời
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
+            return response;
         } catch (error) {
             // Xử lý lỗi nếu cần
         }
@@ -60,10 +61,9 @@ export const handleDownloadMonthLyReport = createAsyncThunk(
 );
 export const handleDownloadMonthLyReportTuyenSinh = createAsyncThunk(
     'reports/download-monthly-excel-tuyensinh',
-    async () => {
+    async (params: ParamsExportI) => {
         try {
-
-            const response = await reportService.getMonthlyReportExcel(); // Gọi service để nhận dữ liệu từ server
+            const response = await reportService.getMonthlyReportExcelTuyenSinh(params); // Gọi service để nhận dữ liệu từ server
             const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
             // Tạo một URL tạm thời cho blob
             const url = window.URL.createObjectURL(blob);
@@ -72,10 +72,11 @@ export const handleDownloadMonthLyReportTuyenSinh = createAsyncThunk(
             link.setAttribute('download', 'monthly_report.xlsx');
             document.body.appendChild(link);
             link.click();
-
             // Xóa đường link và URL tạm thời
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
+            return response;
+
         } catch (error) {
             // Xử lý lỗi nếu cần
         }
@@ -85,7 +86,6 @@ export const handleDownloadReport = createAsyncThunk(
     'reports/download-excel',
     async () => {
         try {
-
             const response = await reportService.getReportAccountExcel(); // Gọi service để nhận dữ liệu từ server
             const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
             // Tạo một URL tạm thời cho blob
@@ -95,10 +95,10 @@ export const handleDownloadReport = createAsyncThunk(
             link.setAttribute('download', 'account_report.xlsx');
             document.body.appendChild(link);
             link.click();
-
             // Xóa đường link và URL tạm thời
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
+            return response;
         } catch (error) {
             // Xử lý lỗi nếu cần
         }
@@ -110,14 +110,25 @@ export const collabSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(handleDownloadAccountReport.pending, (state) => {
+            .addMatcher(isAnyOf(
+                handleDownloadAccountReport.pending,
+                handleDownloadMonthLyReportTuyenSinh.pending,
+                handleDownloadMonthLyReportOpenDay.pending
+            ), (state) => {
                 state.loading = true;
                 state.error = "";
             })
-            .addCase(handleDownloadAccountReport.fulfilled, (state, action) => {
+            .addMatcher(isAnyOf(
+                handleDownloadAccountReport.fulfilled,
+                handleDownloadMonthLyReportTuyenSinh.fulfilled,
+                handleDownloadMonthLyReportOpenDay.fulfilled
+            ), (state, action) => {
                 state.loading = false;
             })
-            .addCase(handleDownloadAccountReport.rejected, (state, action) => {
+            .addMatcher(isAnyOf(handleDownloadAccountReport.rejected,
+                handleDownloadMonthLyReportTuyenSinh.rejected,
+                handleDownloadMonthLyReportOpenDay.rejected
+            ), (state, action) => {
                 state.error = String(action.payload);
                 state.loading = false;
             })
