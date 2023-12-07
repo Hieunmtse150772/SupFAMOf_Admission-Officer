@@ -11,12 +11,20 @@ type CollabListInfo = {
     taxNumber: string,
     bankName: string,
     branch: string,
-    certificates: Certificate[]
+    certificates: Certificate[],
+    isActive: boolean,
+    isBanned: boolean,
+    startTime: Date,
+    endTime: Date
 }
 export type Certificate = {
     id: number,
-    certificateName: string,
-    trainingCertificateId: number
+    trainingTypeId: number,
+    trainingCertificateId: number,
+    status: number,
+    createAt: Date,
+    updateAt: Date,
+    certificateName: string
 }
 
 

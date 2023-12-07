@@ -4,7 +4,6 @@ import AttendenceDto from 'dtos/Attendence/attendence.dto';
 import ErrorDto from 'dtos/error.dto';
 import AttendenceI from 'models/attendence.model';
 import { attendenceService } from 'services/attendence.service';
-import { registrationService } from 'services/registration.service';
 
 interface AttendenceState {
     attendenceList: AttendenceDto,
@@ -18,8 +17,15 @@ type paramUpdate = {
     ids: number[],
     IsApproved: boolean
 }
-type paramCancel = {
-    ids: number[],
+export type paramsConfirmAttendance = {
+    positionId: string,
+    data:
+    {
+        id: number,
+        status: number
+    }[]
+
+
 }
 const initialState: AttendenceState = {
     attendenceList: {
@@ -41,11 +47,11 @@ export const getAttendenceByPositionId = createAsyncThunk(
     },
 );
 
-export const confirmPositionByCollabList = createAsyncThunk(
-    'attendence/update-attendence',
-    async (params: paramUpdate, { rejectWithValue }) => {
+export const confirmAttendanceByPositionId = createAsyncThunk(
+    'attendence/confirm-attendence',
+    async (params: paramsConfirmAttendance, { rejectWithValue }) => {
         try {
-            const result = await registrationService.updateRequest(params)
+            const result = await attendenceService.confirmAttendance(params)
             return result;
         } catch (error) {
             const axiosError = error as AxiosError;

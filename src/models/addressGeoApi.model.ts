@@ -30,6 +30,7 @@ type addressGeoApiI = {
             offset_DST: string,
             offset_DST_seconds: number
         },
+        place_id: string,
     }
 }
 export default addressGeoApiI;

@@ -36,7 +36,8 @@ function useViewCertificate() {
     };
     useEffect(() => {
         const fetchData = async () => {
-            await fetchCertificateRegistration()
+            await fetchCertificateRegistration();
+            await fetchCertificate();
         }
         fetchData();
     }, [])

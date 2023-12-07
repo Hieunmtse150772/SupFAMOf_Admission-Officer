@@ -6,6 +6,7 @@ import { CollabListDto } from 'dtos/collabList.dto';
 import { BanParamsI, UnBanParamsI } from 'models/banParamsI.model';
 import CollabInfo from 'models/collab.model';
 import CollabListInfo from 'models/collabListInfo.model';
+import { GiveCertificateParamsI } from 'models/giveCertificate.model';
 import { collabService } from 'services/collab.service';
 
 interface CollabState {
@@ -58,10 +59,20 @@ export const banCollaboratorById = createAsyncThunk('collabs/ban-collab-accountI
             return rejectWithValue(axiosError.response?.data)
         }
     })
-export const updateBanCollaboratorById = createAsyncThunk('collabs/ban-collab-accountId',
+export const updateBanCollaboratorById = createAsyncThunk('collabs/unban-collab-accountId',
     async (params: UnBanParamsI, { rejectWithValue }) => {
         try {
             const result = await collabService.updateBanCollaboratorById(params);
+            return result
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data)
+        }
+    })
+export const giveCertificateByAccountId = createAsyncThunk('collabs/give-certificate-by-accoutnId',
+    async (params: GiveCertificateParamsI, { rejectWithValue }) => {
+        try {
+            const result = await collabService.giveCertificateByAccountId(params);
             return result
         } catch (error) {
             const axiosError = error as AxiosError;

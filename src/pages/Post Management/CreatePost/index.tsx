@@ -309,12 +309,19 @@ const AddNewPost: FC = () => {
                                     name="location"
                                     label="Address"
                                     showSearch
+                                    key='key'
                                     debounceTime={300}
                                     width='lg'
-                                    request={async ({ keyWords }) => handler.handleSearchAddressGeoapifi(keyWords)}
-                                    placeholder="Please select a country"
-                                    rules={[{ required: true, message: 'Please select your country!' }]}
-                                    options={options}
+                                    request={async ({ keyWords }) => {
+                                        const result = await handler.handleSearchAddressGeoapifi(keyWords);
+                                        console.log('result:', result);
+                                        return result
+                                    }}
+                                    fieldProps={{
+                                        filterOption: false
+                                    }}
+                                    placeholder="Please select a address"
+                                    rules={[{ required: true, message: 'Please select your address!' }]}
                                 />
                                 {/* <ProFormText
                                     label="Location"

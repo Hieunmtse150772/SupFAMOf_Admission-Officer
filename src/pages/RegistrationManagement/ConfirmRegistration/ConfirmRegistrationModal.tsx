@@ -8,7 +8,7 @@ import { Span } from "components/Typography";
 import { cancelRegistration, confirmPositionByCollabList, getRegistrationByPositionId } from "features/registrationSlice";
 import Registrations from "models/registration.model";
 import { FC, Key, useEffect, useState } from "react";
-
+import './style.scss';
 interface ConfirmRegistrationModalProps {
     open: boolean,
     setOpenConfirmModal: React.Dispatch<React.SetStateAction<boolean>>,
@@ -232,7 +232,7 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
                     return (
                         <Modal
                             width={1190}
-                            title={'Confirm position'}
+                            title={'CONFIRM POSITION'}
                             onCancel={() => setOpenConfirmModal(false)}
                             open={open}
                             footer={submitter}
@@ -252,14 +252,16 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
                         bordered
                         headerBordered
                         collapsible
+                        className="table"
                         style={{
                             marginBlockEnd: 16,
-                            minWidth: 1000,
+                            width: 1000,
                             maxWidth: '100%',
                         }}
                     >
                         {activeKey === 'tab1' ? <> <Span>Choose Collab to confirm</Span><Progress percent={Number(percent.toFixed(2))} type="line" style={{ width: '100%' }} /></> : <Span>Choose Collab to reject</Span>}
                         <ProList<DataItem>
+
                             loading={loading}
                             rowKey="id"
                             style={{ width: '100%' }}

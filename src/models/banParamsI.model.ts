@@ -4,7 +4,7 @@ export type BanParamsI = {
     note: string
 }
 export type UnBanParamsI = {
-    accountIdBanned: number,
+    accountBannedId: number,
     note: string,
     isActive: boolean
 }
