@@ -6,7 +6,7 @@ import axiosClient from './axiosClient';
 
 export const reportService = {
     getReportAccountExcel: (): Promise<AxiosResponse<ExportDto | any>> => {
-        const url = 'https://dev.supfamof.id.vn/api/admission/admission-financial-report/get-account-excel';
+        const url = 'https://dev.supfamof.id.vn/api/admission/admission-financial-report/get-account-identity-excel';
         return axiosClient.post(
             url,
             '',

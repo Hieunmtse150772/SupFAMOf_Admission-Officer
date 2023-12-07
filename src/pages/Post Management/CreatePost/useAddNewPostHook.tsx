@@ -169,10 +169,9 @@ const useAddNewPostHook = () => {
                 const optionsFromAPI = response.payload.data?.predictions?.map((prediction) => {
                     return {
                         label: prediction.description,
-                        value: prediction.description
+                        value: prediction.description,
                     }
                 });
-                setOptionAddress(optionsFromAPI);
                 return optionsFromAPI;
             } else {
                 throw new Error('Failed to fetch data');
@@ -188,13 +187,15 @@ const useAddNewPostHook = () => {
             const response = await dispatch(getGeoApiFi({ address: keyWords, key: '6f44e55eb27841738cbd3be2852d936c' }));
             unwrapResult(response)
             if (getGeoApiFi.fulfilled.match(response)) {
+                console.log('response: ', response);
                 const optionsFromAPI = response.payload.data?.features?.map((feature) => {
                     return {
                         label: feature.properties.formatted,
-                        value: feature.properties.formatted
+                        value: feature.properties.formatted,
+                        key: feature.properties.place_id
                     }
                 });
-                setOptionAddress(optionsFromAPI);
+                console.log('optionsFromAPI: ', optionsFromAPI)
                 return optionsFromAPI;
             } else {
                 throw new Error('Failed to fetch data');
@@ -490,7 +491,8 @@ const useAddNewPostHook = () => {
         certificateOptionsAPI,
         documentOptionsAPI,
         postTitleOptionsAPI,
-        optionDate
+        optionDate,
+        optionAddress
     }
     return { handler, props }
 

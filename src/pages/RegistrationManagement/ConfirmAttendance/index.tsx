@@ -21,6 +21,7 @@ const ViewAttendanceModal: FC<ViewAttendenceModalProps> = ({ open, setOpenViewRe
             onFinish={async (value) => {
                 handler.handleConfirmCheckAttendance(value)
             }}
+            title='ATTENDANCE'
             submitter={{
                 searchConfig: {
                     submitText: 'Submit',

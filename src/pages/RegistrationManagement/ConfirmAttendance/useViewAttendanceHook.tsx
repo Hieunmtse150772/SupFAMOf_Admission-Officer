@@ -1,9 +1,13 @@
 import { ProColumns, RequestData } from "@ant-design/pro-components";
-import { Avatar, Modal, Space, Switch, Tag } from 'antd';
+import { FiberManualRecord } from "@mui/icons-material";
+import { Box, Typography } from "@mui/material";
+import { green, grey, red } from "@mui/material/colors";
+import { Avatar, Modal, Switch, message } from 'antd';
 import { SortOrder } from 'antd/es/table/interface';
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
-import { getAttendenceByPositionId } from 'features/attendenceSlice';
+import Status from "enums/statusAttendanceEnum";
+import { confirmAttendanceByPositionId, getAttendenceByPositionId, paramsConfirmAttendance } from 'features/attendenceSlice';
 import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router';
 
@@ -68,6 +72,13 @@ function useViewAttendanceHook(positionId: string, fetchPost: () => void) {
 
     const columns: ProColumns[] = [
         {
+            title: 'Number',
+            dataIndex: 'count',
+            key: 'count',
+            hideInSearch: true,
+            valueType: 'index'
+        },
+        {
             title: 'Avatar',
             dataIndex: 'imgUrl',
             key: 'imgUrl',
@@ -107,46 +118,88 @@ function useViewAttendanceHook(positionId: string, fetchPost: () => void) {
             },
         },
         {
-            title: 'Email',
-            dataIndex: 'email',
-            key: 'email',
-        },
-        {
-            title: 'Phone',
-            dataIndex: 'phone',
-            key: 'phone',
-            hideInSearch: true,
-        },
-        {
-            title: 'Is Premium',
-            dataIndex: 'isPremium',
-            key: 'isPremium',
-            hideInSearch: true,
-            render: (isPremium) => {
-
-                return <Space size={0}>
-                    {isPremium ? <Tag color="yellow">Premium</Tag> : <Tag color="blue">Normal</Tag>}
-                </Space>
-            }
-        },
-        {
             title: 'Student ID',
             dataIndex: 'idStudent',
             key: 'idStudent',
             hideInSearch: true,
         },
         {
+            title: 'Check in time',
+            dataIndex: 'checkInTime',
+            key: 'checkinTime',
+            valueType: 'date',
+            hideInSearch: true,
+        },
+        {
+            title: 'Check out time',
+            dataIndex: 'checkOutTime',
+            valueType: 'date',
+            key: 'checkoutTime',
+        },
+        {
+            title: 'Status',
+            dataIndex: 'status',
+            key: 'status',
+            valueEnum: {
+                1: {
+                    text: 'Pending',
+                    status: 'Pending',
+                },
+                2: {
+                    text: 'Approved',
+                    status: 'Approved',
+                },
+                3: {
+                    text: 'Rejected',
+                    status: 'Rejected',
+                },
+            },
+            render: (value, valueEnum) => {
+                let color = grey[400].toString();
+                let statusText = 'Unknown';
+                switch (valueEnum?.status) {
+                    case Status.pending:
+                        color = '#1890ff';
+                        statusText = 'Pending';
+                        break;
+
+                    case Status.approved:
+                        color = green[500];
+                        statusText = 'Approved';
+                        break;
+
+                    case Status.rejected:
+                        color = red[500];
+                        statusText = 'Rejected';
+                        break;
+                    default:
+                        break;
+                }
+                return <Box display="flex" alignItems="center">
+                    <FiberManualRecord sx={{ fontSize: 14, marginRight: 1, color }} />
+                    <Typography variant="subtitle1" color={color}>
+                        {statusText}
+                    </Typography>
+                </Box>
+            },
+        },
+        {
             title: 'Check attendence',
             key: 'checkAttendence',
+            dataIndex: 'status',
             align: 'center',
-            render: (value) => {
+            render: (value, valueEnum) => {
                 return <Switch
                     style={{
                         marginBlockEnd: 16,
+                        alignSelf: 'center',
+                        display: 'felx',
+                        justifySelf: 'center'
                     }}
-                    defaultChecked={false}
+                    defaultChecked={Boolean(valueEnum?.status === 2)}
                     checkedChildren="attend"
                     unCheckedChildren="absend"
+                    onChange={(value) => { handleChangeStatus(valueEnum.id, valueEnum.status, value) }}
                 />
             },
             hideInSearch: true,
@@ -157,9 +210,7 @@ function useViewAttendanceHook(positionId: string, fetchPost: () => void) {
     const handleSearch = (value: any) => {
 
     }
-    const handleConfirmCheckAttendance = async (value: any) => {
-        console.log('value: ', value)
-    }
+
     const handleActionChange = async (params: any,
         sorter: Record<string, SortOrder>,
         filter: Record<string, (string | number)[] | null>): Promise<Partial<RequestData<any>>> => {
@@ -175,7 +226,35 @@ function useViewAttendanceHook(positionId: string, fetchPost: () => void) {
     const onChangePageSize = (value: any) => {
         setPageSize(value)
     }
-    const rows = attendenceList.data.map(attendence => ({
+
+    const checkAttendanceData = attendenceList.data.map((attendence, index) => ({
+        id: attendence?.id,
+        status: attendence?.status
+    }))
+    const handleChangeStatus = (id: number, status: number, value: boolean) => {
+        checkAttendanceData.map((attendance) => {
+            if (attendance.id === id) {
+                attendance.status = value ? 2 : 1
+            }
+            return attendance;
+        })
+    }
+    const handleConfirmCheckAttendance = async (value: any) => {
+        const params: paramsConfirmAttendance = {
+            data: checkAttendanceData,
+            positionId: positionId
+        }
+        dispatch(confirmAttendanceByPositionId(params)).then((response: any) => {
+            if (response?.payload?.data?.status?.success) {
+                message.success('Confirm attendance success');
+            } else if (response?.payload?.statusCode === 400) {
+                message.error(response?.payload?.message);
+            }
+        })
+    }
+
+    const rows = attendenceList.data.map((attendence, index) => ({
+        count: index,
         key: attendence?.id,
         id: attendence?.id,
         name: attendence?.account?.name,
@@ -183,7 +262,10 @@ function useViewAttendanceHook(positionId: string, fetchPost: () => void) {
         phone: attendence?.postRegistration?.post?.account?.phone,
         imgUrl: attendence?.account?.imgUrl,
         idStudent: attendence?.postRegistration?.post?.account?.accountInformation?.idStudent,
-        isPremium: attendence?.postRegistration?.post?.account?.isPremium
+        isPremium: attendence?.postRegistration?.post?.account?.isPremium,
+        status: attendence?.status,
+        checkInTime: attendence.checkInTime,
+        checkOutTime: attendence.checkOutTime
     }));
 
     const fetchAttendence = async () => {

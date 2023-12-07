@@ -18,9 +18,10 @@ interface BanCollaboratorModalProps {
     open: boolean,
     setOpenBanCollaborator: React.Dispatch<React.SetStateAction<boolean>>,
     accountId: number,
-    accountName: string
+    accountName: string,
+    fetchCollabList: () => void
 }
-const BanCollaboratorModal: FC<BanCollaboratorModalProps> = ({ open, setOpenBanCollaborator, accountId, accountName }) => {
+const BanCollaboratorModal: FC<BanCollaboratorModalProps> = ({ open, setOpenBanCollaborator, accountId, accountName, fetchCollabList }) => {
     console.log('accountId: ', accountId)
     const { confirm } = Modal;
     const Formatter = 'DD/MM/YYYY';
@@ -42,13 +43,13 @@ const BanCollaboratorModal: FC<BanCollaboratorModalProps> = ({ open, setOpenBanC
             icon: <ExclamationCircleFilled rev={undefined} />,
             onOk: async () => {
                 dispatch(banCollaboratorById(params)).then((response: any) => {
-                    console.log('response: ', response)
-                    if (response?.payload?.errorCode === 4002) {
-                        message.error(response?.payload?.message)
-                    } else if (response?.payload?.data.status.success) {
+                    if (response?.payload?.statusCode === 400) {
+                        message.error(response?.payload?.message);
+                    } else if (response?.payload?.data?.status?.success) {
                         message.success(`Successfully banned ${accountName} account`);
                         setOpenBanCollaborator(false);
-                    }
+                        fetchCollabList();
+                    } else message.error('Server internal error');
                 })
             },
             onCancel() {
