@@ -1,27 +1,33 @@
-import { ModalForm, ProCard, ProList } from "@ant-design/pro-components";
-import { Space, Tag } from "antd";
-import CertificateOptionI from "models/certificateOption.model";
-import { FC, useEffect, useState } from "react";
+import { ModalForm, ProCard, ProFormGroup, ProFormSelect, ProList } from "@ant-design/pro-components";
+import { Button, Space, Tag } from "antd";
+import { Certificate } from "models/collabListInfo.model";
+import { FC } from "react";
 import 'react-quill/dist/quill.snow.css'; // Import Quill styles
 import useEditPostModalHook from "./useCertificateModalHook";
 
 interface CertificateModalProps {
     open: boolean,
     setOpenCertificateModal: React.Dispatch<React.SetStateAction<boolean>>,
-    certificateList: CertificateOptionI[]
+    certificateList: Certificate[],
+    certificateOption: {
+        id: number,
+        value: number,
+        label: string,
+    }[],
+    accountId: string,
+    fetchCollabList: () => void
 }
-const CertificateModal: FC<CertificateModalProps> = ({ open, setOpenCertificateModal, certificateList }) => {
+const CertificateModal: FC<CertificateModalProps> = ({ open, setOpenCertificateModal, certificateList, certificateOption, accountId, fetchCollabList }) => {
     type DataItem = (typeof certificateList)[number];
-    const [dataSource, setDataSource] = useState<DataItem[]>(certificateList);
-    const { handler, props } = useEditPostModalHook();
-
-    useEffect(() => { setDataSource(certificateList) }, [certificateList])
-    console.log('certificateList 111', certificateList)
+    console.log('certificateList: ', certificateList);
+    const { handler, props } = useEditPostModalHook(certificateList, accountId, setOpenCertificateModal, fetchCollabList);
+    const option = certificateOption.filter((item) => !certificateList.some(cert => cert.trainingCertificateId === item.id))
+    console.log('options: ', option)
     return (
         <ModalForm
             width={1190}
             open={open}
-            // onFinish={(value) => handler.handleUpdatePost(value)}
+            onFinish={(value) => handler.handleGiveCertificateByAccountId(value)}
             onOpenChange={setOpenCertificateModal}
             submitter={{
                 searchConfig: {
@@ -29,6 +35,7 @@ const CertificateModal: FC<CertificateModalProps> = ({ open, setOpenCertificateM
                     resetText: 'Cancel'// Đặt lại văn bản cho nút gửi
                 }
             }}
+            title='CERTIFICATE'
         >
             <ProCard
                 title="Certificate list"
@@ -44,52 +51,67 @@ const CertificateModal: FC<CertificateModalProps> = ({ open, setOpenCertificateM
                 <ProList<DataItem>
                     rowKey="id"
                     style={{ width: '100%' }}
-                    dataSource={dataSource}
+                    dataSource={props.dataSource}
+                    toolbar={{
+                        actions: [
+                            <Button type="dashed" disabled={Boolean(props.selectedRowKeys.length === 0)} danger onClick={() => handler.handleRemoveCertificateByAccountId()}>
+                                Remove certificate
+                            </Button>,
+                        ],
+                    }}
                     metas={{
-                        id: {
+                        key: {
                             dataIndex: 'id'
                         },
                         title: {
                             dataIndex: 'certificateName',
-                            search: false,
-                            render: (text, row, index, action) => {
-                                console.log('row: ', row.certificateName)
-                                return (
-
-                                    <>{row.certificateName}</>
-                                )
-                            }
                         },
                         description: {
+                            dataIndex: 'trainingTypeId',
+                        },
+                        content: {
+                            valueType: 'date',
                             dataIndex: 'createAt',
-                            search: false,
-                            render: (text, row, index, action) => (
-                                <>{row.createAt}</>
-                            )
+                            editable: false
                         },
                         subTitle: {
-                            render: (text, row, index, action) => (
-                                console.log('row', row),
-                                row?.status === 1 ? (
+                            render: (rows, row) => {
+                                return (
                                     <Space size={0}>
-                                        <Tag color="blue">isActive</Tag>
+                                        {row?.status === 1 ? <Tag color="green">Completed</Tag> : <Tag color="red">Rejected</Tag>}
                                     </Space>
-                                ) : (
-                                    <Space size={0}>
-                                        <Tag color="blue">inActive</Tag>
-                                    </Space>
-                                )
-
-                            ),
-                            search: false
+                                );
+                            },
+                            editable: false
                         },
                     }}
                     pagination={{
                         pageSize: 5,
                     }}
-                // rowSelection={rowSelection}
+                    rowSelection={props.rowSelection}
+                    key='trainingCertificateId'
                 />
+                <ProFormGroup>
+                    <ProFormSelect
+                        name="trainingCertificateId"
+                        label="Certificate"
+                        options={option}
+                        width='lg'
+                        fieldProps={{
+                            mode: 'multiple',
+                        }}
+                        placeholder="Please choose certificate to give collaborator"
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Please select atleast one certificate to give',
+                                type: 'array',
+                            },
+                        ]}
+                    />
+                </ProFormGroup>
             </ProCard>
+
         </ModalForm >
     )
 }

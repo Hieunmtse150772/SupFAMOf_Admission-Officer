@@ -45,7 +45,7 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
             width={1190}
             loading={props.isloading}
             form={props.form}
-            title={`Edit post ${postInfo?.data?.postCode}`}
+            title={`Edit post information`}
             open={open}
             onFinish={(value) => handler.handleUpdatePost(value, setOpenEditPostModal)}
             onOpenChange={setOpenEditPostModal}
@@ -182,7 +182,7 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                     <ProCard
                         bordered
                         style={{ marginBlockEnd: 8 }}
-                        title={`Position${index + 1}`}
+                        title={`Position ${index + 1}`}
                         bodyStyle={{ paddingBlockEnd: 0, boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px' }}
                     >
                         {listDom}

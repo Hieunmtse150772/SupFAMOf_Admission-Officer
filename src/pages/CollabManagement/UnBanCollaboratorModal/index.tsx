@@ -17,9 +17,10 @@ interface UnBanCollaboratorModalProps {
     open: boolean,
     setOpenUnBanCollaborator: React.Dispatch<React.SetStateAction<boolean>>,
     accountId: number,
-    accountName: string
+    accountName: string,
+    fetchCollabList: () => void
 }
-const UnBanCollaboratorModal: FC<UnBanCollaboratorModalProps> = ({ open, setOpenUnBanCollaborator, accountId, accountName }) => {
+const UnBanCollaboratorModal: FC<UnBanCollaboratorModalProps> = ({ open, setOpenUnBanCollaborator, accountId, accountName, fetchCollabList }) => {
     console.log('accountId: ', accountId)
     const { confirm } = Modal;
     const Formatter = 'DD/MM/YYYY';
@@ -32,9 +33,9 @@ const UnBanCollaboratorModal: FC<UnBanCollaboratorModalProps> = ({ open, setOpen
 
     const handleUnBanAccount = async (value: any) => {
         const params: UnBanParamsI = {
-            accountIdBanned: accountId,
+            accountBannedId: accountId,
             note: value?.note,
-            isActive: true
+            isActive: false
         }
         confirm({
             title: `Do you want to unban ${accountName}?`,
@@ -48,6 +49,7 @@ const UnBanCollaboratorModal: FC<UnBanCollaboratorModalProps> = ({ open, setOpen
                         } else if (response?.payload?.data?.status?.success) {
                             message.success(`Successfully un banned ${accountName} account`);
                             setOpenUnBanCollaborator(false);
+                            fetchCollabList();
                         } else message.error('Server internal error');
                     })
                 } catch (error) {

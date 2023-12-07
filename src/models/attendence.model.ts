@@ -1,8 +1,9 @@
 
 type AttendenceI = {
-    id: 0,
+    id: number,
     checkInTime: Date,
     checkOutTime: Date,
+    status: number,
     account: {
         name: string,
         email: string,

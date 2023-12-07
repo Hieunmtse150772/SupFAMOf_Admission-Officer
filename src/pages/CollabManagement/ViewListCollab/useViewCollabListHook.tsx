@@ -5,9 +5,10 @@ import { Avatar, Badge, Button, Dropdown, MenuProps, Modal, Space, Tag } from "a
 import { SortOrder } from "antd/es/table/interface";
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
+import { getCertificate } from "features/certificateSlice";
 import { getCollabList } from "features/collabSlice";
 import { handleDownloadReport } from "features/reportSlice";
-import CertificateOptionI from "models/certificateOption.model";
+import { Certificate } from "models/collabListInfo.model";
 import { useEffect, useState } from "react";
 
 const useViewCollablistHook = () => {
@@ -16,7 +17,7 @@ const useViewCollablistHook = () => {
     // const [selectedRowsState, setSelectedRows] = useState<boolean>([]);
     const [showDetail, setShowDetail] = useState<boolean>(false);
     const [openCertificateModal, setOpenCertificateModal] = useState<boolean>(false)
-    const [certificateList, setCertificateList] = useState<CertificateOptionI[]>([])
+    const [certificateList, setCertificateList] = useState<Certificate[]>([])
     const { collabList, loading } = useAppSelector(state => state.collab);
     const [page, setPage] = useState<number>(1);
     const pageSizeOptions = [10, 20, 30]; // Các tùy chọn cho pageSize
@@ -27,12 +28,17 @@ const useViewCollablistHook = () => {
     const option = [{ label: 'true', value: true }, { label: 'false', value: false }];
     const [openDisableAccountModal, setOpendisableAccountModal] = useState<boolean>(false);
     const [openUnbanAccountModal, setOpenUnbanAccountModal] = useState<boolean>(false);
-
+    const [accountId, setAccountId] = useState<string>()
     const [accountIdBan, setAccountIdBan] = useState<number>();
     const [accountName, setAccountName] = useState<string>();
     const [openExportModal, setOpenExportModal] = useState<boolean>(false);
     const [nameFileExport, setNameFileExport] = useState<string>('false');
-
+    const certificateOptionsAPI = useAppSelector(state => state.certificate.certificateOption)
+    const certificateOptions = certificateOptionsAPI?.map((title) => ({
+        id: title.id,
+        value: title.id,
+        label: title.certificateName
+    }));
     const { confirm } = Modal;
     const columns: ProColumns[] = [
         {
@@ -110,21 +116,45 @@ const useViewCollablistHook = () => {
             key: 'certificates',
             render: (certificates) => {
                 if (Array.isArray(certificates)) {
-                    if (certificates.length !== 0) {
-                        return certificates.map((certificate) => (
+                    const filtercertificate = certificates.filter((certificate) => certificate.status === 1)
+                    if (filtercertificate.length !== 0) {
+                        return filtercertificate.map((certificate) =>
+                        (
                             <Space size={0} key={certificate.id}>
                                 <Tag color="green">{certificate?.certificateName}</Tag>
                             </Space>
-                        ));
+                        )
+                        );
                     } else return <Space size={0}>
                         <Tag color="red">No certificate</Tag>
                     </Space>
-
                 } else {
                     <Tag color="red">No certificate</Tag>
                     // Handle the case when certificates is not an array
                     return null; // or you can return an appropriate message or component
                 }
+            }
+        },
+        {
+            title: 'Status',
+            dataIndex: 'isActive',
+            hideInSearch: true,
+            key: 'isActive',
+            render: (value, valueEnum) => {
+                if (valueEnum.isActive === true) {
+                    return <Tag color="blue">Is Active</Tag>
+                } else return <Tag color="red">InActive</Tag>
+            }
+        },
+        {
+            title: 'Ban',
+            dataIndex: 'isBanned',
+            hideInSearch: true,
+            key: 'isBanned',
+            render: (value, valueEnum) => {
+                if (valueEnum.isBanned === true) {
+                    return <Tag color="red">Banned</Tag>
+                } else return <Tag color="blue">Unbanned</Tag>
             }
         },
         {
@@ -145,13 +175,14 @@ const useViewCollablistHook = () => {
             },
             render: (value, valueEnum, record) => {
                 const totalUpdateRegisterAmount = valueEnum?.totalUpdateRegisterAmount; // Access totalUpdateRegisterAmount from record
+                console.log('valueEnum.isActive: ', valueEnum.isActive)
                 const items: MenuProps['items'] = [
                     {
                         label: 'Ban account',
                         key: '1',
                         icon: <LockOutlined rev={undefined} />,
                         onClick: () => handleOpenDisableAccountModal(valueEnum),
-                        // disabled: Boolean(!valueEnum.isActive),
+                        disabled: Boolean(valueEnum.isBanned === true),
                         danger: true
                     },
                     {
@@ -159,7 +190,7 @@ const useViewCollablistHook = () => {
                         key: '2',
                         icon: <UnlockOutlined rev={undefined} />,
                         onClick: () => handleOpenUnBanAccountModal(valueEnum),
-                        disabled: Boolean(valueEnum.isActive),
+                        disabled: Boolean(valueEnum.isBanned === false),
                     },
                     {
                         label: 'Edit certificate',
@@ -201,8 +232,9 @@ const useViewCollablistHook = () => {
 
     const handleOpenCertificateModal = (value: any) => {
         console.log('value: ', value)
-        setCertificateList(value?.certificates)
-        setOpenCertificateModal(true)
+        setAccountId(value?.key);
+        setCertificateList(value?.certificates);
+        setOpenCertificateModal(true);
     }
 
     const handleOpenUnBanAccountModal = async (value: any) => {
@@ -242,7 +274,11 @@ const useViewCollablistHook = () => {
         taxNumber: collab?.taxNumber,
         bankName: collab?.bankName,
         branch: collab?.branch,
-        certificates: collab?.certificates
+        certificates: collab?.certificates,
+        isActive: collab.isActive,
+        endTime: collab.endTime,
+        isBanned: collab.isBanned,
+        startTime: collab.startTime
         // ...
     }));
     const fetchCollabList = async () => {
@@ -262,6 +298,12 @@ const useViewCollablistHook = () => {
             }
         }
     };
+    const fetchCertificateOption = async () => {
+        const result = await dispatch(getCertificate());
+    }
+    useEffect(() => {
+        fetchCertificateOption();
+    }, [])
     useEffect(() => {
         fetchCollabList()
     }, [page, pageSize])
@@ -294,7 +336,8 @@ const useViewCollablistHook = () => {
         handleOpenDisableAccountModal,
         setOpenUnbanAccountModal,
         handleOpenExportExcel,
-        setOpenExportModal
+        setOpenExportModal,
+        fetchCollabList
     }
     const props = {
         columns,
@@ -315,7 +358,9 @@ const useViewCollablistHook = () => {
         accountName,
         openUnbanAccountModal,
         openExportModal,
-        nameFileExport
+        nameFileExport,
+        certificateOptions,
+        accountId
     }
     return {
         handler,

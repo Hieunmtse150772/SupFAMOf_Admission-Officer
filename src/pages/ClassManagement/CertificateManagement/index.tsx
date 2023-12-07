@@ -17,7 +17,7 @@ const Index = () => {
             disabled={props.selectedRowsState.length === 0}
             onClick={handler.hanldeOpenAssignClass}
         >
-            < CheckCircleOutlined rev={undefined} /> Assign class
+            < CheckCircleOutlined rev={undefined} /> Assign room
         </Button >
     )
     return (

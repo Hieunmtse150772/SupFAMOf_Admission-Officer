@@ -148,23 +148,31 @@ const ViewCollabList = () => {
 
             </Drawer >
             {props.accountIdBan && props.accountName && <BanCollaboratorModal
+                fetchCollabList={handler.fetchCollabList}
                 accountName={props.accountName}
                 accountId={props.accountIdBan}
                 open={props.openDisableAccountModal}
                 setOpenBanCollaborator={handler.setOpendisableAccountModal}
             ></BanCollaboratorModal>}
             {props.accountIdBan && props.accountName && <UnBanCollaboratorModal
+                fetchCollabList={handler.fetchCollabList}
                 accountName={props.accountName}
                 accountId={props.accountIdBan}
                 open={props.openUnbanAccountModal}
                 setOpenUnBanCollaborator={handler.setOpenUnbanAccountModal}
             ></UnBanCollaboratorModal>}
-            <CertificateModal
-                open={props.openCertificateModal}
-                setOpenCertificateModal={handler.setOpenCertificateModal}
-                certificateList={props.certificateList}>
+            {props.accountId &&
+                <CertificateModal
+                    accountId={props.accountId}
+                    certificateOption={props.certificateOptions}
+                    open={props.openCertificateModal}
+                    setOpenCertificateModal={handler.setOpenCertificateModal}
+                    certificateList={props.certificateList}
+                    fetchCollabList={handler.fetchCollabList}
+                >
+                </CertificateModal>
+            }
 
-            </CertificateModal>
             {props.nameFileExport && <ExportModal
                 open={props.openExportModal}
                 setOpenExportModal={handler.setOpenExportModal}

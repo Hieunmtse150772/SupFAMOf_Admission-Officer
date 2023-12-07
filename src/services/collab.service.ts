@@ -5,6 +5,7 @@ import SearchCollabParamDto from 'dtos/Collab/searchCollab.dto';
 import { CollabDto } from 'dtos/collab.dto';
 import { CollabListDto } from 'dtos/collabList.dto';
 import { BanParamsI, UnBanParamsI } from 'models/banParamsI.model';
+import { GiveCertificateParamsI } from 'models/giveCertificate.model';
 import axiosClient from './axiosClient';
 
 export const collabService = {
@@ -21,12 +22,16 @@ export const collabService = {
         })
     },
     banCollaboratorById: (params: BanParamsI): Promise<AxiosResponse<CollabDto>> => {
-        const url = '/admin/admission-ban-account/create';
+        const url = '/admission/admission-ban-account/create';
         return axiosClient.post(url, params)
     },
     updateBanCollaboratorById: (params: UnBanParamsI): Promise<AxiosResponse<CollabDto>> => {
-        const url = '/admin/admission-ban-account/update';
+        const url = `/admission/admission-ban-account/update?accountBannedId=${params.accountBannedId}`;
         return axiosClient.put(url, params)
+    },
+    giveCertificateByAccountId: (params: GiveCertificateParamsI): Promise<AxiosResponse<CollabDto>> => {
+        const url = '/admission/admission-account-certificate/create';
+        return axiosClient.post(url, params)
     },
 
 };
