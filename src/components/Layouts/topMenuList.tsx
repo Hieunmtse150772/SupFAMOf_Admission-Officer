@@ -17,6 +17,11 @@ const admissionTopMenu = [
     path: "/dashboard/certificate-list",
   },
   {
+    title: "Room Management",
+    Icon: Icons.ClassOutlined,
+    path: "/dashboard/room-list",
+  },
+  {
     title: "Post Management",
     Icon: Icons.PostList,
     path: "/dashboard/post-list",

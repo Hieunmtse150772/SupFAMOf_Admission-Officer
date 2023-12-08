@@ -163,7 +163,7 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
     }
     return (
         <ModalForm
-            title="Chose class to assign"
+            title="Choose room to assign"
             open={open}
             onFinish={async () => {
                 if (selectedRowKeys.length === 0) {
@@ -192,7 +192,7 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
             </Button> */}
             <EditableProTable<ClassTrainingViewI>
                 rowKey="id"
-                headerTitle="Class training"
+                headerTitle="Room training"
                 scroll={{
                     x: 960,
                 }}

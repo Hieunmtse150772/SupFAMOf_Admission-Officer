@@ -33,7 +33,10 @@ const UserProfile = Loadable(lazy(() => import("./pages/UserProfile")));
 const UserList = Loadable(
   lazy(() => import("./pages/CollabManagement/ViewListCollab"))
 );
-const ClassList = Loadable(
+const RoomList = Loadable(
+  lazy(() => import("./pages/RoomManagement/index"))
+);
+const CertificateList = Loadable(
   lazy(() => import("./pages/ClassManagement/index"))
 );
 const UserGrid = Loadable(
@@ -125,10 +128,14 @@ const routes = [
         title: 'Collab Management'
       },
       {
+        path: "room-list",
+        element: <RoomList />,
+        title: 'Room Management'
+      },
+      {
         path: "certificate-list",
-        element: <ClassList />,
+        element: <CertificateList />,
         title: 'Certificate Management'
-
       },
       {
         path: "certificate-list/:id",
