@@ -17,9 +17,10 @@ interface AddCertificateModalProps {
     open: boolean,
     setOpenCertificateModal: React.Dispatch<React.SetStateAction<boolean>>,
     fetchCertificateOption: () => void,
-    data: CertificateOptionI[]
+    data: CertificateOptionI[],
+    fetchCertificateRegistration?: () => void
 }
-const AddCertificateModal: FC<AddCertificateModalProps> = ({ open, setOpenCertificateModal, fetchCertificateOption, data }) => {
+const AddCertificateModal: FC<AddCertificateModalProps> = ({ open, setOpenCertificateModal, fetchCertificateOption, data, fetchCertificateRegistration }) => {
     const Formatter = 'DD/MM/YYYY';
     const dispatch = useAppDispatch();
     type DataItem = (typeof data)[number];
@@ -37,6 +38,7 @@ const AddCertificateModal: FC<AddCertificateModalProps> = ({ open, setOpenCertif
                 const result2 = unwrapResult(response);
                 if (result2.status === 200) {
                     fetchCertificateOption();
+                    fetchCertificateRegistration && fetchCertificateRegistration();
                     message.success('Add certificate success!');
                     result = true;
                 }

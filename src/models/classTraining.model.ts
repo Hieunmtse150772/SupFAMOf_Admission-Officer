@@ -9,27 +9,32 @@ export type ClassTrainingI = {
     status: string,
     createAt: Date,
     updateat: Date,
-    trainingRegistrations: [
-        {
-            id: number,
-            status: number,
-            account: {
-                id: number,
-                name: string,
-                imgUrl: string,
-                isPremium: boolean,
-                email: string,
-                phone: string,
-                idStudent: string
-            },
-            trainingCertificate: {
-                id: number,
-                trainingTypeId: string,
-                certificateName: string,
-                isActive: boolean
-            }
-        }
-    ]
+    trainingRegistrations: TrainingRegistrationsI[]
+}
+export type TrainingRegistrationsI = {
+    id: number,
+    status: number,
+    account: {
+        id: number,
+        name: string,
+        imgUrl: string,
+        isPremium: boolean,
+        email: string,
+        phone: string,
+        idStudent: string
+    },
+    trainingCertificate: {
+        id: number,
+        trainingTypeId: string,
+        certificateName: string,
+        isActive: boolean
+    },
+    newItem: {
+        date: Date,
+        timeFrom: Date,
+        timeTo: Date
+    }
+
 }
 export type ClassTrainingViewI = {
     id: string | number,

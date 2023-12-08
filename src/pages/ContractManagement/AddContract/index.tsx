@@ -112,7 +112,7 @@ const AddContract = () => {
                                                 onChange: (value) => handler.handleAssignDateChange(value)
                                             }}
                                             tooltip='The contract signing date must be 2 days greater than the current date!'
-                                            rules={[{ required: true, message: 'Chose date to assign!' }]} />
+                                            rules={[{ required: true, message: 'Choose date to assign!' }]} />
                                         {/* <ProFormDateRangePicker
                                         name="dateFrom_dateTo"
                                         label="Starting date - Ending date"
@@ -122,7 +122,7 @@ const AddContract = () => {
                                             disabledDate: handler.disabledDateStart
                                         }}
                                         tooltip='The end date must be within 30 days of the start date!'
-                                        rules={[{ required: true, message: 'Chose date from & date to!' }]}
+                                        rules={[{ required: true, message: 'Choose date from & date to!' }]}
                                     /> */}
                                         <ProFormDateRangePicker
                                             name="dateFrom_dateTo"
@@ -133,7 +133,7 @@ const AddContract = () => {
                                                 disabledDate: handler.disabledDateStart,
                                             }}
                                             tooltip='The end date must be within 30 days of the start date!'
-                                            rules={[{ required: true, message: 'Chose date from & date to!' }]} />
+                                            rules={[{ required: true, message: 'Choose date from & date to!' }]} />
                                         {/* <ProFormUploadButton
                                         name="upload"
                                         label="Upload Document"
@@ -197,7 +197,7 @@ const AddContract = () => {
                                     onChange: handler.handleChange,
                                 }}
                                 title="Upload"
-                                description='Chose template file contract (docs, prf,..)'
+                                description='Choose template file contract (docs, prf,..)'
                                 required
                                 rules={[{ required: true, message: 'Add 1 file docs, pdf!' }]} />
                         </StepsForm.StepForm>
@@ -266,8 +266,8 @@ const AddContract = () => {
                             </ProDescriptions>
                         </StepsForm.StepForm>
                         <StepsForm.StepForm
-                            name="chose_collab"
-                            title="Chose collaborator"
+                            name="Choose_collab"
+                            title="Choose collaborator"
                         // onFinish={async () => {
                         //     handleConfirm()
                         // }}
