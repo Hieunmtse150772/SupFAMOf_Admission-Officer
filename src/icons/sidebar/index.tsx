@@ -3,6 +3,7 @@ import {
   AddToPhotosOutlined,
   PersonAdd as AddUserIcon,
   Assignment,
+  ClassOutlined,
   DocumentScannerOutlined as DocumentIcon,
   Login as LoginIcon,
   Map as MapIcon,
@@ -33,5 +34,6 @@ export default {
   MapIcon,
   AddToPhotosOutlined,
   Assignment,
-  SchoolIcon
+  SchoolIcon,
+  ClassOutlined
 };

@@ -44,7 +44,8 @@ function useViewCertificate() {
     const handler = {
         onOpenAddCertificateModal,
         fetchCertificate,
-        setOpenAddCertificateModal
+        setOpenAddCertificateModal,
+        fetchCertificateRegistration
     }
     const props = {
         certificateRegistrationList,

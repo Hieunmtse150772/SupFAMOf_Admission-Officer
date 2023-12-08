@@ -79,8 +79,8 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                             initialValue={postInfo?.data?.postCategoryId}
                             debounceTime={5}
                             label="Post Title"
-                            tooltip="Chose one options of post title"
-                            rules={[{ required: true, message: 'Chose one options of post title!' }]}
+                            tooltip="Choose one options of post title"
+                            rules={[{ required: true, message: 'Choose one options of post title!' }]}
                             onChange={() => handler.handleEdit()}
                         />
                         <ProFormDateRangePicker
@@ -88,7 +88,7 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                             label="Date From-To"
                             disabled
                             width='xl'
-                            rules={[{ required: true, message: 'Chose date from & date to!' }]}
+                            rules={[{ required: true, message: 'Choose date from & date to!' }]}
                             initialValue={[postInfo?.data.dateFrom, postInfo?.data.dateTo]}
                             onMetaChange={onchange = () => handler.handleEdit()}
                         />
@@ -251,7 +251,7 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                         width="md"
                         disabled
                         name="date"
-                        rules={[{ required: true, message: 'Chose Date!' }]} />
+                        rules={[{ required: true, message: 'Choose Date!' }]} />
 
                     <ProFormSelect
                         label="Document"
@@ -288,7 +288,7 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                         name="timeFrom"
                         disabled
                         // initialValue={['timeFrom', 'timeTo']}
-                        rules={[{ required: true, message: 'Chose time from & time to!' }]}
+                        rules={[{ required: true, message: 'Choose time from & time to!' }]}
                     />
 
                     <ProFormTimePicker
@@ -297,7 +297,7 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                         disabled
                         name="timeTo"
                         // initialValue={['timeFrom', 'timeTo']}
-                        rules={[{ required: true, message: 'Chose time from & time to!' }]}
+                        rules={[{ required: true, message: 'Choose time from & time to!' }]}
                     />
                     <ProFormDigit
                         label="Amount"

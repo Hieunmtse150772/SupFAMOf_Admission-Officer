@@ -135,15 +135,15 @@ const AddNewPost: FC = () => {
                                         label="Post category"
                                         initialValue={options[0]?.value}
                                         debounceTime={5}
-                                        tooltip="Chose one options of post title"
-                                        rules={[{ required: true, message: 'Chose one options of post title!' }]}
+                                        tooltip="Choose one options of post title"
+                                        rules={[{ required: true, message: 'Choose one options of post title!' }]}
                                     />
                                     <ProFormDateRangePicker
                                         name="dateFrom_dateTo"
                                         width='xl'
                                         label="Date From - Date to"
                                         style={{ width: '100%' }}
-                                        rules={[{ required: true, message: 'Chose date from & date to!' }]}
+                                        rules={[{ required: true, message: 'Choose date from & date to!' }]}
                                         fieldProps={{
                                             disabledDate: disabledDate,
                                             disabledTime: disabledRangeTime,
@@ -158,7 +158,7 @@ const AddNewPost: FC = () => {
                                     debounceTime={5}
                                     onChange={(value) => handler.handleChangeProvince(value)}
                                     placeholder={'Select province'}
-                                    rules={[{ required: true, message: 'Chose one options of province!' }]}
+                                    rules={[{ required: true, message: 'Choose one options of province!' }]}
                                 />
                                 <ProFormSelect
                                     width="sm"
@@ -169,7 +169,7 @@ const AddNewPost: FC = () => {
                                     placeholder={'Select district'}
                                     onChange={(value) => handler.handleChangeDistrict(value)}
                                     style={{ marginRight: 60 }}
-                                    rules={[{ required: true, message: 'Chose one options of district!' }]}
+                                    rules={[{ required: true, message: 'Choose one options of district!' }]}
                                 />
                                 <ProFormSelect
                                     width="sm"
@@ -178,7 +178,7 @@ const AddNewPost: FC = () => {
                                     label="Ward"
                                     debounceTime={5}
                                     placeholder={'Select ward'}
-                                    rules={[{ required: true, message: 'Chose one options of ward!' }]}
+                                    rules={[{ required: true, message: 'Choose one options of ward!' }]}
                                 /> */}
 
                                     <ProFormSlider
@@ -341,8 +341,8 @@ const AddNewPost: FC = () => {
                                     options={optionDate}
                                     name="date"
                                     label="Date Option"
-                                    tooltip="Chose one options of Date"
-                                    rules={[{ required: true, message: 'Chose one options of Date!' }]}
+                                    tooltip="Choose one options of Date"
+                                    rules={[{ required: true, message: 'Choose one options of Date!' }]}
                                 />
                                 <ProFormTimePicker.RangePicker
                                     label="Time"
@@ -352,7 +352,7 @@ const AddNewPost: FC = () => {
                                         disabledTime: (current, type) => handler.disabledTime(current, type)
                                     }}
 
-                                    rules={[{ required: true, message: 'Chose time from & time to!' }]}
+                                    rules={[{ required: true, message: 'Choose time from & time to!' }]}
                                 />
                                 <ProFormSelect
                                     label="Document"
@@ -514,7 +514,7 @@ const AddNewPost: FC = () => {
 
                                 <ProFormTimePicker.RangePicker
                                     name="trainingTimeFrom_timeTo"
-                                    rules={[{ required: true, message: 'Chose time from & time to!' }]}
+                                    rules={[{ required: true, message: 'Choose time from & time to!' }]}
                                 // initialValue={[postInfo?.data.timeFrom, postInfo?.data.timeTo]}
                                 />
 

@@ -1,3 +1,4 @@
+import { ExclamationCircleFilled } from "@ant-design/icons";
 import { ProCard, ProList, StepsForm } from "@ant-design/pro-components";
 import { Box } from "@mui/material";
 import { unwrapResult } from "@reduxjs/toolkit";
@@ -32,6 +33,7 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
     }
 ) => {
     const dispatch = useAppDispatch();
+    const { confirm } = Modal;
     type DataItem = (typeof collabList)[number];
     const [dataSource, setDataSource] = useState<DataItem[]>(collabList);
     const loading = useAppSelector(state => state.registration.loading);
@@ -89,71 +91,80 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
         setDataSource(collabList);
     }, [collabList]);
     const handleConfirm = async () => {
-        setLoading(true);
-        const numbers = selectedRowKeys.map((key) => +key);
-        if (activeKey === 'tab1') {
-            const params = {
-                ids: numbers,
-                IsApproved: true
-            }
-            try {
-                await dispatch(confirmPositionByCollabList(params))
-                    .then((result) => {
-                        unwrapResult(result)
-                        console.log('result: ', result)
-                        if (result.meta.requestStatus === "rejected") {
-                            message.warning('Slot already full!');
-                            setLoading(false)
-                        } else if (result.meta.requestStatus === "fulfilled") {
-                            message.success('Confirm collab successfull');
-                            setLoading(false)
-                            fetchPostList();
-                            setOpenConfirmModal(false);
-                        }
+        confirm({
+            title: `Do you want to ${activeKey === 'tab1' ? 'confirm' : 'cancel'} the collaborator list?`,
+            icon: <ExclamationCircleFilled rev={undefined} />,
+            onOk: async () => {
+                setLoading(true);
+                const numbers = selectedRowKeys.map((key) => +key);
+                if (activeKey === 'tab1') {
+                    const params = {
+                        ids: numbers,
+                        IsApproved: true
                     }
-                    )
-                    .catch((error) => {
+                    try {
+                        await dispatch(confirmPositionByCollabList(params))
+                            .then((result) => {
+                                unwrapResult(result)
+                                console.log('result: ', result)
+                                if (result.meta.requestStatus === "rejected") {
+                                    message.warning('Slot already full!');
+                                    setLoading(false)
+                                } else if (result.meta.requestStatus === "fulfilled") {
+                                    message.success('Confirm collab successfull');
+                                    setLoading(false)
+                                    fetchPostList();
+                                    setOpenConfirmModal(false);
+                                }
+                            }
+                            )
+                            .catch((error) => {
+                                setLoading(false)
+                                message.error('Server internal error');
+                            }
+                            )
+                    } catch (error) {
                         setLoading(false)
                         message.error('Server internal error');
+                    } finally {
+                        setLoading(false)
                     }
-                    )
-            } catch (error) {
-                setLoading(false)
-                message.error('Server internal error');
-            } finally {
-                setLoading(false)
-            }
-        } else {
-            const params = {
-                ids: numbers,
-            }
-            try {
-                await dispatch(cancelRegistration(params))
-                    .then((result) => {
-                        unwrapResult(result)
-                        if (result.meta.requestStatus === "rejected") {
-                            message.warning('Can not cancel!');
-                            setLoading(false)
-                        } else if (result.meta.requestStatus === "fulfilled") {
-                            message.success('Cancel collab successfull');
-                            setLoading(false)
-                            fetchPostList();
-                            setOpenConfirmModal(false);
-                        }
+                } else {
+                    const params = {
+                        ids: numbers,
                     }
-                    )
-                    .catch((error) => {
+                    try {
+                        await dispatch(cancelRegistration(params))
+                            .then((result) => {
+                                unwrapResult(result)
+                                if (result.meta.requestStatus === "rejected") {
+                                    message.warning('Can not cancel!');
+                                    setLoading(false)
+                                } else if (result.meta.requestStatus === "fulfilled") {
+                                    message.success('Cancel collab successfull');
+                                    setLoading(false)
+                                    fetchPostList();
+                                    setOpenConfirmModal(false);
+                                }
+                            }
+                            )
+                            .catch((error) => {
+                                setLoading(false)
+                                message.error('Server internal error');
+                            }
+                            )
+                    } catch (error) {
                         setLoading(false)
                         message.error('Server internal error');
+                    } finally {
+                        setLoading(false)
                     }
-                    )
-            } catch (error) {
-                setLoading(false)
-                message.error('Server internal error');
-            } finally {
-                setLoading(false)
-            }
-        }
+                }
+            },
+            onCancel() {
+            },
+        });
+
 
     }
 
@@ -259,7 +270,7 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
                             maxWidth: '100%',
                         }}
                     >
-                        {activeKey === 'tab1' ? <> <Span>Choose Collab to confirm</Span><Progress percent={Number(percent.toFixed(2))} type="line" style={{ width: '100%' }} /></> : <Span>Choose Collab to reject</Span>}
+                        {activeKey === 'tab1' ? <> <Span>Choose collaborators to confirm</Span><Progress percent={Number(percent.toFixed(2))} type="line" style={{ width: '100%' }} /></> : <Span>Choose collaborators to cancel</Span>}
                         <ProList<DataItem>
 
                             loading={loading}
@@ -376,9 +387,10 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
                         }}
                     >
                         <ProList<DataItem>
+                            loading={isLoading}
                             rowKey="id"
                             style={{ width: '100%' }}
-                            headerTitle={activeKey === 'tab1' ? <Span>List collab confirmed</Span> : <Span>List collab rejected</Span>}
+                            headerTitle={activeKey === 'tab1' ? <Span>List collab to confirm</Span> : <Span>List collab cancel</Span>}
                             dataSource={collabPicker}
                             metas={{
                                 title: {
