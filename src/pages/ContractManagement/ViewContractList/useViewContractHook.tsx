@@ -31,6 +31,10 @@ interface ExpandedDataType {
     phone: string,
     imgUrl: string,
 }
+type SortModalI = {
+    Sort: string,
+    Order: string
+}
 const useViewContractHook = () => {
     const Formatter = 'DD/MM/YYYY'
     const [currentRow, setCurrentRow] = useState<any>();
@@ -50,6 +54,10 @@ const useViewContractHook = () => {
     const [contractId, setContractId] = useState<number | null>(null);
     const downloadRef = useRef<HTMLAnchorElement | null>(null);
     const [accountList, setAccountList] = useState<CollabListInfo[]>([])
+    const [sortModel, setSortModel] = useState<SortModalI>({
+        Sort: 'createAt',
+        Order: 'desc'
+    });
     const columns: ProColumns<CollumsField>[] = [
         {
             title: 'Contract Name',
@@ -92,7 +100,6 @@ const useViewContractHook = () => {
             dataIndex: 'sampleFile',
             key: 'sampleFile',
             width: 30,
-            sorter: true,
             render: (value) => {
                 return <a ref={downloadRef} href={String(value)} download='downloaded_file.doc'>Link</a>
             },
@@ -103,7 +110,6 @@ const useViewContractHook = () => {
             dataIndex: 'totalSalary',
             key: 'totalSalary',
             width: 30,
-            sorter: true,
         },
         {
             title: 'Status',
@@ -126,6 +132,7 @@ const useViewContractHook = () => {
             key: 'createAt',
             valueType: 'date',
             width: 20,
+            sorter: true,
         },
         {
             title: 'Action',
@@ -271,7 +278,12 @@ const useViewContractHook = () => {
         // ...
     }));
     const fetchContractList = async () => {
-        await dispatch(getContractList({ page: page, PageSize: pageSize }))
+        await dispatch(getContractList({
+            page: page,
+            PageSize: pageSize,
+            Sort: sortModel?.Sort,
+            Order: sortModel?.Order,
+        }))
     }
     const handleAddContract = () => {
         setOpenAddContractModal(true);
