@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import SearchCollabParamDto from 'dtos/Collab/searchCollab.dto';
 import { CollabDto } from 'dtos/collab.dto';
@@ -7,6 +7,7 @@ import { BanParamsI, UnBanParamsI } from 'models/banParamsI.model';
 import CollabInfo from 'models/collab.model';
 import CollabListInfo from 'models/collabListInfo.model';
 import { GiveCertificateParamsI } from 'models/giveCertificate.model';
+import { RemoveCertificateParamsI } from 'models/removeCertificate.model';
 import { collabService } from 'services/collab.service';
 
 interface CollabState {
@@ -79,6 +80,27 @@ export const giveCertificateByAccountId = createAsyncThunk('collabs/give-certifi
             return rejectWithValue(axiosError.response?.data)
         }
     })
+export const removeCertificateByAccountId = createAsyncThunk('collabs/remove-certificate-by-accoutnId',
+    async (params: RemoveCertificateParamsI, { rejectWithValue }) => {
+        try {
+            const result = await collabService.removeCertificateByAccountId(params);
+            return result
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data)
+        }
+    })
+
+export const updateCollaboratorToPremium = createAsyncThunk('collabs/update-collaborator-premium',
+    async (id: string, { rejectWithValue }) => {
+        try {
+            const result = await collabService.updateCollaboratorToPremium(id);
+            return result
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data)
+        }
+    })
 export const collabSlice = createSlice({
     name: 'collabs',
     initialState,
@@ -109,14 +131,26 @@ export const collabSlice = createSlice({
                 state.error = String(action.payload);
                 state.loading = false;
             })
-            .addCase(banCollaboratorById.pending, (state) => {
+            .addMatcher(isAnyOf(
+                banCollaboratorById.pending,
+                updateBanCollaboratorById.pending,
+                updateCollaboratorToPremium.pending
+            ), (state) => {
                 state.loading = true;
                 state.error = "";
             })
-            .addCase(banCollaboratorById.fulfilled, (state, action) => {
+            .addMatcher(isAnyOf(
+                banCollaboratorById.fulfilled,
+                updateBanCollaboratorById.fulfilled,
+                updateCollaboratorToPremium.fulfilled
+            ), (state, action) => {
                 state.loading = false;
             })
-            .addCase(banCollaboratorById.rejected, (state, action) => {
+            .addMatcher(isAnyOf(
+                banCollaboratorById.rejected,
+                updateBanCollaboratorById.rejected,
+                updateCollaboratorToPremium.rejected
+            ), (state, action) => {
                 state.error = String(action.payload);
                 state.loading = false;
             })

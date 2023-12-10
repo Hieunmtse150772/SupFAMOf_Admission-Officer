@@ -96,6 +96,14 @@ const DashboardNavbar: FC<DashboardNavBarProps> = ({
       title: 'Certificate Management',
     },
     {
+      path: '/dashboard/application-list',
+      title: 'Application Management',
+    },
+    {
+      path: '/dashboard/room-list',
+      title: 'Room Management',
+    },
+    {
       path: `/dashboard/certificate-list/${id}`,
       title: 'Training Room',
       pathBack: '/dashboard/certificate-list',

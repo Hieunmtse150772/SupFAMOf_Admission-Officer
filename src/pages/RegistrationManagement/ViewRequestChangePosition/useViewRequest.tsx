@@ -339,7 +339,7 @@ function useViewRequest(postId: number, fetchPost: () => void) {
         await dispatch(getRequestByAccountId({
             page: page,
             PageSize: pageSize,
-            postId: postId
+            Id: postId
         }))
     }
     useEffect(() => {

@@ -112,10 +112,8 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                             onMetaChange={onchange = () => handler.handleEdit()}
                         />
                         <ProFormSwitch name="isPremium" label="Is Premium show" initialValue={postInfo?.data?.isPremium}
-                            onMetaChange={onchange = () => handler.handleEdit()}
+                            onMetaChange={onchange = () => handler.handleEdit()} disabled
                         />
-
-
                     </ProForm.Group>
                     <Upload
                         customRequest={handler.customRequest}
@@ -133,7 +131,7 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                     </Modal>
 
                 </Grid>
-                <Grid item sm={6.8}>
+                <Grid item sm={7}>
                     <Small fontSize={15}>
                         Description
                     </Small>
@@ -244,6 +242,9 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                         request={async ({ keyWords }) => handler.handleSearchAddressGeoapifi(keyWords)}
                         placeholder="Please select a country"
                         rules={[{ required: true, message: 'Please select your country!' }]}
+                        fieldProps={{
+                            filterOption: false
+                        }}
                         onMetaChange={onchange = () => handler.handleEdit()}
                     />
                     <ProFormDatePicker
@@ -316,6 +317,7 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                         name="salary"
                         width="xs"
                         customSymbol="đ"
+                        disabled
                         rules={[
                             {
                                 required: true,

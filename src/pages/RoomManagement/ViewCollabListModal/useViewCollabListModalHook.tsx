@@ -1,12 +1,12 @@
 import { ProColumns, RequestData } from "@ant-design/pro-components";
 import { FiberManualRecord } from "@mui/icons-material";
 import { Box, Typography } from "@mui/material";
-import { green, grey, red } from "@mui/material/colors";
+import { blue, green, grey, red } from "@mui/material/colors";
 import { Avatar, Modal, Switch, message } from 'antd';
 import { SortOrder } from 'antd/es/table/interface';
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
-import Status from "enums/statusAttendanceEnum";
+import StatusTrainingRegistration from "enums/statusTrainingRegistration.enum";
 import { confirmAttendanceByEvenDayId } from "features/classSlice";
 import { ConfirmAdtendanceRoom } from "models/ConfirmAdtendanceRoom.model";
 import { TrainingRegistrationsI } from "models/classTraining.model";
@@ -142,19 +142,27 @@ function useViewCollabListModalHook(collabList: TrainingRegistrationsI[], eventD
                 let color = grey[400].toString();
                 let statusText = 'Unknown';
                 switch (valueEnum?.status) {
-                    case Status.pending:
+                    case StatusTrainingRegistration.Pending:
                         color = '#1890ff';
                         statusText = 'Pending';
                         break;
 
-                    case Status.approved:
-                        color = green[500];
-                        statusText = 'Approved';
+                    case StatusTrainingRegistration.Assigned:
+                        color = blue[500];
+                        statusText = 'Assigned';
                         break;
 
-                    case Status.rejected:
+                    case StatusTrainingRegistration.Passed:
+                        color = green[500];
+                        statusText = 'Passed';
+                        break;
+                    case StatusTrainingRegistration.Not_Passed:
                         color = red[500];
-                        statusText = 'Rejected';
+                        statusText = 'Not Passed';
+                        break;
+                    case StatusTrainingRegistration.Canceled:
+                        color = red[500];
+                        statusText = 'Canceled';
                         break;
                     default:
                         break;
@@ -180,7 +188,7 @@ function useViewCollabListModalHook(collabList: TrainingRegistrationsI[], eventD
                         display: 'felx',
                         justifySelf: 'center'
                     }}
-                    defaultChecked={Boolean(valueEnum?.status === 2)}
+                    defaultChecked={Boolean(valueEnum?.status === 1)}
                     checkedChildren="attend"
                     unCheckedChildren="absend"
                     onChange={(value) => { handleChangeStatus(valueEnum.id, valueEnum.status, value) }}
@@ -218,7 +226,7 @@ function useViewCollabListModalHook(collabList: TrainingRegistrationsI[], eventD
     const handleChangeStatus = (id: number, status: number, value: boolean) => {
         checkAttendanceData.map((attendance) => {
             if (attendance.trainingRegistrationId === id) {
-                attendance.status = value ? 2 : 1
+                attendance.status = value ? 3 : 1
             }
             return attendance;
         })

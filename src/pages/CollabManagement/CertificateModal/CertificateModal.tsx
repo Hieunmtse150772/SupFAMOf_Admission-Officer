@@ -21,7 +21,8 @@ const CertificateModal: FC<CertificateModalProps> = ({ open, setOpenCertificateM
     type DataItem = (typeof certificateList)[number];
     console.log('certificateList: ', certificateList);
     const { handler, props } = useEditPostModalHook(certificateList, accountId, setOpenCertificateModal, fetchCollabList);
-    const option = certificateOption.filter((item) => !certificateList.some(cert => cert.trainingCertificateId === item.id))
+    const certificateListFilter = certificateList?.filter((certificate) => certificate?.status === 1)
+    const option = certificateOption?.filter((item) => !certificateListFilter?.some(cert => cert?.trainingCertificateId === item.id))
     console.log('options: ', option)
     return (
         <ModalForm

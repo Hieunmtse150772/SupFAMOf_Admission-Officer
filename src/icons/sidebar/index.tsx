@@ -7,6 +7,7 @@ import {
   DocumentScannerOutlined as DocumentIcon,
   Login as LoginIcon,
   Map as MapIcon,
+  MessageOutlined as MessageIcon,
   LocalPostOffice as PostList,
   AppRegistration as RegistrationList,
   GridView as UserGridIcon
@@ -35,5 +36,6 @@ export default {
   AddToPhotosOutlined,
   Assignment,
   SchoolIcon,
-  ClassOutlined
+  ClassOutlined,
+  MessageIcon
 };

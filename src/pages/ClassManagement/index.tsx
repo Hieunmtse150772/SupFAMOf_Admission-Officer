@@ -62,7 +62,7 @@ function ClassManagement() {
 
                 }}
                 showActions="hover"
-                grid={{ gutter: 20, column: 4 }}
+                grid={{ column: 4 }}
                 onItem={(record: any) => {
                     return {
                         onMouseEnter: () => {
@@ -122,6 +122,7 @@ function ClassManagement() {
                     setOpenCertificateModal={handler.setOpenAddCertificateModal}
                     open={props.openAddCertificateModal}
                     data={props.certificateList}
+                    fetchCertificateRegistration={handler.fetchCertificateRegistration}
                 />
             }
 
