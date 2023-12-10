@@ -1,4 +1,4 @@
-import { CheckCircleOutlined, ExclamationCircleFilled, EyeOutlined, FolderViewOutlined, MoreOutlined, UnlockOutlined } from '@ant-design/icons'; // Import the icon from the library
+import { CheckCircleOutlined, ExclamationCircleFilled, EyeOutlined, FolderViewOutlined, LockOutlined, MoreOutlined, UnlockOutlined } from '@ant-design/icons'; // Import the icon from the library
 import { ProColumns, RequestData } from "@ant-design/pro-components";
 import { FiberManualRecord } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
@@ -40,7 +40,8 @@ type SearchParamsI = {
     dateFrom?: Date,
     dateTo?: Date,
     status?: string,
-    postCategoryId?: number
+    postCategoryId?: number,
+    createAt?: Date
 }
 function useViewRegistrationHook() {
     const Formatter = 'DD/MM/YYYY'
@@ -279,7 +280,7 @@ function useViewRegistrationHook() {
                     {
                         label: 'Close',
                         key: '1',
-                        icon: <CheckCircleOutlined rev={undefined} />,
+                        icon: <LockOutlined rev={undefined} />,
                         onClick: () => handleAction(value, valueEnum.status),
                         disabled: Boolean(valueEnum?.status === 2 || valueEnum?.status === 3)
                     },
@@ -544,7 +545,8 @@ function useViewRegistrationHook() {
                 dateTo: value?.dateTo,
                 postCode: value?.postCode,
                 postName: value?.postName,
-                postCategoryId: value?.postCategoryId
+                postCategoryId: value?.postCategoryId,
+                createAt: value?.createAt
             }))
         }
     }
@@ -605,7 +607,8 @@ function useViewRegistrationHook() {
             dateTo: searchParams?.dateTo,
             postCode: searchParams?.postCode,
             postName: searchParams?.postName,
-            postCategoryId: searchParams?.postCategoryId
+            postCategoryId: searchParams?.postCategoryId,
+            createAt: searchParams?.createAt
         }))
     }
 

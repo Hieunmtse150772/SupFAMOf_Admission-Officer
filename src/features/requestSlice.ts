@@ -43,7 +43,7 @@ export const updateRequest = createAsyncThunk('request/update-request-by-request
         }
     })
 
-export const postSlice = createSlice({
+export const requestSlice = createSlice({
     name: 'request',
     initialState,
     reducers: {},
@@ -76,4 +76,4 @@ export const postSlice = createSlice({
     },
 });
 
-export default postSlice.reducer;
+export default requestSlice.reducer;

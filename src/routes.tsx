@@ -69,6 +69,9 @@ const ViewRequest = Loadable(
 const ViewCertificate = Loadable(
   lazy(() => import("./pages/ClassManagement/CertificateManagement"))
 );
+const ViewApplicationList = Loadable(
+  lazy(() => import("./pages/ApplicationManagement"))
+);
 // error
 const Error = Loadable(lazy(() => import("./pages/404")));
 
@@ -130,6 +133,11 @@ const routes = [
       {
         path: "room-list",
         element: <RoomList />,
+        title: 'Room Management'
+      },
+      {
+        path: "application-list",
+        element: <ViewApplicationList />,
         title: 'Room Management'
       },
       {

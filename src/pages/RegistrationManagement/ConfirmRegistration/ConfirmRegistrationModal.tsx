@@ -272,7 +272,6 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
                     >
                         {activeKey === 'tab1' ? <> <Span>Choose collaborators to confirm</Span><Progress percent={Number(percent.toFixed(2))} type="line" style={{ width: '100%' }} /></> : <Span>Choose collaborators to cancel</Span>}
                         <ProList<DataItem>
-
                             loading={loading}
                             rowKey="id"
                             style={{ width: '100%' }}

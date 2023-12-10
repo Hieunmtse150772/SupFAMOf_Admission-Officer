@@ -1,6 +1,7 @@
-import { message } from "antd";
+import { ExclamationCircleFilled } from "@ant-design/icons";
+import { Modal, message } from "antd";
 import { useAppDispatch } from "app/store";
-import { giveCertificateByAccountId } from "features/collabSlice";
+import { giveCertificateByAccountId, removeCertificateByAccountId } from "features/collabSlice";
 import { Certificate } from "models/collabListInfo.model";
 import { Key, useEffect, useState } from "react";
 
@@ -10,11 +11,11 @@ const useEditPostModal = (
     setOpenCertificateModal: React.Dispatch<React.SetStateAction<boolean>>,
     fetchCollabList: () => void
 ) => {
+    const { confirm } = Modal
     const dispatch = useAppDispatch();
     type DataItem = (typeof certificateList)[number];
     const [dataSource, setDataSource] = useState<DataItem[]>(certificateList);
     const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
-
     useEffect(() => { setDataSource(certificateList) }, [certificateList])
     console.log('certificateList 111', certificateList)
     const rowSelection = {
@@ -27,12 +28,30 @@ const useEditPostModal = (
     };
     const handleRemoveCertificateByAccountId = async () => {
         console.log('select')
-        const params = {
-            accountId: accountId,
-            trainingCertificateId: selectedRowKeys,
-            status: 2
-        }
-        console.log('params: ', params)
+        const certificateName = certificateList?.find((certificate) => certificate?.id === selectedRowKeys[0])?.certificateName
+        confirm({
+            title: `Do you want to remove ${certificateName}?`,
+            icon: <ExclamationCircleFilled rev={undefined} />,
+            onOk: async () => {
+                const params = {
+                    accountId: accountId,
+                    accountCertificateId: String(selectedRowKeys[0]),
+                    status: 2
+                }
+                dispatch(removeCertificateByAccountId(params)).then((response: any) => {
+                    console.log('response: ', response)
+                    if (response?.payload?.data?.status?.success) {
+                        message.success(`Remove certificate ${certificateName} success`);
+                        fetchCollabList();
+                        setOpenCertificateModal(false);
+                    } else message.error('Remove certificate fail');
+                })
+                console.log('params: ', params)
+            },
+            onCancel() {
+            },
+        })
+
     }
     const handleGiveCertificateByAccountId = async (value: any) => {
         console.log('valeu: ', value);
@@ -52,7 +71,7 @@ const useEditPostModal = (
     }
     const handler = {
         handleRemoveCertificateByAccountId,
-        handleGiveCertificateByAccountId
+        handleGiveCertificateByAccountId,
     }
     const props = {
         rowSelection, selectedRowKeys, dataSource,

@@ -404,7 +404,9 @@ const useAddNewPostHook = () => {
     const fetchCertificateOption = async () => {
         await dispatch(getCertificate());
     }
+    const fetchCertificateRegistration = async () => {
 
+    }
     const handleChangePosition = (value: PostOptionI | null) => {
         setValue('postTitle', value?.id)
     }
@@ -465,7 +467,8 @@ const useAddNewPostHook = () => {
         validateAddress,
         handleSearchAddress,
         onSelectOption,
-        handleSearchAddressGeoapifi
+        handleSearchAddressGeoapifi,
+        fetchCertificateRegistration
     }
     const props = {
         open,

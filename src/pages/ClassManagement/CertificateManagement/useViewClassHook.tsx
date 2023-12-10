@@ -1,9 +1,13 @@
 import { ProColumns, RequestData } from "@ant-design/pro-components";
+import { FiberManualRecord } from "@mui/icons-material";
+import { Box, Typography } from "@mui/material";
+import { blue, green, grey, red } from "@mui/material/colors";
 import { Avatar, Modal, Popover, Space, StepsProps, Tag, message } from 'antd';
 import { SortOrder } from 'antd/es/table/interface';
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import SearchTrainingRegistrationParamsDto from "dtos/searchTrainingRegistration.dto";
+import StatusTrainingRegistration from "enums/statusTrainingRegistration.enum";
 import { assignTrainingClass, getCertificateRegistration } from 'features/certificateSlice';
 import { getPostByAccountId } from "features/postSlice";
 import AssignTrainingClass from "models/assignTraining.model";
@@ -140,6 +144,52 @@ function UseViewClassHook() {
             dataIndex: 'status',
             key: 'status',
             hideInSearch: true,
+            valueEnum: {
+                1: {
+                    text: 'Pending',
+                    status: 'Pending',
+                },
+                2: {
+                    text: 'Approved',
+                    status: 'Approved',
+                },
+                3: {
+                    text: 'Rejected',
+                    status: 'Rejected',
+                },
+            },
+            render: (value, valueEnum) => {
+                let color = grey[400].toString();
+                let statusText = 'Unknown';
+                switch (valueEnum?.status) {
+                    case StatusTrainingRegistration.Pending:
+                        color = '#1890ff';
+                        statusText = 'Pending';
+                        break;
+
+                    case StatusTrainingRegistration.Assigned:
+                        color = blue[500];
+                        statusText = 'Assigned';
+                        break;
+
+                    case StatusTrainingRegistration.Passed:
+                        color = green[500];
+                        statusText = 'Passed';
+                        break;
+                    case StatusTrainingRegistration.Not_Passed:
+                        color = red[500];
+                        statusText = 'Not Passed';
+                        break;
+                    default:
+                        break;
+                }
+                return <Box display="flex" alignItems="center">
+                    <FiberManualRecord sx={{ fontSize: 14, marginRight: 1, color }} />
+                    <Typography variant="subtitle1" color={color}>
+                        {statusText}
+                    </Typography>
+                </Box>
+            },
         },
     ];
     const dispatch = useAppDispatch();
@@ -214,6 +264,7 @@ function UseViewClassHook() {
         imgUrl: collab?.imgUrl,
         isPremium: collab?.isPremium,
         idStudent: collab?.idStudent,
+        status: collab?.status
         // ...
     }));
 
