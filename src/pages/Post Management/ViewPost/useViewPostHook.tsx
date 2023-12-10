@@ -10,6 +10,7 @@ import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import Status from 'enums/status.enum';
 import { deletePositionById, deletePostById, getPostByAccountId, getPostByPostId } from "features/postSlice";
+import { getPostTitle } from 'features/postTitleSlice';
 import { ListPositionI } from 'models/post.model';
 import moment from "moment";
 import { useEffect, useState } from "react";
@@ -48,7 +49,8 @@ type SearchParamsI = {
   dateFrom?: Date,
   dateTo?: Date,
   status?: string,
-  postCategoryId?: number
+  postCategoryId?: number,
+  createAt?: Date
 }
 function useViewPostList() {
   const Formatter = 'DD/MM/YYYY'
@@ -62,8 +64,15 @@ function useViewPostList() {
   const { posts, loading, isDeleted } = useAppSelector(state => state.post);
   const postInfoAPI = useAppSelector(state => state.post.postInfo);
   const isLoading = useAppSelector(state => state.post.loading);
+  const postTitleOptionsAPI = useAppSelector(state => state.postTitle.postTitleOption);
+
   const [postInfo, setPostInfo] = useState<any>();
   const [page, setPage] = useState<number>(1);
+  const valueEnum: { [key: number]: { text: string } } = {};
+  postTitleOptionsAPI.forEach((option) => {
+    valueEnum[option.id] = { text: option.postCategoryDescription };
+  });
+
   const [sortModel, setSortModel] = useState<SortModalI>({
     Sort: 'createAt',
     Order: 'desc'
@@ -97,9 +106,11 @@ function useViewPostList() {
     },
     {
       title: 'Category',
-      dataIndex: 'title',
-      key: 'title',
+      dataIndex: 'postCategoryId',
+      key: 'postCategoryId',
       width: 5,
+      valueType: 'select',
+      valueEnum: valueEnum
     },
     {
       title: 'Title',
@@ -164,6 +175,7 @@ function useViewPostList() {
       dataIndex: 'status',
       key: 'status',
       width: 20,
+      hideInSearch: true,
       valueEnum: {
         1: {
           text: 'Pending',
@@ -411,23 +423,35 @@ function useViewPostList() {
     });
   }
 
-  const handleSearch = (value: any) => {
+  const handleSearch = async (value: any) => {
+    if (value) {
+      setSearchParams(value)
+      await dispatch(getPostByAccountId({
+        page: page,
+        PageSize: pageSize,
+        Sort: sortModel?.Sort,
+        Order: sortModel?.Order,
+        dateFrom: value?.dateFrom,
+        dateTo: value?.dateTo,
+        postCode: value?.postCode,
+        postName: value?.postName,
+        postCategoryId: value?.postCategoryId,
+        createAt: value?.createAt
 
+      }))
+    }
   }
   const handleActionChange = async (params: any,
     sorter: Record<string, SortOrder>,
     filter: Record<string, (string | number)[] | null>): Promise<Partial<RequestData<any>>> => {
-    if (JSON.stringify(params) !== JSON.stringify({ current: 1, pageSize: 10 })) {
-      setSearchParams(params);
-    }
     if (sorter && Object.keys(sorter).length > 0) {
       const keys = Object.keys(sorter);
       const fieldName = keys[0];
       const sortOrder = sorter[fieldName] === 'ascend' ? 'asc' : 'desc';
-      if (sorter[fieldName] !== sortModel.Sort && fieldName !== sortModel.Order) {
-        setSortModel({ Sort: fieldName, Order: String(sortOrder) })
-      }
+
+      setSortModel({ Sort: fieldName, Order: String(sortOrder) })
     } else setSortModel({ Sort: 'createAt', Order: 'desc' })
+
 
     return {
       data: [],
@@ -461,7 +485,9 @@ function useViewPostList() {
     priority: post?.priority,
     position: post?.postPositions,
     createAt: post?.createAt,
-    totalUpdateRegisterAmount: post?.totalUpdateRegisterAmount
+    totalUpdateRegisterAmount: post?.totalUpdateRegisterAmount,
+    postCategoryId: post?.postCategory?.postCategoryDescription,
+
     // ...
   }));
   const fetchPostList = async () => {
@@ -474,15 +500,24 @@ function useViewPostList() {
       dateTo: searchParams?.dateTo,
       postCode: searchParams?.postCode,
       postName: searchParams?.postName,
-      postCategoryId: searchParams?.postCategoryId
+      postCategoryId: searchParams?.postCategoryId,
+      createAt: searchParams?.createAt
     }))
   }
   const handleAddPost = () => {
     navigate('/dashboard/add-post')
   }
+  const fetchPostTitleOption = async () => {
+    await dispatch(getPostTitle());
+  }
+
+  useEffect(() => {
+    fetchPostTitleOption()
+  }, [])
+
   useEffect(() => {
     fetchPostList()
-  }, [page, pageSize, searchParams, sortModel])
+  }, [page, pageSize, sortModel])
   useEffect(() => {
     fetchPostList()
   }, [isDeleted])

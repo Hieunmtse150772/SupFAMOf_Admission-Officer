@@ -8,5 +8,4 @@ export default interface SearchPostParamsDto extends SearchParams {
     status?: string,
     postCategoryId?: number,
     createAt?: Date
-
 }

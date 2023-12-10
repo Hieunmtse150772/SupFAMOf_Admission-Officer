@@ -22,6 +22,12 @@ const admissionTopMenu = [
     path: "/dashboard/room-list",
   },
   {
+    title: "Application Management",
+    Icon: Icons.MessageIcon,
+    path: "/dashboard/application-list",
+  }
+  ,
+  {
     title: "Post Management",
     Icon: Icons.PostList,
     path: "/dashboard/post-list",

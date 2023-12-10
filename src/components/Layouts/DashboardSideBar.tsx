@@ -85,12 +85,10 @@ const DashboardSideBar: FC<SideNavBarProps> = ({
   // main menus content
   const mainSideBarContent = (
     <List sx={{ height: "100%" }}>
-      <StyledListItemButton disableRipple>
+      <StyledListItemButton disableRipple onClick={() => navigate('/dashboard')}>
         <img src="/static/logo/supfamof-website-favicon-white.png" alt="SupFAMof Logo" width={31} />
       </StyledListItemButton>
-
       <ScrollBar style={{ maxHeight: "calc(100% - 50px)" }}>
-
         {admissionTopMenu.map((nav, index) => (
           <Tooltip title={nav.title} placement="right" key={index}>
             <StyledListItemButton

@@ -545,7 +545,7 @@ const AddNewPost: FC = () => {
                     </ProForm>
                     {props.openAddTitleModal && <AddPostTitleModal fetchPostTitleOption={handler.fetchPostTitleOption} setOpenAddTitleModal={handler.setOpenAddTitleModal} open={props.openAddTitleModal} data={props.postTitleOptionsAPI} />}
                     {props.openAddDocumentModal && <AddDocumentModal fetchDocumentOption={handler.fetchDocumentOption} setOpenAddDocumentModal={handler.setOpenAddDocumentModal} open={props.openAddDocumentModal} data={props.documentOptionsAPI} />}
-                    {props.openAddCertificateModal && <AddCertificateModal fetchCertificateOption={handler.fetchCertificateOption} setOpenCertificateModal={handler.setOpenAddCertificateModal} open={props.openAddCertificateModal} data={props.certificateOptionsAPI} />}
+                    {props.openAddCertificateModal && <AddCertificateModal fetchCertificateRegistration={handler.fetchCertificateRegistration} fetchCertificateOption={handler.fetchCertificateOption} setOpenCertificateModal={handler.setOpenAddCertificateModal} open={props.openAddCertificateModal} data={props.certificateOptionsAPI} />}
 
                 </Box >
             </Box >

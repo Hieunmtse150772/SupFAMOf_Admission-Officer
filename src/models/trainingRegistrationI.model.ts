@@ -12,7 +12,8 @@ type TrainingRegistrationI = {
             isPremium: boolean,
             email: string,
             phone: string,
-            idStudent: string
+            idStudent: string,
+            status: number
         }
     ],
     actions: any[],
