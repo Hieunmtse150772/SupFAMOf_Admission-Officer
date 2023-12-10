@@ -432,7 +432,7 @@ const AddContract = () => {
                                     <Button type="primary" key="console" onClick={() => { navigate('/dashboard/contract-list') }}>
                                         Go to contract management
                                     </Button>,
-                                    <Button key="buy" onClick={() => { navigate('/dashboard/add-contract') }}>Create more contract</Button>,
+                                    <Button key="buy" onClick={() => { window.location.reload() }}>Create more contract</Button>,
                                 ]}
                             />
                         </StepsForm.StepForm>

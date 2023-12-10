@@ -140,18 +140,23 @@ const useAddContractHook = () => {
                     if (params) {
                         await dispatch(createContract(params)).then((response: any) => {
                             console.log('repsonse: ', response)
-                            if (response.payload.status === 200) {
+                            if (response?.payload?.status === 200) {
                                 setLoading(false)
                                 message.success('Create post success!')
-                                setContractId(response.payload.data.data.id);
+                                setContractId(response?.payload?.data?.data?.id);
                                 fetchCollabList(searchByEmail)
                                 form.submit();
                                 result = true;
-                            } else if (response.payload.errorCode === 4008) {
-                                message.error(response.payload.message)
+                            } else if (response?.payload?.status === 400) {
+                                message.error('Description too long')
+                                setLoading(false);
+                                result = false;
+                            } else {
+                                message.error(response?.payload?.message)
                                 setLoading(false);
                                 result = false;
                             }
+
                         }).catch((error) => {
                             message.error('Intenal server error!')
                             setLoading(false)
