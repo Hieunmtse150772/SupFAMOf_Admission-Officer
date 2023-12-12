@@ -1,18 +1,21 @@
 import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
+import SearchRoomParamsDto from 'dtos/SearchRoomParams.dto';
 import ClassTrainingDto from 'dtos/class.dto';
 import AllClassTrainingDto from 'dtos/classList.dto';
 import SearchParamsDto from 'dtos/searchParams.dto';
 import { ConfirmAdtendanceRoom } from 'models/ConfirmAdtendanceRoom.model';
 import ClassCreated from 'models/classCreated.model';
 import { ClassTrainingI, ClassTrainingViewI } from 'models/classTraining.model';
+import ClassUpdated from 'models/classUpdated.model';
 import { classTrainingService } from 'services/classTraining.service';
 
 interface ClassState {
     classList: ClassTrainingDto,
-    allClassList: AllClassTrainingDto
+    allClassList: AllClassTrainingDto,
     loading: boolean,
     error: string | null,
+    classInfo: ClassTrainingI | null
 }
 
 const initialState: ClassState = {
@@ -24,13 +27,26 @@ const initialState: ClassState = {
         data: [] as ClassTrainingI[]
     },
     loading: false,
-    error: ''
+    error: '',
+    classInfo: null
 }
 export const getClassTraining = createAsyncThunk(
     'class/get-class',
     async (_, { rejectWithValue }) => {
         try {
             const result = await classTrainingService.getClassTraining()
+            return result.data;
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data);
+        }
+    },
+);
+export const getClassById = createAsyncThunk(
+    'class/get-class-by-id',
+    async (params: SearchRoomParamsDto, { rejectWithValue }) => {
+        try {
+            const result = await classTrainingService.getClassById(params)
             return result.data;
         } catch (error) {
             const axiosError = error as AxiosError;
@@ -74,7 +90,18 @@ export const createClass = createAsyncThunk(
         }
     },
 );
-
+export const updateClass = createAsyncThunk(
+    'class/update-class',
+    async (payload: ClassUpdated, { rejectWithValue }) => {
+        try {
+            const result = await classTrainingService.updateClass(payload)
+            return result;
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data);
+        }
+    },
+);
 export const classSlice = createSlice({
     name: 'class',
     initialState,
@@ -102,6 +129,18 @@ export const classSlice = createSlice({
                 state.loading = false;
             })
             .addCase(getAllClassTraining.rejected, (state, action) => {
+                state.error = String(action.payload);
+                state.loading = false;
+            })
+            .addCase(getClassById.pending, (state) => {
+                state.loading = true;
+                state.error = "";
+            })
+            .addCase(getClassById.fulfilled, (state, action) => {
+                state.classInfo = action.payload.data[0]
+                state.loading = false;
+            })
+            .addCase(getClassById.rejected, (state, action) => {
                 state.error = String(action.payload);
                 state.loading = false;
             })

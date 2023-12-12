@@ -1,6 +1,6 @@
 
 import { PlusOutlined } from '@ant-design/icons';
-import { FooterToolbar, ProCard, ProForm, ProFormCheckbox, ProFormDateRangePicker, ProFormDigit, ProFormGroup, ProFormList, ProFormMoney, ProFormSelect, ProFormSlider, ProFormSwitch, ProFormText, ProFormTimePicker } from '@ant-design/pro-components';
+import { FooterToolbar, ProCard, ProForm, ProFormCheckbox, ProFormDateRangePicker, ProFormDigit, ProFormGroup, ProFormList, ProFormMoney, ProFormSelect, ProFormSwitch, ProFormText, ProFormTimePicker } from '@ant-design/pro-components';
 import { Box, Grid, alpha, styled } from '@mui/material';
 import { Button, DatePicker, Divider, Modal, Spin, Upload } from 'antd';
 import { RangePickerProps } from 'antd/es/date-picker';
@@ -180,20 +180,9 @@ const AddNewPost: FC = () => {
                                     placeholder={'Select ward'}
                                     rules={[{ required: true, message: 'Choose one options of ward!' }]}
                                 /> */}
-
-                                    <ProFormSlider
-                                        name="piority"
-                                        label="Piority 1-5"
-                                        width="xl"
-                                        placeholder="Piority"
-                                        rules={[{ required: true, message: 'Piority is required!' }]}
-                                        max={5}
-                                    />
                                     <ProFormSwitch name="isPremium" label="Is Premium show" initialValue={false} style={{ marginLeft: '100px' }}
                                     />
-
                                 </ProForm.Group>
-
                                 <Upload
                                     customRequest={handler.customRequest}
                                     listType="picture-card"
@@ -208,7 +197,6 @@ const AddNewPost: FC = () => {
                                 <Modal open={props.previewOpen} title={props.previewTitle} footer={null} onCancel={handler.handleCancel}>
                                     <img alt="example" style={{ width: '100%' }} src={props.previewImage} />
                                 </Modal>
-
                             </Grid>
                             <Grid item sm={0.2}>
                                 <Divider type='vertical' style={{ color: '#f09101', height: 320 }} >
@@ -258,6 +246,7 @@ const AddNewPost: FC = () => {
                             ]}
                             creatorButtonProps={{
                                 position,
+                                creatorButtonText: 'Add more position'
                             }}
                             creatorRecord={{
                                 name: 'position',
@@ -273,6 +262,7 @@ const AddNewPost: FC = () => {
                                     {listDom}
                                 </ProCard>
                             )}
+
                         >
                             <ProFormGroup >
                                 <ProFormText

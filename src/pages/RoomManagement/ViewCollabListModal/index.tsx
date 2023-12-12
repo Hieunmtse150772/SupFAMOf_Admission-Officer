@@ -8,22 +8,25 @@ interface ViewCollabListProps {
     open: boolean,
     setOpenViewCollabListModal: React.Dispatch<React.SetStateAction<boolean>>,
     collabList: TrainingRegistrationsI[],
-    eventDayId: string
+    eventDayId: string,
+    fetchRooms: () => void
 }
 
 const ViewCollabListModal: FC<ViewCollabListProps> = ({
     open,
     setOpenViewCollabListModal,
     collabList,
-    eventDayId
+    eventDayId,
+    fetchRooms
 }) => {
-    const { handler, props } = useViewCollabListModalHook(collabList, eventDayId);
+    const { handler, props } = useViewCollabListModalHook(collabList, eventDayId, setOpenViewCollabListModal, fetchRooms);
     console.log('collabList: ', collabList)
     return (
         <ModalForm
             width={1190}
             open={open}
             onOpenChange={setOpenViewCollabListModal}
+            loading={props.isLoading}
             onFinish={async (value) => {
                 handler.handleConfirmCheckAttendance(value)
             }}

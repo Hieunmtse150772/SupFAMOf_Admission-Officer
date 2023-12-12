@@ -1,5 +1,5 @@
 import { PlusOutlined } from "@ant-design/icons";
-import { ModalForm, ProCard, ProForm, ProFormCheckbox, ProFormDatePicker, ProFormDateRangePicker, ProFormDigit, ProFormGroup, ProFormList, ProFormMoney, ProFormSelect, ProFormSlider, ProFormSwitch, ProFormText, ProFormTimePicker } from "@ant-design/pro-components";
+import { ModalForm, ProCard, ProForm, ProFormCheckbox, ProFormDatePicker, ProFormDateRangePicker, ProFormDigit, ProFormGroup, ProFormList, ProFormMoney, ProFormSelect, ProFormSwitch, ProFormText, ProFormTimePicker } from "@ant-design/pro-components";
 import { Grid } from "@mui/material";
 import { Button, Modal, Upload } from "antd";
 import { Small } from "components/Typography";
@@ -101,16 +101,6 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                     rules={[{ required: true, message: 'Description is required!' }]}
                     onMetaChange={onchange = () => handleEdit()}
                 /> */}
-                        <ProFormSlider
-                            name="piority"
-                            label="Piority 1-5"
-                            width="lg"
-                            placeholder="Piority"
-                            initialValue={postInfo?.data?.priority}
-                            rules={[{ required: true, message: 'Piority is required!' }]}
-                            max={5}
-                            onMetaChange={onchange = () => handler.handleEdit()}
-                        />
                         <ProFormSwitch name="isPremium" label="Is Premium show" initialValue={postInfo?.data?.isPremium}
                             onMetaChange={onchange = () => handler.handleEdit()} disabled
                         />

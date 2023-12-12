@@ -180,6 +180,10 @@ function UseViewClassHook() {
                         color = red[500];
                         statusText = 'Not Passed';
                         break;
+                    case StatusTrainingRegistration.Canceled:
+                        color = red[500];
+                        statusText = 'Canceled';
+                        break;
                     default:
                         break;
                 }

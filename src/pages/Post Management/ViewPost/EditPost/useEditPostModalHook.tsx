@@ -169,7 +169,7 @@ const useEditPostModal = () => {
                             postId: postInfo?.data.id ? postInfo?.data.id : 0,
                             postCategoryId: value?.postCategory,
                             postDescription: description,
-                            priority: value?.piority,
+                            priority: 1,
                             isPremium: value?.isPremium,
                             postPositions: postPositionsResults,
                             postImg: photoUrl ? photoUrl : 'https://fptcameraiq.vn/storage/festftel25.jpg',

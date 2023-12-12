@@ -1,8 +1,9 @@
+import { ExclamationCircleFilled } from "@ant-design/icons";
 import { ProColumns, RequestData } from "@ant-design/pro-components";
 import { FiberManualRecord } from "@mui/icons-material";
 import { Box, Typography } from "@mui/material";
 import { blue, green, grey, red } from "@mui/material/colors";
-import { Avatar, Modal, Switch, message } from 'antd';
+import { Avatar, Modal, Switch, Tag, message } from 'antd';
 import { SortOrder } from 'antd/es/table/interface';
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
@@ -26,7 +27,12 @@ type SearchParamsI = {
     status?: string,
     postCategoryId?: number
 }
-function useViewCollabListModalHook(collabList: TrainingRegistrationsI[], eventDayId: string) {
+function useViewCollabListModalHook(
+    collabList: TrainingRegistrationsI[],
+    eventDayId: string,
+    setOpenViewCollabListModal: React.Dispatch<React.SetStateAction<boolean>>,
+    fetchRooms: () => void
+) {
     const Formatter = 'DD/MM/YYYY'
     const [currentRow, setCurrentRow] = useState<any>();
     const { confirm } = Modal;
@@ -35,7 +41,7 @@ function useViewCollabListModalHook(collabList: TrainingRegistrationsI[], eventD
     const [showDetail, setShowDetail] = useState<boolean>(false);
     const [openEditPostModal, setOpenEditPostModal] = useState<boolean>(false);
     const [editPostModalId, setEditPostModalId] = useState<string>('');
-    const isLoading = useAppSelector(state => state.post.loading);
+    const isLoading = useAppSelector(state => state.class.loading);
     const [postInfo, setPostInfo] = useState<any>();
     const [page, setPage] = useState<number>(1);
     const [sortModel, setSortModel] = useState<SortModalI>({
@@ -121,6 +127,15 @@ function useViewCollabListModalHook(collabList: TrainingRegistrationsI[], eventD
             hideInSearch: true,
         },
         {
+            title: 'Certificate',
+            dataIndex: 'certificateName',
+            key: 'certificateName',
+            hideInSearch: true,
+            render: (value, valueEnum) => {
+                return <Tag color="green">{valueEnum.certificateName}</Tag>
+            }
+        },
+        {
             title: 'Status',
             dataIndex: 'status',
             key: 'status',
@@ -146,12 +161,10 @@ function useViewCollabListModalHook(collabList: TrainingRegistrationsI[], eventD
                         color = '#1890ff';
                         statusText = 'Pending';
                         break;
-
                     case StatusTrainingRegistration.Assigned:
                         color = blue[500];
                         statusText = 'Assigned';
                         break;
-
                     case StatusTrainingRegistration.Passed:
                         color = green[500];
                         statusText = 'Passed';
@@ -188,7 +201,8 @@ function useViewCollabListModalHook(collabList: TrainingRegistrationsI[], eventD
                         display: 'felx',
                         justifySelf: 'center'
                     }}
-                    defaultChecked={Boolean(valueEnum?.status === 1)}
+                    defaultChecked={Boolean(valueEnum?.status === 3)}
+
                     checkedChildren="attend"
                     unCheckedChildren="absend"
                     onChange={(value) => { handleChangeStatus(valueEnum.id, valueEnum.status, value) }}
@@ -232,18 +246,30 @@ function useViewCollabListModalHook(collabList: TrainingRegistrationsI[], eventD
         })
     }
     const handleConfirmCheckAttendance = async (value: any) => {
-        const params: ConfirmAdtendanceRoom = {
-            data: checkAttendanceData,
-            eventDayId: eventDayId
-        }
-        console.log('paramsL: ', params)
-        dispatch(confirmAttendanceByEvenDayId(params)).then((response: any) => {
-            if (response?.payload?.data?.status?.success) {
-                message.success('Confirm attendance success');
-            } else if (response?.payload?.statusCode === 400) {
-                message.error(response?.payload?.message);
-            }
-        })
+        confirm({
+            title: `Do you want to submit check attendance?`,
+            icon: <ExclamationCircleFilled rev={undefined} />,
+            onOk: async () => {
+                const params: ConfirmAdtendanceRoom = {
+                    data: checkAttendanceData,
+                    eventDayId: eventDayId
+                }
+                console.log('paramsL: ', params)
+                dispatch(confirmAttendanceByEvenDayId(params)).then((response: any) => {
+                    console.log('response: ', response)
+                    if (response?.payload?.status?.success) {
+                        message.success('Confirm attendance success');
+                        setOpenViewCollabListModal(false);
+                        fetchRooms();
+                    } else if (response?.payload?.statusCode === 400) {
+                        message.error(response?.payload?.message);
+                    }
+                })
+            },
+            onCancel() {
+            },
+        });
+
     }
 
     const rows = collabList.map((collab, index) => ({
@@ -258,7 +284,8 @@ function useViewCollabListModalHook(collabList: TrainingRegistrationsI[], eventD
         status: collab?.status,
         timeFrom: collab?.newItem?.timeFrom,
         timeTo: collab?.newItem?.timeTo,
-        date: collab?.newItem?.date
+        date: collab?.newItem?.date,
+        certificateName: collab?.trainingCertificate?.certificateName
     }));
 
     const handler = {

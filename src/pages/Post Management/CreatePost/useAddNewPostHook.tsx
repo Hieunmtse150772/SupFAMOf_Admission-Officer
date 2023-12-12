@@ -325,12 +325,13 @@ const useAddNewPostHook = () => {
                     try {
                         const postPositionsResults = await Promise.all(postPositionPromises);
                         const photoUrl = await uploadImage(fileImage, setLoading); // Gọi hàm upload của bạn
+                        setLoading(true);
                         const params: PostCreatedV2 = {
                             postCategoryId: value?.postCategory,
                             postDescription: description,
                             dateFrom: dateFrom,
                             dateTo: dateTo,
-                            priority: value?.piority,
+                            priority: 1,
                             isPremium: value?.isPremium,
                             postPositions: postPositionsResults,
                             postImg: photoUrl
