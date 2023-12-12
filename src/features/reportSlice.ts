@@ -39,15 +39,15 @@ export const handleDownloadAccountReport = createAsyncThunk(
 );
 export const handleDownloadMonthLyReportOpenDay = createAsyncThunk(
     'reports/download-monthly-excel-openday',
-    async (parmas: ParamsExportI) => {
+    async (params: ParamsExportI) => {
         try {
-            const response = await reportService.getMonthlyReportExcelOpenDay(parmas); // Gọi service để nhận dữ liệu từ server
+            const response = await reportService.getMonthlyReportExcelOpenDay(params); // Gọi service để nhận dữ liệu từ server
             const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
             // Tạo một URL tạm thời cho blob
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', 'monthly_report.xlsx');
+            link.setAttribute('download', `Monthly_Report_OpenDay_${params.Month}/${params.Year}.xlsx`);
             document.body.appendChild(link);
             link.click();
             // Xóa đường link và URL tạm thời
@@ -69,7 +69,7 @@ export const handleDownloadMonthLyReportTuyenSinh = createAsyncThunk(
             const url = window.URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', 'monthly_report.xlsx');
+            link.setAttribute('download', `Monthly_Report_TuyenSinh_${params.Month}/${params.Year}.xlsx`);
             document.body.appendChild(link);
             link.click();
             // Xóa đường link và URL tạm thời

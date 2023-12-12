@@ -161,6 +161,8 @@ const ViewPostList = () => {
                             <>
                                 <Descriptions style={{ marginTop: 20 }} title={props.currentRow?.title} bordered items={items} />
                                 {props.currentRow?.position.map((value: any, index: number) => {
+                                    const certificateName = props.certificateList.find((certificate) => certificate.id === Number(value.trainingCertificateId))?.certificateName
+                                    const documentName = props.documentList.find((document) => document.id === Number(value.documentId))?.docName
                                     const items: DescriptionsProps['items'] = [
                                         {
                                             key: '1',
@@ -195,12 +197,12 @@ const ViewPostList = () => {
                                         {
                                             key: '7',
                                             label: 'Document',
-                                            children: value?.documentOption ? <Tag color='blue'>{value?.documentOption}</Tag> : <Tag color='red'>No Document</Tag>
+                                            children: documentName ? <Tag color='green'>{documentName}</Tag> : <Tag color='red'>No document</Tag>
                                         },
                                         {
                                             key: '8',
                                             label: 'Certificate',
-                                            children: value?.trainingCertificateId ? <Tag color='green'>{value?.trainingCertificateId}</Tag> : <Tag color='red'>No Certificate</Tag>
+                                            children: certificateName ? <Tag color='green'>{certificateName}</Tag> : <Tag color='red'>No certificate</Tag>
                                         }
                                     ];
                                     return <>

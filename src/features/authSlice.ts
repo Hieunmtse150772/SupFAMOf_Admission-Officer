@@ -3,11 +3,9 @@ import { AxiosError } from 'axios';
 import LoginDto from 'dtos/Auth/loginPayload.dto';
 import updateAccountDto from 'dtos/Auth/update.account.dto';
 import LoginAdminDto from 'dtos/login.admin.dto';
-import { signInWithPopup } from 'firebase/auth';
 import UserInfo from 'models/userInfor.model';
 import UserInfoLogin from 'models/userInforLogin.model';
 import AppConstants from '../enums/app';
-import { auth, provider } from '../firebase';
 import { authService } from '../services/auth.service';
 
 interface AuthState {
@@ -49,10 +47,8 @@ const initialState: AuthState = {
 }
 export const loginGoogle = createAsyncThunk(
   'auth/login-google',
-  async (_, { rejectWithValue }) => {
+  async (accessToken: string, { rejectWithValue }) => {
     try {
-      const response = await signInWithPopup(auth, provider);
-      const accessToken = await response.user.getIdToken(true);
       const result = await authService.loginGoogle({ idToken: accessToken, fcmToken: "" })
       localStorage.setItem(AppConstants.ACCESS_TOKEN, result.data.data.access_token);
       localStorage.setItem(AppConstants.USER, JSON.stringify(result.data.data.account));

@@ -42,6 +42,13 @@ const useViewCollablistHook = () => {
     const { confirm } = Modal;
     const columns: ProColumns[] = [
         {
+            title: '',
+            dataIndex: 'count',
+            key: 'count',
+            hideInSearch: true,
+            valueType: 'index'
+        },
+        {
             title: 'Avatar',
             dataIndex: 'imgUrl',
             key: 'imgUrl',
@@ -290,7 +297,8 @@ const useViewCollablistHook = () => {
             total: 10, // Total number of data items (if available)
         };
     }
-    const rows = collabList?.data.map(collab => ({
+    const rows = collabList?.data.map((collab, index) => ({
+        count: index,
         key: collab?.id,
         name: collab?.name,
         email: collab?.email,

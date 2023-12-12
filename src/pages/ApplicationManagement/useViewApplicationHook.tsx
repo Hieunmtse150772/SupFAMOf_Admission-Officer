@@ -27,11 +27,10 @@ function useViewApplicationHook() {
     const { confirm } = Modal;
     const columns: ProColumns[] = [
         {
-            title: 'Number',
             dataIndex: 'count',
             key: 'count',
-            valueType: 'index'
-
+            valueType: 'index',
+            hideInSearch: true
         },
         {
             title: 'Full name',
