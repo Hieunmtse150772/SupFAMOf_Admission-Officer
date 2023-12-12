@@ -9,6 +9,8 @@ import { SortOrder } from 'antd/es/table/interface';
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import Status from 'enums/status.enum';
+import { getCertificate } from 'features/certificateSlice';
+import { getDocument } from 'features/documentSlice';
 import { deletePositionById, deletePostById, getPostByAccountId, getPostByPostId } from "features/postSlice";
 import { getPostTitle } from 'features/postTitleSlice';
 import { ListPositionI } from 'models/post.model';
@@ -65,14 +67,14 @@ function useViewPostList() {
   const postInfoAPI = useAppSelector(state => state.post.postInfo);
   const isLoading = useAppSelector(state => state.post.loading);
   const postTitleOptionsAPI = useAppSelector(state => state.postTitle.postTitleOption);
-
+  const certificateList = useAppSelector(state => state.certificate.certificateOption);
+  const documentList = useAppSelector(state => state.document.documentOption);
   const [postInfo, setPostInfo] = useState<any>();
   const [page, setPage] = useState<number>(1);
   const valueEnum: { [key: number]: { text: string } } = {};
   postTitleOptionsAPI.forEach((option) => {
     valueEnum[option.id] = { text: option.postCategoryDescription };
   });
-
   const [sortModel, setSortModel] = useState<SortModalI>({
     Sort: 'createAt',
     Order: 'desc'
@@ -86,10 +88,15 @@ function useViewPostList() {
 
   const columns: ProColumns[] = [
     {
+      dataIndex: 'count',
+      key: 'count',
+      valueType: 'index',
+      hideInSearch: true
+    },
+    {
       title: 'Post Code',
       dataIndex: 'postCode',
       key: 'postCode',
-      width: 10,
       render: (dom, entity) => {
         return (
           // eslint-disable-next-line jsx-a11y/anchor-is-valid
@@ -108,7 +115,6 @@ function useViewPostList() {
       title: 'Category',
       dataIndex: 'postCategoryId',
       key: 'postCategoryId',
-      width: 5,
       valueType: 'select',
       valueEnum: valueEnum
     },
@@ -116,7 +122,6 @@ function useViewPostList() {
       title: 'Title',
       dataIndex: 'titleType',
       key: 'titleType',
-      width: 10,
       hideInTable: true,
       hideInSearch: true,
     },
@@ -125,7 +130,6 @@ function useViewPostList() {
       dataIndex: 'createAt',
       key: 'createAt',
       valueType: 'date',
-      width: 30,
       sorter: true,
     },
     {
@@ -133,7 +137,6 @@ function useViewPostList() {
       dataIndex: 'dateFrom',
       key: 'dateFrom',
       valueType: 'date',
-      width: 30,
       sorter: true,
     },
     {
@@ -141,14 +144,12 @@ function useViewPostList() {
       dataIndex: 'dateTo',
       key: 'dateTo',
       valueType: 'date',
-      width: 30,
       sorter: true,
     },
     {
       title: 'Description',
       dataIndex: 'description',
       key: 'Description',
-      width: 20,
       hideInSearch: true,
       render: (value) => {
 
@@ -164,7 +165,6 @@ function useViewPostList() {
       dataIndex: 'postImg',
       key: 'postImg',
       hideInSearch: true,
-      width: 20,
       render: (value) => {
         return (<Image src={String(value)}></Image>);
       },
@@ -174,7 +174,6 @@ function useViewPostList() {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      width: 20,
       hideInSearch: true,
       valueEnum: {
         1: {
@@ -248,7 +247,6 @@ function useViewPostList() {
       dataIndex: 'isPremium',
       key: 'isPremium',
       hideInSearch: true,
-      width: 20,
       render: (value) => {
 
         if (value === true) {
@@ -281,7 +279,6 @@ function useViewPostList() {
     {
       title: 'Action',
       align: 'center',
-      width: 10,
       hideInSearch: true,
       render: (value, valueEnum) => {
         const items: MenuProps['items'] = [
@@ -323,9 +320,23 @@ function useViewPostList() {
       { title: 'Time From', dataIndex: 'timeFrom', key: 'timeFrom' },
       { title: 'Time To', dataIndex: 'timeTo', key: 'timeTo' },
       { title: 'Address', dataIndex: 'location', key: 'location' },
-      { title: 'Bus Option', dataIndex: 'isBusOption', key: 'isBusOption' },
-      { title: 'Document', dataIndex: 'documentId', key: 'documentId' },
-      { title: 'Training certificate', dataIndex: 'trainingCertificateId', key: 'trainingCertificateId' },
+      { title: 'Bus Option', dataIndex: 'isBusService', key: 'isBusService', render: (value) => { return value ? <span>Yes</span> : <span>No</span> } },
+      {
+        title: 'Document', dataIndex: 'documentId', key: 'documentId', render: (value) => {
+          const documentName = documentList.find((document) => document.id === Number(value))?.docName
+          {
+            return documentName ? <Tag color='green'>{documentName}</Tag> : <Tag color='red'>No document</Tag>
+          }
+        }
+      },
+      {
+        title: 'Training certificate', dataIndex: 'trainingCertificateId', key: 'trainingCertificateId', render: (value) => {
+          const certificateName = certificateList.find((certificate) => certificate.id === Number(value))?.certificateName
+          {
+            return certificateName ? <Tag color='green'>{certificateName}</Tag> : <Tag color='red'>No certificate</Tag>
+          }
+        }
+      },
       { title: 'Salary', dataIndex: 'salary', key: 'salary' },
       {
         title: 'Status', dataIndex: 'status', key: 'status', render: (rows) => {
@@ -466,8 +477,9 @@ function useViewPostList() {
     setPageSize(value)
   }
 
-  const rows = posts.data.map(post => ({
+  const rows = posts.data.map((post, index) => ({
     // ...post,
+    count: index,
     key: post?.id,
     id: post?.postCode,
     postCode: post?.postCode,
@@ -510,9 +522,19 @@ function useViewPostList() {
   const fetchPostTitleOption = async () => {
     await dispatch(getPostTitle());
   }
-
+  const fetchCertificateOption = async () => {
+    await dispatch(getCertificate());
+  }
+  const fetchDocumentOption = async () => {
+    await dispatch(getDocument());
+  }
   useEffect(() => {
-    fetchPostTitleOption()
+    const fetch = async () => {
+      await fetchPostTitleOption();
+      await fetchCertificateOption();
+      await fetchDocumentOption();
+    }
+    fetch();
   }, [])
 
   useEffect(() => {
@@ -552,7 +574,9 @@ function useViewPostList() {
     isLoading,
     page,
     pageSize,
-    pageSizeOptions
+    pageSizeOptions,
+    documentList,
+    certificateList
   }
   return {
     handler,

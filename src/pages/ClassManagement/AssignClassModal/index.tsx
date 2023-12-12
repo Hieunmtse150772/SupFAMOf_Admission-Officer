@@ -227,7 +227,7 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
                     record: (index, dataSource) => ({
                         id: (Math.random() * 1000000).toFixed(0),
                     }),
-                    creatorButtonText: 'Create New', // Text for the creation button
+                    creatorButtonText: 'Create New Class', // Text for the creation button
 
                 }}
             />

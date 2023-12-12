@@ -5,7 +5,7 @@ import { Button, Dropdown, MenuProps, Modal, Space, Tag } from 'antd';
 import { SortOrder } from 'antd/es/table/interface';
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
-import { getAllClassTraining } from 'features/classSlice';
+import { getAllClassTraining, getClassById } from 'features/classSlice';
 import { ClassTrainingI, TrainingRegistrationsI } from 'models/classTraining.model';
 import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router';
@@ -40,7 +40,7 @@ function useViewTrainingHook() {
     const { confirm } = Modal;
     const rooms = useAppSelector(state => state.class.allClassList);
     const total = rooms.metadata?.total;
-    const isLoading = useAppSelector(state => state.post.loading);
+    const isLoading = useAppSelector(state => state.class.loading);
     const [page, setPage] = useState<number>(1);
     const [sortModel, setSortModel] = useState<SortModalI>({
         Sort: 'createAt',
@@ -50,8 +50,13 @@ function useViewTrainingHook() {
     const pageSizeOptions = [10, 20, 30]; // Các tùy chọn cho pageSize
     const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
     const [openViewCollabListModal, setOpenViewCollabListModal] = useState<boolean>(false);
-    const [collabList, setCollabList] = useState<TrainingRegistrationsI[]>()
-    const [eventDayId, setEvenDayId] = useState<string>()
+    const [collabList, setCollabList] = useState<TrainingRegistrationsI[]>();
+    const [eventDayId, setEvenDayId] = useState<string>();
+    const [loading, setLoading] = useState<boolean>(false);
+    const [openAddMoreClassModal, setOpenAddMoreClassModal] = useState<boolean>(false);
+    const [openEditRoom, setOpenEditRoom] = useState<boolean>(false);
+    const [roomId, setRoomId] = useState<string>();
+    const { classInfo } = useAppSelector(state => state.class);
     let navigate = useNavigate();
 
     const columns: ProColumns[] = [
@@ -155,7 +160,7 @@ function useViewTrainingHook() {
                         label: 'Edit',
                         key: '2',
                         icon: <CloseCircleOutlined rev={undefined} />,
-                        onClick: () => handleEditRoom(value),
+                        onClick: () => handleEditRoom(valueEnum),
                         danger: true,
                         disabled: Boolean(value !== 1)
                     },
@@ -186,8 +191,13 @@ function useViewTrainingHook() {
         setEvenDayId(String(value?.id));
         setCollabList(updatedCollabList);
     }
-    const handleEditRoom = (value: any) => {
-
+    const handleEditRoom = async (value: any) => {
+        setOpenEditRoom(true);
+        setRoomId(value?.id);
+        await dispatch(getClassById({ id: value?.id }))
+    }
+    const handleOpenAddMoreRoom = () => {
+        setOpenAddMoreClassModal(true)
     }
     const dispatch = useAppDispatch();
 
@@ -243,6 +253,7 @@ function useViewTrainingHook() {
     const handleAddPost = () => {
         navigate('/dashboard/add-post')
     }
+
     useEffect(() => {
         fetchRooms()
     }, [page, pageSize, searchParams, sortModel])
@@ -255,7 +266,11 @@ function useViewTrainingHook() {
         handleAddPost,
         handleActionChange,
         handleSearch,
-        setOpenViewCollabListModal
+        setOpenViewCollabListModal,
+        fetchRooms,
+        handleOpenAddMoreRoom,
+        setOpenAddMoreClassModal,
+        setOpenEditRoom
     }
     const props = {
         columns,
@@ -269,7 +284,12 @@ function useViewTrainingHook() {
         total,
         openViewCollabListModal,
         collabList,
-        eventDayId
+        eventDayId,
+        loading,
+        openAddMoreClassModal,
+        roomId,
+        openEditRoom,
+        classInfo,
     }
     return {
         handler,

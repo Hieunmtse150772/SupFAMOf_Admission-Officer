@@ -183,10 +183,13 @@ const useAddContractHook = () => {
         const numbers = selectedRowKeys.map((key) => +key);
         try {
             await dispatch(sendContractEmail({ contractId: contractId, accountIds: numbers })).then((response: any) => {
+                console.log('response: ', response)
                 if (response.payload.status === 200) {
                     setLoading(false);
                     message.success('Send contract email success!');
                     form.submit();
+                } else {
+                    message.error(response?.payload?.message);
                 }
             })
         } catch (error) {
