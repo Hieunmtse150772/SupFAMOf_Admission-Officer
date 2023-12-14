@@ -33,7 +33,8 @@ const useViewCollablistHook = () => {
     const [accountName, setAccountName] = useState<string>();
     const [openExportModal, setOpenExportModal] = useState<boolean>(false);
     const [nameFileExport, setNameFileExport] = useState<string>('false');
-    const certificateOptionsAPI = useAppSelector(state => state.certificate.certificateOption)
+    const loadingExport = useAppSelector(state => state.report.loading);
+    const certificateOptionsAPI = useAppSelector(state => state.certificate.certificateOption);
     const certificateOptions = certificateOptionsAPI?.map((title) => ({
         id: title.id,
         value: title.id,
@@ -242,7 +243,14 @@ const useViewCollablistHook = () => {
         setOpenExportModal(true);
     }
     const handleExportAccountReportExcel = async () => {
-        await dispatch(handleDownloadReport())
+        const hideLoading = message.loading('File export downloading, please wait a second', 0);
+        await dispatch(handleDownloadReport()).then((response: any) => {
+            console.log('response: ', response)
+            if (response.payload.status === 200) {
+                hideLoading();
+                message.success('Download file export account successful');
+            }
+        });
     }
 
     const handleUpdatePremium = (value: any) => {
@@ -357,7 +365,6 @@ const useViewCollablistHook = () => {
     //         }
     //     }
     // }, [excelFile]);
-
     const handler = {
         onPageChange,
         handleExportAccountReportExcel,
