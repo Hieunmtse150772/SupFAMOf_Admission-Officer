@@ -1,35 +1,54 @@
 import { Box, Card, useTheme } from "@mui/material";
+import { DatePicker } from "antd";
 import { ApexOptions } from "apexcharts";
+import { useAppSelector } from "app/hooks";
+import { useAppDispatch } from "app/store";
 import { H2, H5 } from "components/Typography";
-import { FC } from "react";
+import { getMoneyYearReport } from "features/manageDashboardSlice";
+import { FC, useEffect, useState } from "react";
 import Chart from "react-apexcharts";
 
-const data = {
-  series: [
-    {
-      name: "Spent",
-      data: [22, 80, 36, 50, 60, 30, 90, 26, 75, 10, 55, 65],
-    },
-  ],
-  categories: [
-    "Jan",
-    "Feb",
-    "Mar",
-    "Apr",
-    "May",
-    "Jun",
-    "Jul",
-    "Aug",
-    "Sep",
-    "Oct",
-    "Nov",
-    "Dec",
-  ],
-};
+
 
 const TotalSpent: FC = () => {
   const theme = useTheme();
-
+  const dispatch = useAppDispatch();
+  const dataReport = useAppSelector(state => state.dashboard.moneyReport);
+  const [year, setYear] = useState<number>(2023);
+  const totalMoneyReport: number = dataReport.data.reduce((total, data) => total + data, 0)
+  const total = new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+    minimumFractionDigits: 0, // Số lẻ tối thiểu (0 để làm tròn)
+  }).format(totalMoneyReport)
+  const data = {
+    series: [
+      {
+        name: "Spent",
+        data: dataReport.data,
+      },
+    ],
+    categories: [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ],
+  };
+  const fetchMoneyReport = async () => {
+    await dispatch(getMoneyYearReport({ year: year }))
+  }
+  useEffect(() => {
+    fetchMoneyReport()
+  }, [year])
   const chartOptions: ApexOptions = {
     chart: {
       background: "transparent",
@@ -68,15 +87,25 @@ const TotalSpent: FC = () => {
 
     plotOptions: {
       bar: {
-        borderRadius: 8,
+        borderRadius: 0,
         columnWidth: "60%",
         rangeBarOverlap: false,
       },
     },
     tooltip: {
+
       x: { show: false },
       y: {
-        formatter: (val: number) => `$${val}`,
+        formatter: (val: number) => {
+          const formattedAmount = new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND',
+            minimumFractionDigits: 0, // Số lẻ tối thiểu (0 để làm tròn)
+          }).format(val);
+          return `${formattedAmount}`
+        }
+
+
       },
     },
 
@@ -111,7 +140,11 @@ const TotalSpent: FC = () => {
   };
 
   const chartSeries = data.series;
-
+  const handleChangeYear = (value: string) => {
+    console.log('con các')
+    console.log('year: ', value);
+    setYear(Number(value));
+  }
   return (
     <Card
       sx={{
@@ -122,8 +155,16 @@ const TotalSpent: FC = () => {
         [theme.breakpoints.down(425)]: { padding: "1.5rem" },
       }}
     >
-      <H5>Total Spent</H5>
-      <H2 color="primary.main">$682.5</H2>
+      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+
+        <div>
+          <H5>Total Spent</H5>
+          <H2 color="primary.main">{total}</H2>
+        </div>
+        <div>
+          <DatePicker onChange={(value, dateString) => handleChangeYear(dateString)} picker="year" size="large" style={{ marginBottom: 10 }} />
+        </div>
+      </div>
 
       <Box
         sx={{

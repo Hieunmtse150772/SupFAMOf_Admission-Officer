@@ -1,6 +1,7 @@
 import { DeleteOutlined, DownloadOutlined, EditOutlined, MoreOutlined } from "@ant-design/icons";
 import { ProColumns } from "@ant-design/pro-components";
 import { Box } from "@mui/material";
+import { green, grey, red, yellow } from "@mui/material/colors";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { Avatar, Button, Dropdown, MenuProps, Space, Table, TableColumnsType, Tag } from "antd";
 import { useAppSelector } from "app/hooks";
@@ -37,7 +38,7 @@ type SortModalI = {
 }
 const useViewContractHook = () => {
     const Formatter = 'DD/MM/YYYY'
-    const [currentRow, setCurrentRow] = useState<any>();
+    const [currentRow, setCurrentRow] = useState<ContractInfoRows | null>(null);
     // const [selectedRowsState, setSelectedRows] = useState<boolean>([]);
     const [showDetail, setShowDetail] = useState<boolean>(false);
     const [openConFirmModal, setOpenConfirmModal] = useState<boolean>(false);
@@ -58,9 +59,9 @@ const useViewContractHook = () => {
         Sort: 'createAt',
         Order: 'desc'
     });
-    const columns: ProColumns<CollumsField>[] = [
+    const columns: ProColumns<ContractInfoRows>[] = [
         {
-            title: 'Contract Name',
+            title: 'Contract name',
             dataIndex: 'contractName',
             key: 'contractName',
             width: 5,
@@ -84,6 +85,7 @@ const useViewContractHook = () => {
             title: 'Description',
             dataIndex: 'contractDescription',
             key: 'contractDescription',
+            valueType: 'text',
             width: 15,
             hideInSearch: true,
             render: (value) => {
@@ -92,11 +94,19 @@ const useViewContractHook = () => {
                     return (ReactHtmlParser(String(value)));
                 }
                 return <span></span>;
-
             },
+            hideInTable: true
         },
         {
-            title: 'File',
+            title: 'Date create',
+            dataIndex: 'createAt',
+            key: 'createAt',
+            valueType: 'date',
+            width: 20,
+            sorter: true,
+        },
+        {
+            title: 'Sample file',
             dataIndex: 'sampleFile',
             key: 'sampleFile',
             width: 30,
@@ -104,11 +114,13 @@ const useViewContractHook = () => {
                 return <a ref={downloadRef} href={String(value)} download='downloaded_file.doc'>Link</a>
             },
             hideInSearch: true,
+            hideInTable: true
         },
         {
             title: 'Salary',
             dataIndex: 'totalSalary',
             key: 'totalSalary',
+            valueType: 'digit',
             width: 30,
         },
         {
@@ -121,18 +133,10 @@ const useViewContractHook = () => {
                 console.log('value: ', value)
                 return (
                     <Space size={0}>
-                        {value ? <Tag color="blue">isActive</Tag> : <Tag color="red">inActive</Tag>}
+                        {value ? <Tag color="blue">Is Active</Tag> : <Tag color="red">InActive</Tag>}
                     </Space>
                 );
             }
-        },
-        {
-            title: 'Date Create',
-            dataIndex: 'createAt',
-            key: 'createAt',
-            valueType: 'date',
-            width: 20,
-            sorter: true,
         },
         {
             title: 'Action',
@@ -191,18 +195,43 @@ const useViewContractHook = () => {
             { title: 'Avatar', dataIndex: 'imgUrl', key: 'imgUrl', render: (value) => (<Avatar src={value}></Avatar>) },
             { title: 'Name', dataIndex: 'name', key: 'name' },
             { title: 'Email', dataIndex: 'email', key: 'email' },
-            { title: 'phone', dataIndex: 'phone', key: 'phone' },
+            { title: 'Phone', dataIndex: 'phone', key: 'phone' },
+            { title: 'Signing date', dataIndex: 'signingDate', key: 'signingDate' },
             {
                 title: 'Status', dataIndex: 'status', key: 'status', render: (rows) => {
-                    return rows === 1 ? (
+                    let color = grey[400].toString();
+                    let statusText = 'Unknown';
+                    switch (rows) {
+                        case 1:
+                            color = '#1890ff';
+                            statusText = 'Pending';
+                            break;
+
+                        case 2:
+                            color = green[500];
+                            statusText = 'Confirmed';
+                            break;
+
+                        case 3:
+                            color = red[500];
+                            statusText = 'Rejected';
+                            break;
+                        case 4:
+                            color = yellow[500];
+                            statusText = 'Completed';
+                            break;
+                        case 5:
+                            color = red[500];
+                            statusText = 'Fail';
+                            break;
+                        default:
+                            break;
+                    }
+                    return <Box display="flex" alignItems="center">
                         <Space size={0}>
-                            <Tag color="blue">Pending</Tag>
+                            <Tag color={color}>{statusText}</Tag>
                         </Space>
-                    ) : (
-                        <Space size={0}>
-                            <Tag color="Yellow">Comfirmed</Tag>
-                        </Space>
-                    );
+                    </Box>
                 }
             },
         ];
@@ -218,7 +247,8 @@ const useViewContractHook = () => {
                 contractId: value.contractId,
                 status: value.status,
                 phone: value.account.phone,
-                imgUrl: value.account.imgUrl
+                imgUrl: value.account.imgUrl,
+                signingDate: value.contract.signingDate
             }
         })
         return <Table
@@ -274,6 +304,9 @@ const useViewContractHook = () => {
         totalSalary: contract?.totalSalary,
         isActive: contract?.isActive,
         createAt: contract?.createAt,
+        endDate: contract?.endDate,
+        startDate: contract?.startDate,
+        signingDate: contract?.signingDate,
         accountContracts: contract?.accountContracts
         // ...
     }));
@@ -298,7 +331,9 @@ const useViewContractHook = () => {
         setOpenAddContractModal,
         handleSearch,
         setAddCollabModal,
-        fetchContractList
+        fetchContractList,
+        setCurrentRow,
+        setShowDetail
     }
     const props = {
         columns,
@@ -315,7 +350,9 @@ const useViewContractHook = () => {
         loading,
         contractId,
         addCollabModal,
-        accountList
+        accountList,
+        showDetail,
+        currentRow
     }
     return {
         handler,

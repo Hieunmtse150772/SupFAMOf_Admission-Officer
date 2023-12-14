@@ -3,6 +3,7 @@ import { green, grey, red, yellow } from '@mui/material/colors';
 import { Badge, Button, Descriptions, DescriptionsProps, Drawer, Image, Rate, Space, Tag } from 'antd';
 import SFAMOGrid from 'components/SFAMOGrid';
 import Status from 'enums/status.enum';
+import moment from 'moment';
 import Map from 'pages/Map/map';
 import ReactHtmlParser from 'react-html-parser';
 import EditPostModal from './EditPost/EditPostModal';
@@ -98,12 +99,12 @@ const ViewPostList = () => {
         {
             key: '5',
             label: 'Date From',
-            children: props.currentRow?.dateFrom,
+            children: moment(props.currentRow?.dateFrom).format('YYYY-MM-DD'),
         },
         {
             key: '6',
             label: 'Date To',
-            children: props.currentRow?.dateTo,
+            children: moment(props.currentRow?.dateFrom).format('YYYY-MM-DD'),
         },
         {
             key: '7',
@@ -161,8 +162,13 @@ const ViewPostList = () => {
                             <>
                                 <Descriptions style={{ marginTop: 20 }} title={props.currentRow?.title} bordered items={items} />
                                 {props.currentRow?.position.map((value: any, index: number) => {
-                                    const certificateName = props.certificateList.find((certificate) => certificate.id === Number(value.trainingCertificateId))?.certificateName
-                                    const documentName = props.documentList.find((document) => document.id === Number(value.documentId))?.docName
+                                    const certificateName = props.certificateList.find((certificate) => certificate.id === Number(value.trainingCertificateId))?.certificateName;
+                                    const documentName = props.documentList.find((document) => document.id === Number(value.documentId))?.docName;
+                                    const salary = new Intl.NumberFormat('vi-VN', {
+                                        style: 'currency',
+                                        currency: 'VND',
+                                        minimumFractionDigits: 0, // Số lẻ tối thiểu (0 để làm tròn)
+                                    }).format(value?.salary)
                                     const items: DescriptionsProps['items'] = [
                                         {
                                             key: '1',
@@ -177,7 +183,7 @@ const ViewPostList = () => {
                                         {
                                             key: '3',
                                             label: 'Date',
-                                            children: value?.date,
+                                            children: moment(value?.date).format('YYYY-MM-DD'),
                                         },
                                         {
                                             key: '4',
@@ -187,7 +193,7 @@ const ViewPostList = () => {
                                         {
                                             key: '5',
                                             label: 'Salary',
-                                            children: value?.salary,
+                                            children: salary,
                                         },
                                         {
                                             key: '6',
