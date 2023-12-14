@@ -9,6 +9,8 @@ import { SortOrder } from 'antd/es/table/interface';
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import Status from 'enums/status.enum';
+import { getCertificate } from 'features/certificateSlice';
+import { getDocument } from 'features/documentSlice';
 import { confirmEndPost, confirmReopenPost, confirmRunningPost, getPostByAccountId } from "features/postSlice";
 import { getPostTitle } from 'features/postTitleSlice';
 import { getRegistrationByPositionId } from 'features/registrationSlice';
@@ -72,6 +74,8 @@ function useViewRegistrationHook() {
     const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
     const [searchByEmail, setSearchByEmail] = useState<string>('');
     const [status, setStatus] = useState<number>(1);
+    const certificateList = useAppSelector(state => state.certificate.certificateOption);
+    const documentList = useAppSelector(state => state.document.documentOption);
     const [postId, setPostId] = useState<number | null>(null);
     const [openViewRequestModal, setOpenViewRequestModal] = useState<boolean>(false);
     const [openViewAttendenceModal, setOpenViewAttendenceModal] = useState<boolean>(false);
@@ -296,7 +300,7 @@ function useViewRegistrationHook() {
                         key: '3',
                         icon: <CheckCircleOutlined rev={undefined} />,
                         onClick: () => handleAction(value, valueEnum.status),
-                        disabled: Boolean(valueEnum?.status === 1 || valueEnum?.status === 6),
+                        disabled: Boolean(valueEnum?.status === 1 || valueEnum?.status === 6 || valueEnum?.status === 3),
                         danger: true
                     },
                     {
@@ -574,11 +578,11 @@ function useViewRegistrationHook() {
         setPageSize(value)
     }
 
-    const rows = posts.data.map(post => ({
+    const rows = posts.data.map((post, index) => ({
+        count: index,
         key: post?.id,
         id: post?.postCode,
         postCode: post?.postCode,
-        postCategoryId: post?.postCategory?.postCategoryDescription,
         titleType: post?.postCategory?.postCategoryType,
         isPremium: post?.isPremium,
         description: post?.postDescription,
@@ -590,9 +594,12 @@ function useViewRegistrationHook() {
         timeTo: post?.timeTo,
         postImg: post?.postImg,
         priority: post?.priority,
+        position: post?.postPositions,
         numberOfPosition: post?.postPositions.length,
         createAt: post?.createAt,
-        totalUpdateRegisterAmount: post?.totalUpdateRegisterAmount
+        totalUpdateRegisterAmount: post?.totalUpdateRegisterAmount,
+        postCategoryId: post?.postCategory?.postCategoryDescription,
+
         // ...
     }));
 
@@ -615,9 +622,19 @@ function useViewRegistrationHook() {
     const fetchPostTitleOption = async () => {
         await dispatch(getPostTitle());
     }
-
+    const fetchCertificateOption = async () => {
+        await dispatch(getCertificate());
+    }
+    const fetchDocumentOption = async () => {
+        await dispatch(getDocument());
+    }
     useEffect(() => {
-        fetchPostTitleOption()
+        const fetch = async () => {
+            await fetchPostTitleOption();
+            await fetchCertificateOption();
+            await fetchDocumentOption();
+        }
+        fetch();
     }, [])
 
     useEffect(() => {
@@ -665,7 +682,10 @@ function useViewRegistrationHook() {
         positionId,
         openViewRequestModal,
         postId,
-        openViewAttendenceModal
+        openViewAttendenceModal,
+        currentRow,
+        certificateList,
+        documentList
     }
     return {
         handler,

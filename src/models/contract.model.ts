@@ -11,6 +11,7 @@ type ContractInfo = {
     isActive: boolean,
     createAt: Date,
     updateAt: Date,
+    endDate: Date,
     accountContracts: AccountContract[]
 }
 
@@ -23,6 +24,9 @@ export type ContractInfoRows = {
     totalSalary: number,
     isActive: boolean,
     createAt: Date,
+    signingDate: Date,
+    startDate: Date,
+    endDate: Date,
     accountContracts: AccountContract[]
 }
 export type AccountContract = {
@@ -41,6 +45,7 @@ export type AccountContract = {
         contractDescription: string,
         signingDate: Date,
         startDate: Date,
+        endDate: Date,
         totalSalary: number,
         isActive: boolean,
         createAt: Date,

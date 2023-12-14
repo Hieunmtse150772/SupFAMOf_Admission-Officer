@@ -10,12 +10,26 @@ function useViewCertificate() {
     const loading = useAppSelector(state => state.certificate.loading);
     const certificateList = useAppSelector(state => state.certificate.certificateOption);
     const [openAddCertificateModal, setOpenAddCertificateModal] = useState(false);
-
-
+    const [page, setPage] = useState<number>(1);
+    const pageSizeOptions = [5, 10, 20]; // Các tùy chọn cho pageSize
+    const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
+    const total = certificateRegistrationList.metadata?.total;
+    const [searchKeywords, setSearchKey] = useState<string>('')
+    const handleSearch = async (keywords: string) => {
+        const params: SearchTrainingRegistrationParamsDto = {
+            isActive: true,
+            page: page,
+            PageSize: pageSize,
+            certificateName: keywords
+        }
+        await dispatch(getCertificateRegistration(params));
+    }
     const fetchCertificateRegistration = async () => {
         try {
             const params: SearchTrainingRegistrationParamsDto = {
-                isActive: true
+                isActive: true,
+                page: page,
+                PageSize: pageSize
             }
             await dispatch(getCertificateRegistration(params))
 
@@ -41,17 +55,29 @@ function useViewCertificate() {
         }
         fetchData();
     }, [])
+    useEffect(() => {
+        const fetchData = async () => {
+            await fetchCertificateRegistration();
+            await fetchCertificate();
+        }
+        fetchData();
+    }, [page, pageSize])
     const handler = {
         onOpenAddCertificateModal,
         fetchCertificate,
         setOpenAddCertificateModal,
-        fetchCertificateRegistration
+        fetchCertificateRegistration,
+        setPage,
+        setPageSize,
+        handleSearch
     }
     const props = {
         certificateRegistrationList,
         openAddCertificateModal,
         certificateList,
-        loading
+        loading,
+        pageSizeOptions,
+        total
     }
     return { handler, props }
 }

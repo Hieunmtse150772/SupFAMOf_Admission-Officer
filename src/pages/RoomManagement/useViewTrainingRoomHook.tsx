@@ -1,4 +1,4 @@
-import { CheckOutlined, CloseCircleOutlined, MoreOutlined } from '@ant-design/icons'; // Import the icon from the library
+import { CheckOutlined, EditOutlined, MoreOutlined } from '@ant-design/icons'; // Import the icon from the library
 import { ProColumns, RequestData } from "@ant-design/pro-components";
 import { Box } from '@mui/material';
 import { Button, Dropdown, MenuProps, Modal, Space, Tag } from 'antd';
@@ -159,9 +159,8 @@ function useViewTrainingHook() {
                     {
                         label: 'Edit',
                         key: '2',
-                        icon: <CloseCircleOutlined rev={undefined} />,
+                        icon: <EditOutlined rev={undefined} />,
                         onClick: () => handleEditRoom(valueEnum),
-                        danger: true,
                         disabled: Boolean(value !== 1)
                     },
                 ];

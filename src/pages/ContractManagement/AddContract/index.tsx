@@ -403,10 +403,15 @@ const AddContract = () => {
                                             )
                                         },
                                         subTitle: {
-                                            render: () => {
-                                                return (
+                                            dataIndex: 'isPremium',
+                                            render: (text, row, index, action) => {
+                                                return row.isPremium ? (
                                                     <Space size={0}>
-                                                        <Tag color="blue">IsPremium</Tag>
+                                                        <Tag color="yellow">Premium</Tag>
+                                                    </Space>
+                                                ) : (
+                                                    <Space size={0}>
+                                                        <Tag color="blue">Normal</Tag>
                                                     </Space>
                                                 );
                                             },
