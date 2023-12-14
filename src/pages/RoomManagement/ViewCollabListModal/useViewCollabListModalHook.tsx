@@ -203,8 +203,8 @@ function useViewCollabListModalHook(
                     }}
                     defaultChecked={Boolean(valueEnum?.status === 3)}
 
-                    checkedChildren="attend"
-                    unCheckedChildren="absend"
+                    checkedChildren="passed"
+                    unCheckedChildren="not passed"
                     onChange={(value) => { handleChangeStatus(valueEnum.id, valueEnum.status, value) }}
                 />
             },
@@ -240,7 +240,7 @@ function useViewCollabListModalHook(
     const handleChangeStatus = (id: number, status: number, value: boolean) => {
         checkAttendanceData.map((attendance) => {
             if (attendance.trainingRegistrationId === id) {
-                attendance.status = value ? 3 : 1
+                attendance.status = value ? 3 : 4
             }
             return attendance;
         })
