@@ -365,6 +365,7 @@ const useAddNewPostHook = () => {
                 setFileList([]);
                 setLoading(false);
             } else {
+                setLoading(false);
                 message.error(response.payload.message);
             }
         }).catch((error) => {
