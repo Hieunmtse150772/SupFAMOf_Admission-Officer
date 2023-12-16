@@ -81,6 +81,18 @@ export type AccountContract = {
         }
     }
 }
+export type AccountContractRows = {
+    id?: string | number,
+    name?: string,
+    email?: string,
+    accountId?: string | number,
+    contractId?: string | number,
+    status?: number,
+    phone?: string,
+    imgUrl?: string,
+    signingDate?: Date,
+    submittedFile?: Date
+}
 export type ListContractI = {
     key: string,
     contract: AccountContract[];
