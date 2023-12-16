@@ -80,15 +80,9 @@ const useAddNewPostHook = () => {
     const postTitleOptionsAPI = useAppSelector(state => state.postTitle.postTitleOption)
     const documentOptionsAPI = useAppSelector(state => state.document.documentOption)
     const certificateOptionsAPI = useAppSelector(state => state.certificate.certificateOption)
-
-    const province = useAppSelector(state => state.address.province)
-    const district = useAppSelector(state => state.address.district)
-    const ward = useAppSelector(state => state.address.ward)
-
     const [error, setError] = useState<string>('');
     const [piority, setPiority] = useState<number | null>(0);
     const [isPremium, setIsPremium] = useState<boolean>(false);
-    const [messageApi, contextHolder] = message.useMessage();
     const [open, setOpen] = useState(false);
     const options = postTitleOptionsAPI?.map((title) => ({
         value: title.id,
@@ -102,7 +96,6 @@ const useAddNewPostHook = () => {
         value: title.id,
         label: title.certificateName
     }));
-    const FormatTime = 'HH:mm:ss'
     const loading = useAppSelector(state => state.postTitle.loading);
     const [openAddTitleModal, setOpenAddTitleModal] = useState(false);
     const [openAddCertificateModal, setOpenAddCertificateModal] = useState(false);
@@ -119,7 +112,7 @@ const useAddNewPostHook = () => {
     const [paramsCreatePost, setParamsCreatePost] = useState<PostCreatedV2>()
     const [optionDate, setOptionDate] = useState<any[]>([])
     const [optionAddress, setOptionAddress] = useState<any[]>([]);
-
+    const [disableDocumentSelect, setDisableDocumentSelect] = useState<boolean>(true)
     const disabledTime: RangeDisabledTime = (now, defaultType) => {
         if (defaultType === 'start') {
             // Vô hiệu hóa giờ từ 0-3 và từ 21-24 cho lựa chọn bắt đầu
@@ -370,8 +363,8 @@ const useAddNewPostHook = () => {
             }
         }).catch((error) => {
             message.error('Intenal server error!')
-            setLoading(false)
-            console.error(error)
+            setLoading(false);
+            console.error(error);
         })
     }
 
@@ -394,7 +387,20 @@ const useAddNewPostHook = () => {
         } else setOptionDate([])
     }
 
+    const [selectedCertificates, setSelectedCertificates] = useState<number[]>([]);
 
+    // Hàm xử lý khi chọn chứng chỉ cho mỗi item
+    const handleCertificateChange = (index: number, value: any) => {
+        if (value) {
+            const updatedCertificates: number[] = [...selectedCertificates];
+            updatedCertificates[index] = value;
+            setSelectedCertificates(updatedCertificates);
+        } else {
+            const updatedCertificates: number[] = selectedCertificates.filter((items) => items !== index);
+            updatedCertificates[index] = value;
+            setSelectedCertificates(updatedCertificates);
+        };
+    };
     const fetchPostTitleOption = async () => {
         await dispatch(getPostTitle());
     }
@@ -437,7 +443,9 @@ const useAddNewPostHook = () => {
             handleAddPost(paramsCreatePost)
         }
     }, [paramsCreatePost])
+    useEffect(() => {
 
+    }, [disableDocumentSelect])
     const handler = {
         handleChangePosition,
         handleSubmit,
@@ -470,7 +478,8 @@ const useAddNewPostHook = () => {
         handleSearchAddress,
         onSelectOption,
         handleSearchAddressGeoapifi,
-        fetchCertificateRegistration
+        fetchCertificateRegistration,
+        handleCertificateChange
     }
     const props = {
         open,
@@ -480,7 +489,6 @@ const useAddNewPostHook = () => {
         errors,
         piority,
         error,
-        contextHolder,
         openAddTitleModal,
         previewOpen,
         previewTitle,
@@ -497,7 +505,9 @@ const useAddNewPostHook = () => {
         documentOptionsAPI,
         postTitleOptionsAPI,
         optionDate,
-        optionAddress
+        optionAddress,
+        disableDocumentSelect,
+        selectedCertificates
     }
     return { handler, props }
 

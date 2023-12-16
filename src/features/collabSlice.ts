@@ -39,6 +39,16 @@ export const getCollabList = createAsyncThunk('collabs/get-collab-list',
             return rejectWithValue(axiosError.response?.data)
         }
     })
+export const searchCollabListByEmail = createAsyncThunk('collabs/get-collab-list',
+    async (params: SearchCollabParamDto, { rejectWithValue }) => {
+        try {
+            const result = await collabService.searchCollabListByEmail(params);
+            return result
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data)
+        }
+    })
 
 export const getCollabByPositionId = createAsyncThunk('collabs/get-collab-byPositionId',
     async (id: string, { rejectWithValue }) => {
@@ -107,18 +117,6 @@ export const collabSlice = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         builder
-            .addCase(getCollabList.pending, (state) => {
-                state.loading = true;
-                state.error = "";
-            })
-            .addCase(getCollabList.fulfilled, (state, action) => {
-                state.loading = false;
-                state.collabList = action.payload.data
-            })
-            .addCase(getCollabList.rejected, (state, action) => {
-                state.error = String(action.payload);
-                state.loading = false;
-            })
             .addCase(getCollabByPositionId.pending, (state) => {
                 state.loading = true;
                 state.error = "";
@@ -151,6 +149,18 @@ export const collabSlice = createSlice({
                 updateBanCollaboratorById.rejected,
                 updateCollaboratorToPremium.rejected
             ), (state, action) => {
+                state.error = String(action.payload);
+                state.loading = false;
+            })
+            .addMatcher(isAnyOf(getCollabList.pending, getCollabList.pending), (state) => {
+                state.loading = true;
+                state.error = "";
+            })
+            .addMatcher(isAnyOf(getCollabList.fulfilled, searchCollabListByEmail.fulfilled), (state, action) => {
+                state.loading = false;
+                state.collabList = action.payload.data
+            })
+            .addMatcher(isAnyOf(getCollabList.rejected, searchCollabListByEmail.rejected), (state, action) => {
                 state.error = String(action.payload);
                 state.loading = false;
             })

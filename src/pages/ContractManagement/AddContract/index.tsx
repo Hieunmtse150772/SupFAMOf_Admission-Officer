@@ -105,7 +105,7 @@ const AddContract = () => {
                                         />
                                         <ProFormDatePicker
                                             name="signingDate"
-                                            label="Assign date"
+                                            label="Signing date"
                                             width='xl'
                                             fieldProps={{
                                                 disabledDate: handler.disabledDate,
@@ -255,7 +255,7 @@ const AddContract = () => {
                                 <ProDescriptions.Item label="End date" valueType={'date'}>
                                     {props.dateTo}
                                 </ProDescriptions.Item>
-                                <ProDescriptions.Item label="Assign date" valueType={'date'}>
+                                <ProDescriptions.Item label="Signing date" valueType={'date'}>
                                     {props.form?.getFieldValue('signingDate')}
 
                                 </ProDescriptions.Item>
@@ -290,6 +290,7 @@ const AddContract = () => {
                                     style={{ width: '100%' }}
                                     headerTitle="List Collab"
                                     dataSource={props.dataSource}
+
                                     toolbar={{
                                         search: {
                                             onSearch: (value: string) => {
@@ -347,7 +348,14 @@ const AddContract = () => {
                                         },
                                     }}
                                     pagination={{
-                                        pageSize: 5,
+                                        showSizeChanger: true,
+                                        onChange(page, pageSize) {
+                                            handler.setPage(page);
+                                            handler.setPageSize(pageSize);
+                                        },
+                                        pageSizeOptions: props.pageSizeOptions,
+                                        defaultPageSize: 5,
+                                        total: props.total
                                     }}
                                     rowSelection={props.rowSelection}
                                 />

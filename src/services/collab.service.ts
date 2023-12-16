@@ -14,6 +14,10 @@ export const collabService = {
         const url = '/admission/admission-manage-collaborator/get-all-collab-accounts';
         return axiosClient.get(url, { params })
     },
+    searchCollabListByEmail: (params: SearchCollabParamDto): Promise<AxiosResponse<CollabListDto>> => {
+        const url = '/admission/admission-manage-collaborator/search';
+        return axiosClient.get(url, { params })
+    },
     getCollabByPositionId: (id: string): Promise<AxiosResponse<CollabDto>> => {
         const url = '/admission/admission-post/getAccountByPostPositionId';
         return axiosClient.get(url, {

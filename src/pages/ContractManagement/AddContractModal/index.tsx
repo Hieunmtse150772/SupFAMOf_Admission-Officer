@@ -36,6 +36,10 @@ const AddContractModal: FC<AddContractModalProps> = (
     const [activeKey, setActiveKey] = useState<React.Key | undefined>('tab1');
     const [isLoading, setLoading] = useState<boolean>(false);
     const [searchByEmail, setSearchByEmail] = useState<string>('');
+    const [page, setPage] = useState<number>(1);
+    const pageSizeOptions = [10, 20, 30]; // Các tùy chọn cho pageSize
+    const total = collabList?.length;
+    const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
     let isSubmitting = false;
 
     const rowSelection = {
@@ -205,6 +209,16 @@ const AddContractModal: FC<AddContractModalProps> = (
                             style={{ width: '100%' }}
                             headerTitle="List Collab Register"
                             dataSource={dataSource}
+                            pagination={{
+                                showSizeChanger: true,
+                                onChange(page, pageSize) {
+                                    setPage(page);
+                                    setPageSize(pageSize);
+                                },
+                                pageSizeOptions: pageSizeOptions,
+                                defaultPageSize: 5,
+                                total: total
+                            }}
                             toolbar={{
                                 menu: {
                                     activeKey,
@@ -271,9 +285,6 @@ const AddContractModal: FC<AddContractModalProps> = (
                                     },
                                     search: false
                                 },
-                            }}
-                            pagination={{
-                                pageSize: 5,
                             }}
                             rowSelection={rowSelection}
                         />
