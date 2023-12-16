@@ -7,7 +7,7 @@ import { useAppSelector } from 'app/hooks';
 import { useAppDispatch } from "app/store";
 import dayjs from "dayjs";
 import { CollabListDto } from 'dtos/collabList.dto';
-import { getCollabList } from 'features/collabSlice';
+import { getCollabList, searchCollabListByEmail } from 'features/collabSlice';
 import { createContract, sendContractEmail } from 'features/contractSlice';
 import ContractCreated from 'models/contractCreated.model';
 import { Key, useEffect, useState } from "react";
@@ -37,7 +37,10 @@ const useAddContractHook = () => {
     const [isEdit, setEdit] = useState<boolean>(false);
     const [dateFrom, setDateFrom] = useState<Date | null>(null)
     const [dateTo, setDateTo] = useState<Date | null>(null)
-
+    const [page, setPage] = useState<number>(1);
+    const pageSizeOptions = [10, 20, 30]; // Các tùy chọn cho pageSize
+    const total = collabLists?.metadata?.total;
+    const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
     const rowSelection = {
         selectedRowKeys,
         onChange: (keys: Key[]) => {
@@ -80,7 +83,9 @@ const useAddContractHook = () => {
         }
     };
     const handleSearchCollabByEmail = async (email: string) => {
-        setSearchByEmail(email)
+        if (email !== '') {
+            await dispatch(searchCollabListByEmail({ email: email }));
+        } else await dispatch(getCollabList({ email: email }));
     }
     const handleChangeContractName = (value: any) => {
         if (value) {
@@ -144,7 +149,7 @@ const useAddContractHook = () => {
                                 setLoading(false)
                                 message.success('Create post success!')
                                 setContractId(response?.payload?.data?.data?.id);
-                                fetchCollabList(searchByEmail)
+                                fetchCollabList()
                                 form.submit();
                                 result = true;
                             } else if (response?.payload?.status === 400) {
@@ -206,12 +211,16 @@ const useAddContractHook = () => {
             return true
         }
     }
-    const fetchCollabList = async (email: string) => {
-        await dispatch(getCollabList({ email: email }));
+    const fetchCollabList = async () => {
+        await dispatch(getCollabList({
+            page: page,
+            PageSize: pageSize
+        }));
     }
+
     useEffect(() => {
-        fetchCollabList(searchByEmail)
-    }, [searchByEmail])
+        fetchCollabList()
+    }, [page, pageSize])
     useEffect(() => {
         setDataSource(collabLists.data)
     }, [collabLists])
@@ -234,6 +243,8 @@ const useAddContractHook = () => {
         setEdit,
         setDateFrom,
         setDateTo,
+        setPage,
+        setPageSize,
     }
     const props = {
         disableDate,
@@ -250,6 +261,9 @@ const useAddContractHook = () => {
         isEdit,
         dateFrom,
         dateTo,
+        pageSizeOptions,
+        total
+
     }
     return { handler, props }
 }
