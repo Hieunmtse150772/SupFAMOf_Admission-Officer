@@ -5,6 +5,7 @@ import SearchContractDto from 'dtos/Contract/searchContract.dto';
 import { CollabDto } from 'dtos/collab.dto';
 import { ContractDto } from 'dtos/contract.dto';
 import { ContractListDto } from 'dtos/contractList.dto';
+import CompleteContractParams from 'models/completeContractParams.model';
 import ContractCreated from 'models/contractCreated.model';
 import SendContractParams from 'models/sendContractParams.model';
 import axiosClient from './axiosClient';
@@ -21,6 +22,10 @@ export const contractService = {
     sendContractEmail: (params: SendContractParams): Promise<AxiosResponse<ContractDto>> => {
         const url = `/admission/admission-contract/sendContractEmail?contractId=${params.contractId}`;
         return axiosClient.post(url, params.accountIds)
+    },
+    completeContractByAccountContractId: (params: CompleteContractParams): Promise<AxiosResponse<ContractDto>> => {
+        const url = `/admission/admission-contract/complete?accountContractId=${params.accountContractId}`;
+        return axiosClient.put(url)
     },
     getCollabByPositionId: (id: string): Promise<AxiosResponse<CollabDto>> => {
         const url = '/admission/admission-post/getAccountByPostPositionId';

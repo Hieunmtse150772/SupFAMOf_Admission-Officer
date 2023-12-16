@@ -1,16 +1,17 @@
-import { DeleteOutlined, DownloadOutlined, EditOutlined, MoreOutlined } from "@ant-design/icons";
+import { CheckCircleOutlined, DeleteOutlined, DownOutlined, DownloadOutlined, EditOutlined, MoreOutlined } from "@ant-design/icons";
 import { ProColumns } from "@ant-design/pro-components";
 import { Box } from "@mui/material";
 import { green, grey, red, yellow } from "@mui/material/colors";
 import { unwrapResult } from "@reduxjs/toolkit";
-import { Avatar, Button, Dropdown, MenuProps, Space, Table, TableColumnsType, Tag } from "antd";
+import { Avatar, Button, Dropdown, MenuProps, Space, Table, TableColumnsType, Tag, message } from "antd";
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import { getCollabList } from "features/collabSlice";
-import { getContractList } from "features/contractSlice";
+import { completeContractByAccountContractId, getContractList } from "features/contractSlice";
 import UserPlusIcon from "icons/UserPlusIcon";
 import CollabListInfo from "models/collabListInfo.model";
 import { ContractInfoRows, ListContractI } from "models/contract.model";
+import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 import ReactHtmlParser from 'react-html-parser';
 type CollumsField = {
@@ -23,14 +24,18 @@ type CollumsField = {
     createAt: Date
 }
 interface ExpandedDataType {
-    id: number,
-    contractId: number,
-    accountId: number,
-    status: number,
-    name: string,
-    email: string,
-    phone: string,
-    imgUrl: string,
+    id?: number;
+    contractId?: number;
+    accountId?: number;
+    status?: number;
+    name?: string;
+    email?: string;
+    phone?: string;
+    imgUrl?: string;
+    signingDate?: Date;
+    submittedFile?: string;
+    contractName?: string;
+    accountContractId?: number
 }
 type SortModalI = {
     Sort: string,
@@ -149,7 +154,7 @@ const useViewContractHook = () => {
                         label: 'Download',
                         key: '1',
                         icon: <DownloadOutlined rev={undefined} />,
-                        onClick: () => handleDownload(value),
+                        onClick: () => handleDownload(valueEnum as ContractInfoRows),
                     },
                     {
                         label: 'Edit',
@@ -161,7 +166,7 @@ const useViewContractHook = () => {
                         label: 'Add',
                         key: '3',
                         icon: <UserPlusIcon />,
-                        onClick: () => handleAddCollab(value as ContractInfoRows),
+                        onClick: () => handleAddCollab(valueEnum as ContractInfoRows),
                     },
                     {
                         label: 'Delete',
@@ -196,7 +201,7 @@ const useViewContractHook = () => {
             { title: 'Name', dataIndex: 'name', key: 'name' },
             { title: 'Email', dataIndex: 'email', key: 'email' },
             { title: 'Phone', dataIndex: 'phone', key: 'phone' },
-            { title: 'Signing date', dataIndex: 'signingDate', key: 'signingDate' },
+            { title: 'Signing date', dataIndex: 'signingDate', key: 'signingDate', render: (value) => <span>{moment(value).format(Formatter)}</span> },
             {
                 title: 'Status', dataIndex: 'status', key: 'status', render: (rows) => {
                     let color = grey[400].toString();
@@ -234,11 +239,40 @@ const useViewContractHook = () => {
                     </Box>
                 }
             },
+            {
+                title: 'Action',
+                align: 'center',
+                width: 10,
+                render: (value, valueEnum) => {
+                    const items: MenuProps['items'] = [
+                        {
+                            label: 'Download',
+                            key: '1',
+                            icon: <DownloadOutlined rev={undefined} />,
+                            onClick: () => handleDownloadSubmitFile(valueEnum),
+                        },
+                        {
+                            label: 'Complete',
+                            key: '2',
+                            icon: <CheckCircleOutlined color='green' rev={undefined} />,
+                            onClick: () => handleCompleteContract(valueEnum),
+                        },
+                    ];
+                    const menuProps = {
+                        items,
+                    };
+                    return <Box>
+                        <Dropdown menu={menuProps} trigger={['click']} placement='bottomLeft'>
+                            <Button icon={<DownOutlined rev={undefined} />}></Button>
+                        </Dropdown>
+                    </Box>
+                },
+            },
         ];
         console.log('record: ', record?.id)
         const data = rowsExpanded.find((value) => value.key === record?.id);
         console.log('data: ', data)
-        const dataCustom = data?.contract.map((value) => {
+        const dataCustom: ExpandedDataType[] = data?.contract.map((value) => {
             return {
                 id: value.id,
                 name: value.account.name,
@@ -248,9 +282,12 @@ const useViewContractHook = () => {
                 status: value.status,
                 phone: value.account.phone,
                 imgUrl: value.account.imgUrl,
-                signingDate: value.contract.signingDate
-            }
-        })
+                signingDate: value.contract.signingDate,
+                submittedFile: value.submittedFile,
+                contractName: value.contract.contractName,
+                accountContractId: value.id
+            };
+        }) || [];
         return <Table
             columns={columnsExpanded}
             dataSource={dataCustom}
@@ -272,16 +309,43 @@ const useViewContractHook = () => {
             setAddCollabModal(true);
         }
     }
-    const handleDownload = (value: any) => {
-        if (downloadRef.current && value && value.sampleFile) {
+    const handleDownload = (value: ContractInfoRows) => {
+        if (value.sampleFile) {
             const fileUrl = value.sampleFile;
-            const fileName = 'downloaded_file.docx'; // Thay đổi đuôi file tại đây
+            const fileName = `${value.contractName}.docx`; // Thay đổi đuôi file tại đây
             // Tạo đường dẫn tải về với đuôi file .docx
             const downloadUrl = `${fileUrl}?alt=media&download=${fileName}`;
             // Mở tệp trong tab mới
             window.open(downloadUrl, '_blank');
+            message.success(`Download ${fileName} success`)
         } else {
-            console.error('Invalid file URL');
+            message.error('Download contract fail!')
+        }
+    }
+    const handleCompleteContract = (value: ExpandedDataType) => {
+        const params = {
+            accountContractId: value?.accountContractId
+        }
+        dispatch(completeContractByAccountContractId(params)).then((response: any) => {
+            console.log('response: ', response);
+            if (response?.payload.status) {
+                message.success('Contract completed successfully')
+            } else message.error(response?.payload?.message);
+        })
+    }
+    const handleDownloadSubmitFile = (value: ExpandedDataType) => {
+        console.log('value: ', value);
+        if (value.submittedFile) {
+            const fileUrl = value.submittedFile;
+            const fileName = `${value?.name}_${value?.contractName}.docx`; // Thay đổi đuôi file tại đây
+            // Tạo đường dẫn tải về với đuôi file .docx
+            const downloadUrl = `${fileUrl}?alt=media&download=${fileName}`;
+            // Mở tệp trong tab mới
+            window.open(downloadUrl, '_blank');
+            message.success(`Download ${fileName} success`)
+
+        } else {
+            message.error('Download contract fail!')
         }
     }
     const handleSearch = () => {
