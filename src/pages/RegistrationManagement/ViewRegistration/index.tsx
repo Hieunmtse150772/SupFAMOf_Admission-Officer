@@ -180,9 +180,9 @@ const ViewPostList = () => {
                         return (
                             <>
                                 <Descriptions style={{ marginTop: 20 }} title={props.currentRow?.title} bordered items={items} />
-                                {props.currentRow?.position.map((value: any, index: number) => {
-                                    const certificateName = props.certificateList.find((certificate) => certificate.id === Number(value.trainingCertificateId))?.certificateName;
-                                    const documentName = props.documentList.find((document) => document.id === Number(value.documentId))?.docName;
+                                {props.currentRow?.position?.map((value: any, index: number) => {
+                                    const certificateName = props.certificateList?.find((certificate) => certificate?.id === Number(value?.trainingCertificateId))?.certificateName;
+                                    const documentName = props.documentList?.find((document) => document?.id === Number(value?.documentId))?.docName;
                                     const salary = new Intl.NumberFormat('vi-VN', {
                                         style: 'currency',
                                         currency: 'VND',

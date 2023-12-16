@@ -233,6 +233,7 @@ function UseViewClassHook() {
         dispatch(assignTrainingClass(params)).then((response: any) => {
             if (response?.payload?.data?.status?.success) {
                 message.success('Assign success');
+                fetchCertificateRegistration();
                 setOpenAssignClassModal(false);
             } else message.error(response?.payload?.message)
         })
@@ -289,7 +290,8 @@ function UseViewClassHook() {
         setSelectedRows,
         handleAssignClass,
         setOpenAssignClassModal,
-        hanldeOpenAssignClass
+        hanldeOpenAssignClass,
+        fetchCertificateRegistration
     }
     const props = {
         openConFirmModal,

@@ -3,6 +3,7 @@ import { AxiosError } from 'axios';
 import SearchContractDto from 'dtos/Contract/searchContract.dto';
 import { ContractDto } from 'dtos/contract.dto';
 import { ContractListDto } from 'dtos/contractList.dto';
+import CompleteContractParams from 'models/completeContractParams.model';
 import ContractInfo from 'models/contract.model';
 import ContractCreated from 'models/contractCreated.model';
 import SendContractParams from 'models/sendContractParams.model';
@@ -57,7 +58,16 @@ export const sendContractEmail = createAsyncThunk('contracts/send-contract-email
             return rejectWithValue(axiosError.response?.data)
         }
     })
-
+export const completeContractByAccountContractId = createAsyncThunk('contracts/complete-contract-AccountContractId',
+    async (params: CompleteContractParams, { rejectWithValue }) => {
+        try {
+            const result = await contractService.completeContractByAccountContractId(params);
+            return result
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data)
+        }
+    })
 export const contractSlice = createSlice({
     name: 'contracts',
     initialState,

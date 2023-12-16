@@ -13,7 +13,7 @@ import { FC, Key, useEffect, useRef, useState } from "react";
 interface ConfirmRegistrationModalProps {
     open: boolean,
     setOpenAssignClassModal: React.Dispatch<React.SetStateAction<boolean>>,
-    hanldeAssignClass: (id: Key[]) => void
+    hanldeAssignClass: (id: Key[]) => void,
 }
 
 
@@ -22,7 +22,7 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
     {
         open,
         setOpenAssignClassModal,
-        hanldeAssignClass
+        hanldeAssignClass,
     }
 ) => {
     const dispatch = useAppDispatch();
@@ -57,6 +57,7 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
                 if (response?.payload?.data?.status?.success) {
                     message.success('Create class success');
                     fetchClass();
+
                 } else {
                     message.error(response?.payload?.message);
                     fetchClass();
