@@ -46,6 +46,10 @@ export const collabService = {
         const url = `/admission/admission-manage-collaborator/update-collab-credential?collaboratorAccountId=${collaboratorAccountId}`;
         return axiosClient.put(url)
     },
+    removeCollaboratorPremium: (collaboratorAccountId: string): Promise<AxiosResponse<CollabDto>> => {
+        const url = `/admission/admission-manage-collaborator/disbale-collab-credential?collaboratorAccountId=${collaboratorAccountId}`;
+        return axiosClient.put(url)
+    },
 
 
 };

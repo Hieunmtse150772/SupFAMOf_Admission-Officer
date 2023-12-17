@@ -2,6 +2,7 @@
 import { AxiosResponse } from 'axios';
 
 import RegistrationsDTO from 'dtos/Registration/registration.dto';
+import WorkListDto from 'dtos/Registration/workLists.dto';
 import axiosClient from './axiosClient';
 type paramI = {
     positionId: string,
@@ -18,6 +19,10 @@ type paramCancel = {
 export const registrationService = {
     getRegistrationByPositionId: (params: paramI): Promise<AxiosResponse<RegistrationsDTO>> => {
         const url = '/admission/admission-post-registration/getAccountByPostPositionId';
+        return axiosClient.get(url, { params });
+    },
+    getWorkListByPositionId: (params: paramI): Promise<AxiosResponse<WorkListDto>> => {
+        const url = '/admission/admission-post-registration/get-work-list-position';
         return axiosClient.get(url, { params });
     },
     updateRequest: (params: paramUpdate): Promise<AxiosResponse<RegistrationsDTO>> => {

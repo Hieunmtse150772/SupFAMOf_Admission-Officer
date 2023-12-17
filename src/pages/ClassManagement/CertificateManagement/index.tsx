@@ -31,6 +31,7 @@ const Index = () => {
             {
                 props?.certificateRegistrationList && (
                     <SFAMOGrid
+                        title={props.title}
                         toolbar={[AssignRegistration]}
                         handleSearch={handler.handleSearch}
                         handleTableChange={handler.handleActionChange}

@@ -4,6 +4,7 @@ import React, { useRef } from "react";
 import { useNavigate } from "react-router";
 import './style.scss';
 interface SFAMOGridProps {
+    title?: string,
     isLoading: boolean;
     rows: any[];
     columns: ProColumns[];
@@ -25,15 +26,15 @@ interface SFAMOGridProps {
     handleSearch: (value: any) => void,
     setSelectedRows?: React.Dispatch<React.SetStateAction<any[]>>
 }
-const SFAMOGrid = ({ isLoading, rows, columns, rowsExpanded, page, total, pageSize, onPageChange, onChangePageSize, pageSizeOptions, expandedRowRender, action, toolbar, handleTableChange, handleSearch, setSelectedRows }: SFAMOGridProps) => {
+const SFAMOGrid = ({ title, isLoading, rows, columns, rowsExpanded, page, total, pageSize, onPageChange, onChangePageSize, pageSizeOptions, expandedRowRender, action, toolbar, handleTableChange, handleSearch, setSelectedRows }: SFAMOGridProps) => {
     let navigate = useNavigate();
     const actionRef = useRef<ActionType>();
     console.log('total: ', total)
     const customLocale: TableLocale = {
         filterTitle: 'Custom Filter Title',
-        filterConfirm: 'Custom Confirm',
-        filterReset: 'Custom Reset',
-        selectAll: 'Select all'
+        filterConfirm: 'Search',
+        filterReset: 'Reset',
+        selectAll: 'Select all',
         // Add more customizations as needed...
     };
     const customPagination = {
@@ -50,6 +51,7 @@ const SFAMOGrid = ({ isLoading, rows, columns, rowsExpanded, page, total, pageSi
         <>
             <ProTable
                 actionRef={actionRef}
+                headerTitle={title ? title : ''}
                 request={handleTableChange}
                 expandable={{ expandedRowRender }}
                 toolBarRender={() => [toolbar]}

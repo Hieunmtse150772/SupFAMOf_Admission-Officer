@@ -1,8 +1,10 @@
 // AuthService.ts
 import { AxiosResponse } from 'axios';
 
+import SearchCollabContractParamDto from 'dtos/Contract/searchCollabContract.dto';
 import SearchContractDto from 'dtos/Contract/searchContract.dto';
 import { CollabDto } from 'dtos/collab.dto';
+import { CollabListDto } from 'dtos/collabList.dto';
 import { ContractDto } from 'dtos/contract.dto';
 import { ContractListDto } from 'dtos/contractList.dto';
 import CompleteContractParams from 'models/completeContractParams.model';
@@ -17,6 +19,10 @@ export const contractService = {
     },
     getContractList: (params: SearchContractDto): Promise<AxiosResponse<ContractListDto>> => {
         const url = '/admission/admission-contract/getAll';
+        return axiosClient.get(url, { params })
+    },
+    getCollabByContractId: (params: SearchCollabContractParamDto): Promise<AxiosResponse<CollabListDto>> => {
+        const url = `/admission/admission-contract/getCollaboratorContract?contractId=${params.contractId}`;
         return axiosClient.get(url, { params })
     },
     sendContractEmail: (params: SendContractParams): Promise<AxiosResponse<ContractDto>> => {

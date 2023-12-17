@@ -100,13 +100,13 @@ const ViewContract = () => {
                     })()
                 )}
             </Drawer>
-            {(props.addCollabModal && props.loading !== true && props.accountList !== null) &&
+            {(props.addCollabModal && props.collabList !== null && props.collabList.metadata?.total) &&
                 <AddContractModal
                     fetchContractList={handler.fetchContractList}
                     open={props.addCollabModal}
                     setOpenAddCollabModal={handler.setAddCollabModal}
-                    collabList={props.accountList}
-                    amountUnConfirmed={props.accountList.length}
+                    collabList={props.collabList.data}
+                    amountUnConfirmed={props.collabList.metadata?.total}
                     contractId={props.contractId}
                 />
             }

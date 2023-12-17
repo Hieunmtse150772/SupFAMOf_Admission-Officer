@@ -26,6 +26,7 @@ const initialState: RegistrationState = {
     registrationList: {
         data: [] as Registrations[]
     },
+
     loading: false,
     error: null
 }

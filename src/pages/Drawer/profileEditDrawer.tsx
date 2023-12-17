@@ -1,5 +1,5 @@
 import { DrawerForm, ProForm, ProFormDatePicker, ProFormText } from '@ant-design/pro-components';
-import { Select } from 'antd';
+import { Select, message } from 'antd';
 import { useAppDispatch } from 'app/store';
 import updateAccountDto from 'dtos/Auth/update.account.dto';
 import { updateUserProfile } from 'features/authSlice';
@@ -28,7 +28,15 @@ const ProfileEditDrawer: FC<ProfileEditDrawerProps> = ({ setOpenSetting, onClose
             name: value?.name,
             phone: value?.phoneNumber
         }
-        await dispatch(updateUserProfile(payload))
+        await dispatch(updateUserProfile(payload)).then((response: any) => {
+            console.log('response: ', response);
+            if (response?.payload?.status?.success) {
+                message.success('Update profile information success');
+                setOpenSetting(false);
+            } else {
+                message.error(response?.payload?.message);
+            }
+        })
         console.log('User Infor: ', userInfo?.id)
         console.log("value: ", value)
     }
