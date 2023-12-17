@@ -52,19 +52,20 @@ function useViewRequest(postId: number, fetchPost: () => void) {
     const [showDetail, setShowDetail] = useState<boolean>(false);
     const [openEditPostModal, setOpenEditPostModal] = useState<boolean>(false);
     const [editPostModalId, setEditPostModalId] = useState<string>('');
-    const { posts, loading, isDeleted } = useAppSelector(state => state.post);
     const requests = useAppSelector(state => state.request.requests)
     const postInfoAPI = useAppSelector(state => state.post.postInfo);
-    const isLoading = useAppSelector(state => state.post.loading);
+    const isLoading = useAppSelector(state => state.request.loading);
     const [postInfo, setPostInfo] = useState<any>();
     const [page, setPage] = useState<number>(1);
     const [sortModel, setSortModel] = useState<SortModalI>({
         Sort: 'createAt',
         Order: 'desc'
     });
-    const [searchParams, setSearchParams] = useState<SearchParamsI>()
+    const [statusFilter, setStatusFilter] = useState<number | null>();
 
-    const pageSizeOptions = [10, 20, 30]; // Các tùy chọn cho pageSize
+    const postCode = requests?.data[0]?.post?.postCode;
+    const [searchParams, setSearchParams] = useState<SearchParamsI>()
+    const pageSizeOptions = [5, 10, 15]; // Các tùy chọn cho pageSize
     const total = requests?.metadata?.total
     const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
     let navigate = useNavigate();
@@ -291,21 +292,21 @@ function useViewRequest(postId: number, fetchPost: () => void) {
     const handleSearch = (value: any) => {
 
     }
+    const handleSetStatus = async (value: any) => {
+        if (value.radio === 0) {
+            setStatusFilter(null)
+            setPage(1)
+            await dispatch(getRequestByAccountId({ page: 1, PageSize: 10, Sort: 'createAt', Order: 'desc', Id: postId }))
+        } else {
+            setStatusFilter(value?.radio);
+            setPage(1)
+            await dispatch(getRequestByAccountId({ page: 1, PageSize: 10, Sort: 'createAt', Order: 'desc', Status: value?.radio, Id: postId }))
+        }
+    }
     const handleActionChange = async (params: any,
         sorter: Record<string, SortOrder>,
         filter: Record<string, (string | number)[] | null>): Promise<Partial<RequestData<any>>> => {
-        if (JSON.stringify(params) !== JSON.stringify({ current: 1, pageSize: 10 })) {
-            setSearchParams(params);
-        }
-        if (sorter && Object.keys(sorter).length > 0) {
-            const keys = Object.keys(sorter);
-            const fieldName = keys[0];
-            const sortOrder = sorter[fieldName] === 'ascend' ? 'asc' : 'desc';
-            if (sorter[fieldName] !== sortModel.Sort && fieldName !== sortModel.Order) {
-                setSortModel({ Sort: fieldName, Order: String(sortOrder) })
-            }
-        } else setSortModel({ Sort: 'createAt', Order: 'desc' })
-
+        await dispatch(getRequestByAccountId({ Id: postId }))
         return {
             data: [],
             success: true,
@@ -354,13 +355,13 @@ function useViewRequest(postId: number, fetchPost: () => void) {
         setPageSize,
         onChangePageSize,
         handleActionChange,
-        handleSearch
+        handleSearch,
+        handleSetStatus
     }
     const props = {
         total,
         columns,
         requests,
-        loading,
         rows,
         showDetail,
         currentRow,
@@ -371,7 +372,8 @@ function useViewRequest(postId: number, fetchPost: () => void) {
         isLoading,
         page,
         pageSize,
-        pageSizeOptions
+        pageSizeOptions,
+        postCode
     }
     return {
         handler,

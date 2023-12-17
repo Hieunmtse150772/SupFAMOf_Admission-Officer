@@ -6,14 +6,13 @@ import {
   Toolbar,
   useMediaQuery
 } from "@mui/material";
+import { Space } from "antd";
 import { H2 } from "components/Typography";
 import { TitleContext } from "contexts/TitleContext";
 import UserInfo from "models/userInfor.model";
 import { FC, useContext } from "react";
 import { useLocation, useParams } from "react-router";
-import NotificationsPopover from "./popovers/NotificationsPopover";
 import ProfilePopover from "./popovers/ProfilePopover";
-import ServicePopover from "./popovers/ServicePopover";
 // root component interface
 interface DashboardNavBarProps {
   setShowMobileSideBar: () => void;
@@ -105,7 +104,7 @@ const DashboardNavbar: FC<DashboardNavBarProps> = ({
     },
     {
       path: `/dashboard/certificate-list/${id}`,
-      title: 'Training Room',
+      title: 'Training Registration',
       pathBack: '/dashboard/certificate-list',
       titleBack: 'Certificate Management'
     }
@@ -140,7 +139,10 @@ const DashboardNavbar: FC<DashboardNavBarProps> = ({
   return (
     <DashboardNavbarRoot position="sticky">
       <StyledToolBar>
-        {last?.pathBack && <a href={last?.pathBack} style={{ color: "#F09101", fontSize: '20px' }}>{last?.titleBack}/</a>}<a href={last?.path} style={{ color: "#F09101", fontSize: '20px' }}> {last?.title}</a>
+        <Space>
+          {last?.pathBack && <a href={last?.pathBack} style={{ color: "#F09101", fontSize: '20px' }}>{last?.titleBack} /</a>}
+          <a href={last?.path} style={{ color: "#F09101", fontSize: '20px' }}> {last?.title}</a>
+        </Space>
         <H2
           fontSize={21}
           lineHeight={0}
@@ -153,12 +155,6 @@ const DashboardNavbar: FC<DashboardNavBarProps> = ({
 
         <Box flexGrow={1} ml={1} />
 
-        {upSm && (
-          <>
-            <NotificationsPopover />
-            <ServicePopover />
-          </>
-        )}
         <ProfilePopover userInfo={userInfo} />
       </StyledToolBar>
     </DashboardNavbarRoot>

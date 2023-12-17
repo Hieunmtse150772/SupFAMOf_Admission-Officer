@@ -4,4 +4,6 @@ export default interface SearchParamsDto {
     Sort?: string;
     Status?: number | null;
     Order?: string;
+    class?: string,
+    date?: Date
 }

@@ -1,8 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
+import SearchCollabContractParamDto from 'dtos/Contract/searchCollabContract.dto';
 import SearchContractDto from 'dtos/Contract/searchContract.dto';
+import { CollabListDto } from 'dtos/collabList.dto';
 import { ContractDto } from 'dtos/contract.dto';
 import { ContractListDto } from 'dtos/contractList.dto';
+import CollabListInfo from 'models/collabListInfo.model';
 import CompleteContractParams from 'models/completeContractParams.model';
 import ContractInfo from 'models/contract.model';
 import ContractCreated from 'models/contractCreated.model';
@@ -15,6 +18,7 @@ interface ContractState {
     contractList: ContractListDto,
     contract: ContractDto,
     isDeleted: boolean,
+    collabList: CollabListDto
 }
 
 const initialState: ContractState = {
@@ -27,11 +31,24 @@ const initialState: ContractState = {
     contract: {
         data: {} as ContractInfo
     },
+    collabList: {
+        data: [] as CollabListInfo[]
+    }
 }
 export const getContractList = createAsyncThunk('contracts/get-contract-list',
     async (params: SearchContractDto, { rejectWithValue }) => {
         try {
             const result = await contractService.getContractList(params);
+            return result
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data)
+        }
+    })
+export const getCollabByContractId = createAsyncThunk('contracts/get-collab-by-contractId',
+    async (params: SearchCollabContractParamDto, { rejectWithValue }) => {
+        try {
+            const result = await contractService.getCollabByContractId(params);
             return result
         } catch (error) {
             const axiosError = error as AxiosError;
@@ -83,6 +100,18 @@ export const contractSlice = createSlice({
                 state.contractList = action.payload.data
             })
             .addCase(getContractList.rejected, (state, action) => {
+                state.error = String(action.payload);
+                state.loading = false;
+            })
+            .addCase(getCollabByContractId.pending, (state) => {
+                state.loading = true;
+                state.error = "";
+            })
+            .addCase(getCollabByContractId.fulfilled, (state, action) => {
+                state.loading = false;
+                state.collabList = action.payload.data
+            })
+            .addCase(getCollabByContractId.rejected, (state, action) => {
                 state.error = String(action.payload);
                 state.loading = false;
             })

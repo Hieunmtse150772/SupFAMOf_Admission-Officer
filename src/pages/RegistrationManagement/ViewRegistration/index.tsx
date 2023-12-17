@@ -11,6 +11,7 @@ import ReactHtmlParser from 'react-html-parser';
 import ViewAttendanceModal from '../ConfirmAttendance';
 import ConfirmRegistrationModal from '../ConfirmRegistration/ConfirmRegistrationModal';
 import ViewRequestChangePositionModal from '../ViewRequestChangePosition';
+import ViewWorkListModal from '../WorkList';
 import useViewRegistrationHook from './useViewRegistrationHook';
 
 const ViewPostList = () => {
@@ -57,7 +58,7 @@ const ViewPostList = () => {
     const LightFilterCustom = (
         <div ref={yourRef}>
             <LightFilter
-                key="light-filter"
+                key="light-filter2"
                 initialValues={{
                     sex: 1,
                 }}
@@ -263,6 +264,14 @@ const ViewPostList = () => {
                     fetchPost={handler.fetchPostList}
                     open={props.openViewAttendenceModal}
                     setOpenViewRequestModal={handler.setOpenViewAttendenceModal}
+                    positionId={props.positionId}
+                />
+            }
+            {(props.openViewWorkListModal && props.positionId !== null) &&
+                <ViewWorkListModal
+                    fetchPost={handler.fetchPostList}
+                    open={props.openViewWorkListModal}
+                    setOpenViewWorkListModal={handler.setOpenViewWorkList}
                     positionId={props.positionId}
                 />
             }

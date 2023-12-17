@@ -111,6 +111,16 @@ export const updateCollaboratorToPremium = createAsyncThunk('collabs/update-coll
             return rejectWithValue(axiosError.response?.data)
         }
     })
+export const removeCollaboratorPremium = createAsyncThunk('collabs/remove-collaborator-premium',
+    async (id: string, { rejectWithValue }) => {
+        try {
+            const result = await collabService.removeCollaboratorPremium(id);
+            return result
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data)
+        }
+    })
 export const collabSlice = createSlice({
     name: 'collabs',
     initialState,
@@ -132,7 +142,8 @@ export const collabSlice = createSlice({
             .addMatcher(isAnyOf(
                 banCollaboratorById.pending,
                 updateBanCollaboratorById.pending,
-                updateCollaboratorToPremium.pending
+                updateCollaboratorToPremium.pending,
+                removeCollaboratorPremium.pending
             ), (state) => {
                 state.loading = true;
                 state.error = "";
@@ -140,14 +151,16 @@ export const collabSlice = createSlice({
             .addMatcher(isAnyOf(
                 banCollaboratorById.fulfilled,
                 updateBanCollaboratorById.fulfilled,
-                updateCollaboratorToPremium.fulfilled
+                updateCollaboratorToPremium.fulfilled,
+                removeCollaboratorPremium.fulfilled
             ), (state, action) => {
                 state.loading = false;
             })
             .addMatcher(isAnyOf(
                 banCollaboratorById.rejected,
                 updateBanCollaboratorById.rejected,
-                updateCollaboratorToPremium.rejected
+                updateCollaboratorToPremium.rejected,
+                removeCollaboratorPremium.rejected
             ), (state, action) => {
                 state.error = String(action.payload);
                 state.loading = false;

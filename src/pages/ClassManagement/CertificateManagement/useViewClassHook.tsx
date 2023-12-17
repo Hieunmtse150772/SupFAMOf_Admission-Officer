@@ -2,7 +2,7 @@ import { ProColumns, RequestData } from "@ant-design/pro-components";
 import { FiberManualRecord } from "@mui/icons-material";
 import { Box, Typography } from "@mui/material";
 import { blue, green, grey, red } from "@mui/material/colors";
-import { Avatar, Modal, Popover, Space, StepsProps, Tag, message } from 'antd';
+import { Avatar, Modal, Popover, StepsProps, message } from 'antd';
 import { SortOrder } from 'antd/es/table/interface';
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
@@ -33,10 +33,10 @@ function UseViewClassHook() {
     const [currentRow, setCurrentRow] = useState<any>();
     const [selectedRowsState, setSelectedRows] = useState<any[]>([]);
     const [openConFirmModal, setOpenConfirmModal] = useState<boolean>(false);
-    const certificateRegistrationList = useAppSelector(state => state.certificate.trainingRegistration)
-    const certificateList = useAppSelector(state => state.certificate.certificateOption)
+    const certificateRegistrationList = useAppSelector(state => state.certificate.trainingRegistration);
+    const title = certificateRegistrationList.data[0].certificateName;
+    const certificateList = useAppSelector(state => state.certificate.certificateOption);
     const isLoading = useAppSelector(state => state.certificate.loading);
-
     const valueEnum: { [key: number]: { text: string } } = {};
     const [showDetail, setShowDetail] = useState<boolean>(false);
     const [page, setPage] = useState<number>(1);
@@ -115,29 +115,20 @@ function UseViewClassHook() {
                     </a>
                 );
             },
+            hideInSearch: true,
+
         },
         {
             title: 'Email',
             dataIndex: 'email',
             key: 'email',
+            hideInSearch: true,
         },
         {
             title: 'Phone',
             dataIndex: 'phone',
             key: 'phone',
             hideInSearch: true,
-        },
-        {
-            title: 'Is Premium',
-            dataIndex: 'isPremium',
-            key: 'isPremium',
-            hideInSearch: true,
-            render: (isPremium) => {
-
-                return <Space size={0}>
-                    {isPremium ? <Tag color="yellow">Premium</Tag> : <Tag color="blue">Normal</Tag>}
-                </Space>
-            }
         },
         {
             title: 'Status',
@@ -269,7 +260,7 @@ function UseViewClassHook() {
         imgUrl: collab?.imgUrl,
         isPremium: collab?.isPremium,
         idStudent: collab?.idStudent,
-        status: collab?.status
+        status: collab?.status,
         // ...
     }));
 
@@ -306,7 +297,8 @@ function UseViewClassHook() {
         certificateRegistrationList,
         isLoading,
         selectedRowsState,
-        openAssignClassModal
+        openAssignClassModal,
+        title
     }
     return {
         handler,

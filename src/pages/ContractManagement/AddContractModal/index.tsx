@@ -4,10 +4,9 @@ import { Badge, Button, Modal, Space, Spin, Tag, message } from "antd";
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import { Span } from "components/Typography";
-import { getCollabList } from "features/collabSlice";
-import { sendContractEmail } from "features/contractSlice";
+import { getCollabByContractId, sendContractEmail } from "features/contractSlice";
 import CollabListInfo from "models/collabListInfo.model";
-import { FC, Key, useState } from "react";
+import { FC, Key, useEffect, useState } from "react";
 
 interface AddContractModalProps {
     open: boolean,
@@ -38,7 +37,6 @@ const AddContractModal: FC<AddContractModalProps> = (
     const [searchByEmail, setSearchByEmail] = useState<string>('');
     const [page, setPage] = useState<number>(1);
     const pageSizeOptions = [10, 20, 30]; // Các tùy chọn cho pageSize
-    const total = collabList?.length;
     const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
     let isSubmitting = false;
 
@@ -57,15 +55,6 @@ const AddContractModal: FC<AddContractModalProps> = (
             return true
         }
     }
-    const handleSearchCollabByEmail = async (email: string) => {
-        setSearchByEmail(email)
-    }
-    const fetchCollabByEmail = async () => {
-        const result = await dispatch(getCollabList(
-            {
-                email: searchByEmail,
-            }))
-    }
     const handleConfirm = async () => {
         setLoading(true)
         const numbers = selectedRowKeys.map((key) => +key);
@@ -79,10 +68,10 @@ const AddContractModal: FC<AddContractModalProps> = (
                     console.log('result: ', result);
                     if (result.payload.status === 400) {
                         message.warning(result.payload.message);
-                        setLoading(false)
+                        setLoading(false);
                     } else if (result.payload.status === 200) {
                         message.success('Send contract to collaborators successfull');
-                        setLoading(false)
+                        setLoading(false);
                         setOpenAddCollabModal(false);
                         fetchContractList();
                     }
@@ -100,7 +89,35 @@ const AddContractModal: FC<AddContractModalProps> = (
             setLoading(false)
         }
     }
+    const handleSearchCollabByEmail = async (email: string) => {
+        setSearchByEmail(email);
+        const result = await dispatch(getCollabByContractId(
+            {
+                contractId: contractId,
+                search: email,
+                page: 1,
+                PageSize: 10
+            }))
+    }
 
+    const fetchCollabByContractId = async () => {
+        const result = await dispatch(getCollabByContractId(
+            {
+                contractId: contractId,
+                search: searchByEmail,
+                page: page,
+                PageSize: pageSize
+            }))
+    }
+    useEffect(() => {
+        setDataSource(collabList);
+    }, [collabList]);
+    useEffect(() => {
+        const fetch = async () => {
+            await fetchCollabByContractId();
+        }
+        fetch();
+    }, [page, pageSize])
     // useEffect(() => {
     //     fetchCollabByEmail()
     // }, [searchByEmail])
@@ -217,7 +234,7 @@ const AddContractModal: FC<AddContractModalProps> = (
                                 },
                                 pageSizeOptions: pageSizeOptions,
                                 defaultPageSize: 5,
-                                total: total
+                                total: amountUnConfirmed
                             }}
                             toolbar={{
                                 menu: {
@@ -358,6 +375,7 @@ const AddContractModal: FC<AddContractModalProps> = (
                             }}
                             pagination={{
                                 pageSize: 5,
+                                total: rowSelection.selectedRowKeys.length
                             }}
                         />
                     </ProCard>
