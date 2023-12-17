@@ -147,10 +147,8 @@ const Profile: FC<UserProfileProps> = (userInfo) => {
 
           <Box padding={3}>
             <H4 fontWeight={600}>Role</H4>
-            {/* <Small mt={1} display="block" lineHeight={1.9}>
-              Tart I love sugar plum I love oat cake. Sweet roll caramels I love
-              jujubes. Topping cake wafer..
-            </Small> */}
+            <H4>{userInfo.userInfo?.roleId === 1 ? 'Admission officer' : 'Administrator'}</H4>
+
 
             <Box mt={3}>
             </Box>

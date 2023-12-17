@@ -7,8 +7,8 @@ import { useAppSelector } from 'app/hooks';
 import { useAppDispatch } from "app/store";
 import dayjs from "dayjs";
 import { CollabListDto } from 'dtos/collabList.dto';
-import { getCollabList, searchCollabListByEmail } from 'features/collabSlice';
-import { createContract, sendContractEmail } from 'features/contractSlice';
+import { searchCollabListByEmail } from 'features/collabSlice';
+import { createContract, getCollabByContractId, sendContractEmail } from 'features/contractSlice';
 import ContractCreated from 'models/contractCreated.model';
 import { Key, useEffect, useState } from "react";
 import { uploadDocs } from '../../../firebase';
@@ -17,8 +17,8 @@ const useAddContractHook = () => {
     const { confirm } = Modal;
 
     const dispatch = useAppDispatch();
-    const collabLists: CollabListDto = useAppSelector(state => state.collab.collabList);
-    const loading = useAppSelector(state => state.collab.loading)
+    const collabLists: CollabListDto = useAppSelector(state => state.contract.collabList);
+    const loading = useAppSelector(state => state.contract.loading)
     const [isLoading, setLoading] = useState<boolean>(false);
     const [disableDate, setDisableDate] = useState<boolean>(true)
     const [disableDateAssign, setDisableDateAsign] = useState<RangePickerProps['disabledDate']>()
@@ -85,7 +85,7 @@ const useAddContractHook = () => {
     const handleSearchCollabByEmail = async (email: string) => {
         if (email !== '') {
             await dispatch(searchCollabListByEmail({ email: email }));
-        } else await dispatch(getCollabList({ email: email }));
+        } else await dispatch(getCollabByContractId({ search: email, contractId: contractId }));
     }
     const handleChangeContractName = (value: any) => {
         if (value) {
@@ -147,7 +147,7 @@ const useAddContractHook = () => {
                             console.log('repsonse: ', response)
                             if (response?.payload?.status === 200) {
                                 setLoading(false)
-                                message.success('Create post success!')
+                                message.success('Create contract success!')
                                 setContractId(response?.payload?.data?.data?.id);
                                 fetchCollabList()
                                 form.submit();
@@ -212,7 +212,8 @@ const useAddContractHook = () => {
         }
     }
     const fetchCollabList = async () => {
-        await dispatch(getCollabList({
+        await dispatch(getCollabByContractId({
+            contractId: contractId,
             page: page,
             PageSize: pageSize
         }));

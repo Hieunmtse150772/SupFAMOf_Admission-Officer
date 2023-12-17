@@ -17,7 +17,7 @@ function useViewApplicationHook() {
     const [currentRow, setCurrentRow] = useState<any>();
     // const [selectedRowsState, setSelectedRows] = useState<boolean>([]);
     const [page, setPage] = useState<number>(1);
-    const pageSizeOptions = [10, 20, 30]; // Các tùy chọn cho pageSize
+    const pageSizeOptions = [5, 10, 15]; // Các tùy chọn cho pageSize
     const total = applications?.metadata?.total;
     const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
     const [applicationId, setApplicationId] = useState<number>();

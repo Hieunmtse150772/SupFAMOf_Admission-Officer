@@ -6,10 +6,8 @@ import { unwrapResult } from "@reduxjs/toolkit";
 import { Avatar, Button, Dropdown, MenuProps, Space, Table, TableColumnsType, Tag, message } from "antd";
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
-import { getCollabList } from "features/collabSlice";
-import { completeContractByAccountContractId, getContractList } from "features/contractSlice";
+import { completeContractByAccountContractId, getCollabByContractId, getContractList } from "features/contractSlice";
 import UserPlusIcon from "icons/UserPlusIcon";
-import CollabListInfo from "models/collabListInfo.model";
 import { ContractInfoRows, ListContractI } from "models/contract.model";
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
@@ -48,18 +46,16 @@ const useViewContractHook = () => {
     const [showDetail, setShowDetail] = useState<boolean>(false);
     const [openConFirmModal, setOpenConfirmModal] = useState<boolean>(false);
     const contractAPI = useAppSelector(state => state.contract.contractList);
-    const { collabList, loading } = useAppSelector(state => state.collab);
+    const { collabList } = useAppSelector(state => state.contract);
     const isLoading = useAppSelector(state => state.post.loading);
     const [page, setPage] = useState<number>(1);
     const pageSizeOptions = [10, 20, 30]; // Các tùy chọn cho pageSize
     const total = contractAPI?.metadata?.total;
-    const [totalCollab, setTotalCollab] = useState<number>(0);
     const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
     const [openAddContractModal, setOpenAddContractModal] = useState<boolean>(false);
     const [addCollabModal, setAddCollabModal] = useState<boolean>(false);
     const [contractId, setContractId] = useState<number | null>(null);
     const downloadRef = useRef<HTMLAnchorElement | null>(null);
-    const [accountList, setAccountList] = useState<CollabListInfo[]>([])
     const [sortModel, setSortModel] = useState<SortModalI>({
         Sort: 'createAt',
         Order: 'desc'
@@ -125,7 +121,14 @@ const useViewContractHook = () => {
             title: 'Salary',
             dataIndex: 'totalSalary',
             key: 'totalSalary',
-            valueType: 'digit',
+            render: (value, valueEnum) => {
+                return <span>  {Intl.NumberFormat('vi-VN', {
+                    style: 'currency',
+                    currency: 'VND',
+                    minimumFractionDigits: 0, // Số lẻ tối thiểu (0 để làm tròn)
+                }).format(valueEnum?.totalSalary)}</span>
+
+            },
             width: 30,
         },
         {
@@ -297,17 +300,17 @@ const useViewContractHook = () => {
     const dispatch = useAppDispatch();
     const handleAddCollab = async (value: ContractInfoRows) => {
         console.log('value111: ', value)
-        const listAccount: number[] = value?.accountContracts?.map((account: any) => account.account.id)
         setContractId(Number(value?.id));
-        const result = await dispatch(getCollabList({ email: '' }));
+        const result = await dispatch(getCollabByContractId({ search: '', contractId: Number(value?.id) }));
         unwrapResult(result);
-        if (getCollabList.fulfilled.match(result)) {
-            const filteredCollabs = result.payload.data.data.filter(collab => {
-                return !listAccount.includes(collab.id);
-            });
-            setAccountList(filteredCollabs);
-            setAddCollabModal(true);
-        }
+        setAddCollabModal(true);
+        // if (getCollabList.fulfilled.match(result)) {
+        //     const filteredCollabs = result.payload.data.data.filter(collab => {
+        //         return !listAccount.includes(collab.id);
+        //     });
+        //     setAccountList(filteredCollabs);
+        //     setAddCollabModal(true);
+        // }
     }
     const handleDownload = (value: ContractInfoRows) => {
         if (value.sampleFile) {
@@ -319,7 +322,7 @@ const useViewContractHook = () => {
             window.open(downloadUrl, '_blank');
             message.success(`Download ${fileName} success`)
         } else {
-            message.error('Download contract fail!')
+            message.error('Collaborators have not confirmed the contract yet!')
         }
     }
     const handleCompleteContract = (value: ExpandedDataType) => {
@@ -411,10 +414,8 @@ const useViewContractHook = () => {
         openAddContractModal,
         rowsExpanded,
         collabList,
-        loading,
         contractId,
         addCollabModal,
-        accountList,
         showDetail,
         currentRow
     }

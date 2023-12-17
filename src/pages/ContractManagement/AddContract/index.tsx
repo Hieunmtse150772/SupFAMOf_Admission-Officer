@@ -237,9 +237,12 @@ const AddContract = () => {
                                 <ProDescriptions.Item
                                     label="Salary"
                                     tooltip="Number"
-                                    valueType="digit"
                                 >
-                                    {props.form?.getFieldValue('salary')}
+                                    {Intl.NumberFormat('vi-VN', {
+                                        style: 'currency',
+                                        currency: 'VND',
+                                        minimumFractionDigits: 0, // Số lẻ tối thiểu (0 để làm tròn)
+                                    }).format(props.form.getFieldValue('salary'))}
                                 </ProDescriptions.Item>
 
                                 <ProDescriptions.Item label="Start date" valueType={'date'}>

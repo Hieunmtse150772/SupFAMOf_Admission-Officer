@@ -1,4 +1,4 @@
-import { CheckCircleOutlined, ExclamationCircleFilled, EyeOutlined, FolderViewOutlined, LockOutlined, MoreOutlined, UnlockOutlined } from '@ant-design/icons'; // Import the icon from the library
+import { CheckCircleOutlined, CheckOutlined, DownOutlined, ExclamationCircleFilled, EyeOutlined, FolderViewOutlined, LockOutlined, MoreOutlined, OrderedListOutlined, UnlockOutlined } from '@ant-design/icons'; // Import the icon from the library
 import { ProColumns, RequestData } from "@ant-design/pro-components";
 import { FiberManualRecord } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
@@ -79,6 +79,9 @@ function useViewRegistrationHook() {
     const [postId, setPostId] = useState<number | null>(null);
     const [openViewRequestModal, setOpenViewRequestModal] = useState<boolean>(false);
     const [openViewAttendenceModal, setOpenViewAttendenceModal] = useState<boolean>(false);
+    const [openViewWorkListModal, setOpenViewWorkList] = useState<boolean>(false);
+
+
     const [sortModel, setSortModel] = useState<SortModalI>({
         Sort: 'createAt',
         Order: 'desc'
@@ -358,28 +361,68 @@ function useViewRegistrationHook() {
 
     const expandedRowRender = (record: any) => {
         const columnsExpanded: TableColumnsType<ExpandedDataType> = [
-            { title: 'Position Name', dataIndex: 'positionName', key: 'positionName', width: 200 },
+            { title: 'Position name', dataIndex: 'positionName', key: 'positionName' },
             { title: 'Amount', dataIndex: 'amount', key: 'amount' },
-            { title: 'Amount Confirmed', dataIndex: 'positionRegisterAmount', key: 'positionRegisterAmount', width: 200 },
+            { title: 'Confirmed', dataIndex: 'positionRegisterAmount', key: 'positionRegisterAmount' },
             {
-                title: 'Progress', dataIndex: 'percent', render: (value) => <Progress style={{ maxWidth: '90%' }} percent={Number(value)} size="small" />, width: 200
+                title: 'Progress', dataIndex: 'percent', render: (value) => <Progress style={{ maxWidth: '90%' }} percent={Number(value)} size="small" />
             },
-            { title: 'Date', dataIndex: 'date', key: 'date', render: (value) => <span>{moment(value).format(Formatter)}</span>, width: 200 },
-            { title: 'Time From', dataIndex: 'timeFrom', key: 'timeFrom', width: 200 },
-            { title: 'Time To', dataIndex: 'timeTo', key: 'timeTo', width: 200 },
-            { title: 'Salary', dataIndex: 'salary', key: 'salary', width: 200 },
+            { title: 'Date', dataIndex: 'date', key: 'date', render: (value) => <span>{moment(value).format(Formatter)}</span> },
+            { title: 'Time From', dataIndex: 'timeFrom', key: 'timeFrom' },
+            { title: 'Time To', dataIndex: 'timeTo', key: 'timeTo' },
+            {
+                title: 'Salary', dataIndex: 'salary', key: 'salary', render: (value, valueEnum) => <span>{Intl.NumberFormat('vi-VN', {
+                    style: 'currency',
+                    currency: 'VND',
+                    minimumFractionDigits: 0, // Số lẻ tối thiểu (0 để làm tròn)
+                }).format(valueEnum.salary)}</span>
+            },
             {
                 title: 'Action',
-                key: 'action',
-                width: 200,
-                render: (value) => <Button icon={<FolderViewOutlined rev={undefined} />} onClick={() => handleOpenConfirmModal(value)} color="primary">View registration</Button>,
+                align: 'center',
+                render: (value, valueEnum) => {
+                    const items: MenuProps['items'] = [
+                        {
+                            label: 'Registration',
+                            key: '1',
+                            icon: <FolderViewOutlined rev={undefined} />,
+                            onClick: () => handleOpenConfirmModal(valueEnum),
+                        },
+                        {
+                            label: 'Attendance',
+                            key: '2',
+                            icon: <CheckOutlined color='green' rev={undefined} />,
+                            onClick: () => handleOpenCheckAttendence(valueEnum),
+                        },
+                        {
+                            label: 'Worklist',
+                            key: '3',
+                            icon: <OrderedListOutlined color='green' rev={undefined} />,
+                            onClick: () => handleViewWorkList(valueEnum),
+                        },
+                    ];
+                    const menuProps = {
+                        items,
+                    };
+                    return <Box>
+                        <Dropdown menu={menuProps} trigger={['click']} placement='bottomLeft'>
+                            <Button icon={<DownOutlined rev={undefined} />}></Button>
+                        </Dropdown>
+                    </Box>
+                },
             },
-            {
-                title: 'Attendence',
-                key: 'action',
-                width: 200,
-                render: (value) => <Button icon={<FolderViewOutlined rev={undefined} />} onClick={() => handleOpenCheckAttendence(value)} color="primary">View attendence</Button>,
-            }
+            // {
+            //     title: 'Action',
+            //     key: 'action',
+            //     width: 200,
+            //     render: (value) => <Button icon={<FolderViewOutlined rev={undefined} />} onClick={() => handleOpenConfirmModal(value)} color="primary">View registration</Button>,
+            // },
+            // {
+            //     title: 'Attendence',
+            //     key: 'action',
+            //     width: 200,
+            //     render: (value) => <Button icon={<FolderViewOutlined rev={undefined} />} onClick={() => handleOpenCheckAttendence(value)} color="primary">View attendence</Button>,
+            // }
         ];
         const data = rowsExpanded.find((value) => value.key === record?.id);
         const dataCustom = data?.position.map((value) => {
@@ -413,6 +456,10 @@ function useViewRegistrationHook() {
     const handleOpenCheckAttendence = async (value: any) => {
         setPositionId(value.id);
         setOpenViewAttendenceModal(true);
+    }
+    const handleViewWorkList = async (value: any) => {
+        setPositionId(value.id);
+        setOpenViewWorkList(true);
     }
     const handleOpenConfirmModal = async (value: any) => {
         setTotalCollab(value?.amount)
@@ -536,7 +583,7 @@ function useViewRegistrationHook() {
             await dispatch(getPostByAccountId({ page: 1, PageSize: 10, Status: value?.radio }))
         }
     }
-    const handleSearch = async (value: any) => {
+    const handleSearch = async (value: SearchParamsI) => {
         if (value) {
             setSearchParams(value)
             await dispatch(getPostByAccountId({
@@ -656,7 +703,8 @@ function useViewRegistrationHook() {
         handleSearch,
         setOpenViewRequestModal,
         fetchPostList,
-        setOpenViewAttendenceModal
+        setOpenViewAttendenceModal,
+        setOpenViewWorkList
     }
     const props = {
         openConFirmModal,
@@ -685,7 +733,8 @@ function useViewRegistrationHook() {
         openViewAttendenceModal,
         currentRow,
         certificateList,
-        documentList
+        documentList,
+        openViewWorkListModal
     }
     return {
         handler,

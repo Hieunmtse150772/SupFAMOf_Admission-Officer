@@ -1,4 +1,4 @@
-import { DeleteOutlined, EditOutlined, ExclamationCircleFilled, MoreOutlined, SafetyCertificateOutlined } from '@ant-design/icons'; // Import the icon from the library
+import { DeleteOutlined, EditOutlined, ExclamationCircleFilled, FolderOpenOutlined, MoreOutlined, SafetyCertificateOutlined } from '@ant-design/icons'; // Import the icon from the library
 import { ProColumns, RequestData } from "@ant-design/pro-components";
 import { FiberManualRecord } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
@@ -18,7 +18,6 @@ import moment from "moment";
 import { useEffect, useState } from "react";
 import ReactHtmlParser from 'react-html-parser';
 import { useNavigate } from 'react-router';
-
 
 interface ExpandedDataType {
   id: number,
@@ -207,7 +206,7 @@ function useViewPostList() {
         switch (valueEnum?.status) {
           case Status.opening:
             color = '#1890ff';
-            statusText = 'Opening';
+            statusText = 'Pending';
             break;
 
           case Status.closed:
@@ -250,9 +249,9 @@ function useViewPostList() {
       render: (value) => {
 
         if (value === true) {
-          return <span><SafetyCertificateOutlined rev={undefined} /> Private</span>;
+          return <Tag icon={<SafetyCertificateOutlined rev={undefined} />} color="default">Private</Tag>;
         } else
-          return <span>Public</span>;
+          return <Tag icon={<FolderOpenOutlined rev={undefined} />} color="default">Public</Tag>;
 
       },
     },
@@ -324,17 +323,13 @@ function useViewPostList() {
       {
         title: 'Document', dataIndex: 'documentId', key: 'documentId', render: (value) => {
           const documentName = documentList.find((document) => document.id === Number(value))?.docName
-          {
-            return documentName ? <Tag color='green'>{documentName}</Tag> : <Tag color='red'>No document</Tag>
-          }
+          return documentName ? <Tag color='green'>{documentName}</Tag> : <Tag color='red'>No document</Tag>
         }
       },
       {
         title: 'Training certificate', dataIndex: 'trainingCertificateId', key: 'trainingCertificateId', render: (value) => {
           const certificateName = certificateList.find((certificate) => certificate.id === Number(value))?.certificateName
-          {
-            return certificateName ? <Tag color='green'>{certificateName}</Tag> : <Tag color='red'>No certificate</Tag>
-          }
+          return certificateName ? <Tag color='green'>{certificateName}</Tag> : <Tag color='red'>No certificate</Tag>
         }
       },
       { title: 'Salary', dataIndex: 'salary', key: 'salary' },
@@ -342,7 +337,7 @@ function useViewPostList() {
         title: 'Status', dataIndex: 'status', key: 'status', render: (rows) => {
           return rows === 1 ? (
             <Space size={0}>
-              <Tag color="blue">Is Active</Tag>
+              <Tag color="blue">Active</Tag>
             </Space>
           ) : (
             <Space size={0}>

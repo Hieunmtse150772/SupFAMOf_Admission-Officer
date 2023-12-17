@@ -1,5 +1,6 @@
 import { EditOutlined, ExclamationCircleFilled, LockOutlined, MoreOutlined, UnlockOutlined } from "@ant-design/icons";
 import { ProColumns, RequestData } from "@ant-design/pro-components";
+import BookmarkRemoveIcon from '@mui/icons-material/BookmarkRemove';
 import UpgradeIcon from '@mui/icons-material/Upgrade';
 import { Box } from "@mui/material";
 import { Avatar, Badge, Button, Dropdown, MenuProps, Modal, Space, Tag, message } from "antd";
@@ -7,10 +8,15 @@ import { SortOrder } from "antd/es/table/interface";
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import { getCertificate } from "features/certificateSlice";
-import { getCollabList, updateCollaboratorToPremium } from "features/collabSlice";
+import { getCollabList, removeCollaboratorPremium, updateCollaboratorToPremium } from "features/collabSlice";
 import { handleDownloadReport } from "features/reportSlice";
 import { Certificate } from "models/collabListInfo.model";
 import { useEffect, useState } from "react";
+type SearchParamsI = {
+    name?: string,
+    email?: string,
+}
+
 const useViewCollablistHook = () => {
     const Formatter = 'DD/MM/YYYY'
     const [currentRow, setCurrentRow] = useState<any>();
@@ -33,6 +39,7 @@ const useViewCollablistHook = () => {
     const [accountName, setAccountName] = useState<string>();
     const [openExportModal, setOpenExportModal] = useState<boolean>(false);
     const [nameFileExport, setNameFileExport] = useState<string>('false');
+    const [searchParams, setSearchParams] = useState<SearchParamsI>();
     const loadingExport = useAppSelector(state => state.report.loading);
     const certificateOptionsAPI = useAppSelector(state => state.certificate.certificateOption);
     const certificateOptions = certificateOptionsAPI?.map((title) => ({
@@ -55,6 +62,7 @@ const useViewCollablistHook = () => {
             key: 'imgUrl',
             hideInSearch: true,
             render: (dom, entity) => {
+                console.log('entity: ', entity)
                 return (
                     <Avatar
                         onClick={() => {
@@ -100,7 +108,7 @@ const useViewCollablistHook = () => {
             hideInSearch: true,
         },
         {
-            title: 'Is Premium',
+            title: 'Premium',
             dataIndex: 'isPremium',
             key: 'isPremium',
             hideInSearch: true,
@@ -115,6 +123,7 @@ const useViewCollablistHook = () => {
             title: 'Student ID',
             dataIndex: 'idStudent',
             key: 'idStudent',
+            width: 100,
             hideInSearch: true,
         },
         {
@@ -133,6 +142,7 @@ const useViewCollablistHook = () => {
                             </Space>
                         )
                         );
+
                     } else return <Space size={0}>
                         <Tag color="red">No certificate</Tag>
                     </Space>
@@ -150,7 +160,7 @@ const useViewCollablistHook = () => {
             key: 'isActive',
             render: (value, valueEnum) => {
                 if (valueEnum.isActive === true) {
-                    return <Tag color="blue">Is Active</Tag>
+                    return <Tag color="blue">Active</Tag>
                 } else return <Tag color="red">InActive</Tag>
             }
         },
@@ -184,6 +194,7 @@ const useViewCollablistHook = () => {
             render: (value, valueEnum, record) => {
                 const totalUpdateRegisterAmount = valueEnum?.totalUpdateRegisterAmount; // Access totalUpdateRegisterAmount from record
                 console.log('valueEnum.isActive: ', valueEnum.isActive)
+                const premiumTitle = `${valueEnum?.isPremium ? 'Downgrade normal' : 'Upgrade premium'}`
                 const items: MenuProps['items'] = [
                     {
                         label: 'Ban account',
@@ -201,11 +212,10 @@ const useViewCollablistHook = () => {
                         disabled: Boolean(valueEnum.isBanned === false),
                     },
                     {
-                        label: 'Update premium',
+                        label: premiumTitle,
                         key: '3',
-                        icon: <UpgradeIcon />,
-                        onClick: () => handleUpdatePremium(valueEnum),
-                        disabled: Boolean(valueEnum?.isPremium === true)
+                        icon: valueEnum.isPremium ? <BookmarkRemoveIcon /> : <UpgradeIcon />,
+                        onClick: () => handlePremium(valueEnum),
                     }
                     ,
                     {
@@ -235,8 +245,16 @@ const useViewCollablistHook = () => {
         console.log('pagesize: ', value)
         setPageSize(value)
     }
-    const handleSearch = (value: any) => {
-
+    const handleSearch = async (value: SearchParamsI) => {
+        if (value) {
+            setSearchParams(value)
+            await dispatch(getCollabList({
+                page: page,
+                PageSize: pageSize,
+                name: value?.name,
+                email: value?.email
+            }))
+        }
     }
     const handleOpenExportExcel = (name: string) => {
         setNameFileExport(name);
@@ -253,15 +271,25 @@ const useViewCollablistHook = () => {
         });
     }
 
-    const handleUpdatePremium = (value: any) => {
+    const handlePremium = (value: any) => {
+        const premiumTitle = `${value?.isPremium ? 'Downgrade normal' : 'Upgrade premium'}`
         confirm({
-            title: `Do you want to update premium for ${value?.name}?`,
+            title: `Do you want to ${premiumTitle} for ${value?.name}?`,
             icon: <ExclamationCircleFilled rev={undefined} />,
             onOk: async () => {
-                dispatch(updateCollaboratorToPremium(value?.key)).then((response: any) => {
+                value?.isPremium ? dispatch(removeCollaboratorPremium(value?.key)).then((response: any) => {
                     console.log('ressponse: ', response);
                     if (response?.payload?.data?.status?.success) {
-                        message.success(`Update account ${value?.name} success!`);
+                        message.success(`Downgrade normal of ${value?.name} success!`);
+                        fetchCollabList();
+                    } else {
+                        message.error(response?.payload?.message);
+                    }
+
+                }) : dispatch(updateCollaboratorToPremium(value?.key)).then((response: any) => {
+                    console.log('ressponse: ', response);
+                    if (response?.payload?.data?.status?.success) {
+                        message.success(`Upgrade  account ${value?.name} to premium success!`);
                         fetchCollabList();
                     } else {
                         message.error(response?.payload?.message);
@@ -273,15 +301,14 @@ const useViewCollablistHook = () => {
             },
         });
     }
+
     const handleOpenCertificateModal = (value: any) => {
-        console.log('value: ', value)
         setAccountId(value?.key);
         setCertificateList(value?.certificates.filter((certificate: any) => certificate.status === 1));
         setOpenCertificateModal(true);
     }
 
     const handleOpenUnBanAccountModal = async (value: any) => {
-        console.log('value:', value)
         setAccountIdBan(value?.key);
         setAccountName(value?.name);
         setOpenUnbanAccountModal(true);
@@ -295,10 +322,7 @@ const useViewCollablistHook = () => {
     const handleActionChange = async (params: any,
         sorter: Record<string, SortOrder>,
         filter: Record<string, (string | number)[] | null>): Promise<Partial<RequestData<any>>> => {
-        console.log('sorter: ', params);
-        if (params) {
-            await dispatch(getCollabList(params))
-        }
+        await dispatch(getCollabList({}))
         return {
             data: [],
             success: true, // Set to true if the request was successful
@@ -326,7 +350,7 @@ const useViewCollablistHook = () => {
         // ...
     }));
     const fetchCollabList = async () => {
-        await dispatch(getCollabList({ page: page, PageSize: pageSize }))
+        await dispatch(getCollabList({ page: page, PageSize: pageSize, name: searchParams?.name, email: searchParams?.email }))
     }
     const downloadExcelFile = () => {
         if (excelFile) {

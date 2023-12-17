@@ -1,15 +1,11 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import AttendenceDto from 'dtos/Attendence/attendence.dto';
+import WorkListDto from 'dtos/Registration/workLists.dto';
 import ErrorDto from 'dtos/error.dto';
 import AttendenceI from 'models/attendence.model';
+import WorkLists from 'models/worklist.model';
 import { attendenceService } from 'services/attendence.service';
-
-interface AttendenceState {
-    attendenceList: AttendenceDto,
-    loading: boolean,
-    error: ErrorDto | null,
-}
 type paramI = {
     positionId: string,
 }
@@ -23,16 +19,24 @@ export type paramsConfirmAttendance = {
     {
         id: number,
         status: number
-    }[]
-
-
+    }[],
 }
+interface AttendenceState {
+    attendenceList: AttendenceDto,
+    loading: boolean,
+    error: ErrorDto | null,
+    workLists: WorkListDto
+}
+
 const initialState: AttendenceState = {
     attendenceList: {
         data: [] as AttendenceI[]
     },
     loading: false,
-    error: null
+    error: null,
+    workLists: {
+        data: [] as WorkLists[]
+    }
 }
 export const getAttendenceByPositionId = createAsyncThunk(
     'attendence/get-attendence',
@@ -46,7 +50,18 @@ export const getAttendenceByPositionId = createAsyncThunk(
         }
     },
 );
-
+export const getWorkListsByPositionId = createAsyncThunk(
+    'registration/get-workLists',
+    async (params: paramI, { rejectWithValue }) => {
+        try {
+            const result = await attendenceService.getWorkListByPositionId(params)
+            return result.data;
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data);
+        }
+    },
+);
 export const confirmAttendanceByPositionId = createAsyncThunk(
     'attendence/confirm-attendence',
     async (params: paramsConfirmAttendance, { rejectWithValue }) => {
@@ -74,6 +89,18 @@ export const attendenceSlice = createSlice({
                 state.loading = false;
             })
             .addCase(getAttendenceByPositionId.rejected, (state, action) => {
+                state.error = action.payload as ErrorDto;
+                state.loading = false;
+            })
+            .addCase(getWorkListsByPositionId.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getWorkListsByPositionId.fulfilled, (state, action) => {
+                state.workLists = action.payload
+                state.loading = false;
+            })
+            .addCase(getWorkListsByPositionId.rejected, (state, action) => {
                 state.error = action.payload as ErrorDto;
                 state.loading = false;
             })

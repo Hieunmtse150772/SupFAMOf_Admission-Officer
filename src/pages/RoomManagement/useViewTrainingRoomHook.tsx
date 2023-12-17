@@ -27,12 +27,8 @@ type SortModalI = {
     Order: string
 }
 type SearchParamsI = {
-    postName?: string,
-    postCode?: string,
-    dateFrom?: Date,
-    dateTo?: Date,
-    status?: string,
-    postCategoryId?: number
+    date?: Date,
+    class?: string,
 }
 function useViewTrainingHook() {
     const Formatter = 'DD/MM/YYYY'
@@ -83,7 +79,6 @@ function useViewTrainingHook() {
             dataIndex: 'date',
             key: 'date',
             valueType: 'date',
-            hideInSearch: true,
             width: 5,
         },
         {
@@ -91,6 +86,7 @@ function useViewTrainingHook() {
             dataIndex: 'timeFrom',
             key: 'timeFrom',
             valueType: 'time',
+            hideInSearch: true,
             width: 30,
             sorter: true,
         },
@@ -200,24 +196,18 @@ function useViewTrainingHook() {
     }
     const dispatch = useAppDispatch();
 
-    const handleSearch = (value: any) => {
-
+    const handleSearch = async (value: SearchParamsI) => {
+        console.log('value:', value)
+        const params = {
+            class: value?.class,
+            date: value?.date
+        }
+        setSearchParams(params);
+        await dispatch(getAllClassTraining(params))
     }
     const handleActionChange = async (params: any,
         sorter: Record<string, SortOrder>,
         filter: Record<string, (string | number)[] | null>): Promise<Partial<RequestData<any>>> => {
-        if (JSON.stringify(params) !== JSON.stringify({ current: 1, pageSize: 10 })) {
-            setSearchParams(params);
-        }
-        if (sorter && Object.keys(sorter).length > 0) {
-            const keys = Object.keys(sorter);
-            const fieldName = keys[0];
-            const sortOrder = sorter[fieldName] === 'ascend' ? 'asc' : 'desc';
-            if (sorter[fieldName] !== sortModel.Sort && fieldName !== sortModel.Order) {
-                setSortModel({ Sort: fieldName, Order: String(sortOrder) })
-            }
-        } else setSortModel({ Sort: 'createAt', Order: 'desc' })
-
         return {
             data: [],
             success: true,
@@ -246,7 +236,9 @@ function useViewTrainingHook() {
     const fetchRooms = async () => {
         await dispatch(getAllClassTraining({
             page: page,
-            PageSize: pageSize
+            PageSize: pageSize,
+            class: searchParams?.class,
+            date: searchParams?.date
         }))
     }
     const handleAddPost = () => {
@@ -255,7 +247,7 @@ function useViewTrainingHook() {
 
     useEffect(() => {
         fetchRooms()
-    }, [page, pageSize, searchParams, sortModel])
+    }, [page, pageSize])
 
     const handler = {
         setCurrentRow,
