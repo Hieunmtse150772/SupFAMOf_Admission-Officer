@@ -61,7 +61,7 @@ function useViewRequest(postId: number, fetchPost: () => void) {
         Sort: 'createAt',
         Order: 'desc'
     });
-    const [statusFilter, setStatusFilter] = useState<number | null>();
+    const [statusFilter, setStatusFilter] = useState<number | null>(1);
 
     const postCode = requests?.data[0]?.post?.postCode;
     const [searchParams, setSearchParams] = useState<SearchParamsI>()
@@ -296,17 +296,17 @@ function useViewRequest(postId: number, fetchPost: () => void) {
         if (value.radio === 0) {
             setStatusFilter(null)
             setPage(1)
-            await dispatch(getRequestByAccountId({ page: 1, PageSize: 10, Sort: 'createAt', Order: 'desc', Id: postId }))
+            await dispatch(getRequestByAccountId({ page: 1, PageSize: 10, Sort: 'createAt', Order: 'desc', postId: postId }))
         } else {
             setStatusFilter(value?.radio);
             setPage(1)
-            await dispatch(getRequestByAccountId({ page: 1, PageSize: 10, Sort: 'createAt', Order: 'desc', Status: value?.radio, Id: postId }))
+            await dispatch(getRequestByAccountId({ page: 1, PageSize: 10, Sort: 'createAt', Order: 'desc', Status: value?.radio, postId: postId }))
         }
     }
     const handleActionChange = async (params: any,
         sorter: Record<string, SortOrder>,
         filter: Record<string, (string | number)[] | null>): Promise<Partial<RequestData<any>>> => {
-        await dispatch(getRequestByAccountId({ Id: postId }))
+        fetchRequest();
         return {
             data: [],
             success: true,
@@ -340,12 +340,13 @@ function useViewRequest(postId: number, fetchPost: () => void) {
         await dispatch(getRequestByAccountId({
             page: page,
             PageSize: pageSize,
-            Id: postId
+            postId: postId,
+            Status: statusFilter
         }))
     }
     useEffect(() => {
         fetchRequest()
-    }, [page, pageSize, searchParams, sortModel])
+    }, [page, pageSize])
 
     const handler = {
         setCurrentRow,

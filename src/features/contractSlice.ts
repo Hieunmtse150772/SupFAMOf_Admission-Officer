@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
+import ContractInfoDto from 'dtos/Contract/contractInfo.dto';
 import SearchCollabContractParamDto from 'dtos/Contract/searchCollabContract.dto';
 import SearchContractDto from 'dtos/Contract/searchContract.dto';
 import { CollabListDto } from 'dtos/collabList.dto';
@@ -9,6 +10,7 @@ import CollabListInfo from 'models/collabListInfo.model';
 import CompleteContractParams from 'models/completeContractParams.model';
 import ContractInfo from 'models/contract.model';
 import ContractCreated from 'models/contractCreated.model';
+import ContractUpdated from 'models/contractUpdated.model';
 import SendContractParams from 'models/sendContractParams.model';
 import { contractService } from 'services/contract.service';
 
@@ -18,7 +20,8 @@ interface ContractState {
     contractList: ContractListDto,
     contract: ContractDto,
     isDeleted: boolean,
-    collabList: CollabListDto
+    collabList: CollabListDto,
+    contractInfo: ContractInfoDto | null
 }
 
 const initialState: ContractState = {
@@ -33,12 +36,23 @@ const initialState: ContractState = {
     },
     collabList: {
         data: [] as CollabListInfo[]
-    }
+    },
+    contractInfo: null
 }
 export const getContractList = createAsyncThunk('contracts/get-contract-list',
     async (params: SearchContractDto, { rejectWithValue }) => {
         try {
             const result = await contractService.getContractList(params);
+            return result
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data)
+        }
+    })
+export const getContractById = createAsyncThunk('contracts/get-contract-by-id',
+    async (id: string, { rejectWithValue }) => {
+        try {
+            const result = await contractService.getContracById(id);
             return result
         } catch (error) {
             const axiosError = error as AxiosError;
@@ -65,10 +79,30 @@ export const createContract = createAsyncThunk('contracts/create-contract',
             return rejectWithValue(axiosError.response?.data)
         }
     })
+export const updateContract = createAsyncThunk('contracts/update-contract',
+    async (params: ContractUpdated, { rejectWithValue }) => {
+        try {
+            const result = await contractService.updateContract(params);
+            return result
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data)
+        }
+    })
 export const sendContractEmail = createAsyncThunk('contracts/send-contract-email',
     async (params: SendContractParams, { rejectWithValue }) => {
         try {
             const result = await contractService.sendContractEmail(params);
+            return result
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data)
+        }
+    })
+export const deleteContract = createAsyncThunk('contracts/delete-contract-by-id',
+    async (id: string, { rejectWithValue }) => {
+        try {
+            const result = await contractService.deleteContract(id);
             return result
         } catch (error) {
             const axiosError = error as AxiosError;
@@ -100,6 +134,17 @@ export const contractSlice = createSlice({
                 state.contractList = action.payload.data
             })
             .addCase(getContractList.rejected, (state, action) => {
+                state.error = String(action.payload);
+                state.loading = false;
+            })
+            .addCase(updateContract.pending, (state) => {
+                state.loading = true;
+                state.error = "";
+            })
+            .addCase(updateContract.fulfilled, (state, action) => {
+                state.loading = false;
+            })
+            .addCase(updateContract.rejected, (state, action) => {
                 state.error = String(action.payload);
                 state.loading = false;
             })
@@ -135,6 +180,18 @@ export const contractSlice = createSlice({
                 state.loading = false;
             })
             .addCase(sendContractEmail.rejected, (state, action) => {
+                state.error = String(action.payload);
+                state.loading = false;
+            })
+            .addCase(getContractById.pending, (state) => {
+                state.loading = true;
+                state.error = "";
+            })
+            .addCase(getContractById.fulfilled, (state, action) => {
+                state.loading = false;
+                state.contractInfo = action.payload.data
+            })
+            .addCase(getContractById.rejected, (state, action) => {
                 state.error = String(action.payload);
                 state.loading = false;
             })

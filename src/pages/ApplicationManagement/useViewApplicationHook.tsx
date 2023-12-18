@@ -10,6 +10,14 @@ import { useAppDispatch } from "app/store";
 import { getApplicationList } from "features/applicationSlice";
 import moment from "moment";
 import { useEffect, useState } from "react";
+type SortModalI = {
+    Sort: string,
+    Order: string
+}
+type SearchParamsI = {
+    reportDate?: Date,
+    replyDate?: Date
+}
 function useViewApplicationHook() {
     const { applications, loading } = useAppSelector(state => state.application)
 
@@ -22,15 +30,22 @@ function useViewApplicationHook() {
     const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
     const [applicationId, setApplicationId] = useState<number>();
     const [isApprove, setIsApprove] = useState<boolean>();
-    const certificateOptionsAPI = useAppSelector(state => state.certificate.certificateOption)
-    const [openReplyApplicationModal, setOpenReplyApplicationModal] = useState<boolean>(false)
+    const certificateOptionsAPI = useAppSelector(state => state.certificate.certificateOption);
+    const [openReplyApplicationModal, setOpenReplyApplicationModal] = useState<boolean>(false);
+    const [sortModel, setSortModel] = useState<SortModalI>({
+        Sort: 'ReportDate',
+        Order: 'desc'
+    });
+    const [searchParams, setSearchParams] = useState<SearchParamsI>()
+
     const { confirm } = Modal;
     const columns: ProColumns[] = [
         {
             dataIndex: 'count',
             key: 'count',
             valueType: 'index',
-            hideInSearch: true
+            hideInSearch: true,
+            width: 20
         },
         {
             title: 'Full name',
@@ -50,20 +65,22 @@ function useViewApplicationHook() {
                     </a>
                 );
             },
-            width: 200
+            hideInSearch: true,
+            width: 250
         },
         {
             title: 'Report date',
             dataIndex: 'reportDate',
             key: 'reportDate',
             valueType: 'date',
-            width: 100,
-            hideInSearch: true,
+            width: 120,
+            sorter: true,
         },
         {
             title: 'Problem note',
             dataIndex: 'problemNote',
             key: 'problemNote',
+            width: 300,
             hideInSearch: true,
             render: (value) => {
                 if (value !== null) {
@@ -75,8 +92,9 @@ function useViewApplicationHook() {
             title: 'Reply date',
             dataIndex: 'replyDate',
             key: 'replyDate',
+            sorter: true,
             valueType: 'date',
-            width: 100,
+            width: 120,
             hideInSearch: true,
             render: (value, valueEnum) => {
                 if (valueEnum.replyDate) {
@@ -93,7 +111,8 @@ function useViewApplicationHook() {
                 if (valueEnum.replyNote) {
                     return <p>{valueEnum.replyNote}</p>
                 } else { return <p style={{ fontStyle: 'italic' }}>Haven't replied yet...</p> }
-            }
+            },
+            width: 300,
         },
         {
             title: 'Status',
@@ -142,11 +161,12 @@ function useViewApplicationHook() {
                     </Typography>
                 </Box>
             },
+            width: 100,
         },
         {
             title: 'Action',
             align: 'center',
-            width: 10,
+            width: 50,
             dataIndex: 'status',
             hideInSearch: true,
             render: (value, valueEnum) => {
@@ -186,8 +206,18 @@ function useViewApplicationHook() {
         console.log('pagesize: ', value)
         setPageSize(value)
     }
-    const handleSearch = () => {
-
+    const handleSearch = async (value: SearchParamsI) => {
+        if (value) {
+            setSearchParams(value)
+            await dispatch(getApplicationList({
+                page: page,
+                PageSize: pageSize,
+                Sort: sortModel?.Sort,
+                Order: sortModel?.Order,
+                ReportDate: value?.reportDate,
+                ReplyDate: value?.replyDate
+            }))
+        }
     }
     const handleOpenReplyApplicationModal = (value: number, status: boolean) => {
         console.log('value: ', value)
@@ -200,7 +230,15 @@ function useViewApplicationHook() {
         sorter: Record<string, SortOrder>,
         filter: Record<string, (string | number)[] | null>): Promise<Partial<RequestData<any>>> => {
         console.log('sorter: ', params);
-        fetchApplicationList();
+        if (sorter && Object.keys(sorter).length > 0) {
+            const keys = Object.keys(sorter);
+            const fieldName = keys[0];
+            const sortOrder = sorter[fieldName] === 'ascend' ? 'asc' : 'desc';
+
+            setSortModel({ Sort: fieldName, Order: String(sortOrder) });
+        } else {
+            setSortModel({ Sort: 'ReportDate', Order: 'desc' })
+        }
         return {
             data: [],
             success: true, // Set to true if the request was successful
@@ -219,14 +257,19 @@ function useViewApplicationHook() {
         replyNote: application.replyNote,
         // ...
     }));
-    console.log('rows: ', rows)
     const fetchApplicationList = async () => {
-        await dispatch(getApplicationList({ page: page, PageSize: pageSize }))
+        await dispatch(getApplicationList({
+            page: page,
+            PageSize: pageSize,
+            Sort: sortModel.Sort,
+            Order: sortModel.Order,
+            ReportDate: searchParams?.reportDate,
+            ReplyDate: searchParams?.replyDate
+        }))
     }
-
     useEffect(() => {
         fetchApplicationList()
-    }, [page, pageSize])
+    }, [page, pageSize, sortModel])
 
     const handler = {
         handleSearch,

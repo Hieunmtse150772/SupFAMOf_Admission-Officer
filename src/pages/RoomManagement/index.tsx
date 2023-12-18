@@ -61,7 +61,6 @@ const ViewTrainingRoomList = () => {
                     open={props.openEditRoom}
                     setOpenEditRoomModal={handler.setOpenEditRoom}
                 />
-
             }
         </>
     )
