@@ -5,6 +5,7 @@ import moment from "moment";
 import ReactHtmlParser from 'react-html-parser';
 import { useNavigate } from "react-router";
 import AddContractModal from "../AddContractModal";
+import EditContractModal from "../EditContractModal";
 import useViewContractHook from "./useViewContractHook";
 
 const ViewContract = () => {
@@ -72,10 +73,11 @@ const ViewContract = () => {
                     pageSizeOptions={props.pageSizeOptions}
                     total={props.total}
                     onPageChange={handler.onPageChange}
+                    handleTableChange={handler.handleActionChange}
                     onChangePageSize={handler.onChangePageSize}
                     page={props.page} pageSize={props.pageSize}
                     rows={props.rows} columns={props?.columns}
-                    isLoading={props.isLoading}
+                    isLoading={props.loading}
                     action={handler.handleAddContract}
                     expandedRowRender={expandedRowRender}
                     rowsExpanded={props.rowsExpanded}
@@ -108,6 +110,15 @@ const ViewContract = () => {
                     collabList={props.collabList.data}
                     amountUnConfirmed={props.collabList.metadata?.total}
                     contractId={props.contractId}
+                />
+            }
+
+            {props.contractInfo && props.loading !== true &&
+                <EditContractModal
+                    contractInfo={props.contractInfo?.data}
+                    fetchContractList={handler.fetchContractList}
+                    open={props.openEditContractModal}
+                    setOpenEditContractModal={handler.setOpenEditContractModal}
                 />
             }
         </>

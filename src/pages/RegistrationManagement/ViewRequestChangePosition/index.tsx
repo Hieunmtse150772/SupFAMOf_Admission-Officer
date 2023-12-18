@@ -30,7 +30,7 @@ const ViewRequestChangePositionModal: FC<ViewRequestChangePositionModalProps> = 
                 <ProFormRadio.Group
                     name="radio"
                     radioType="button"
-                    initialValue={0}
+                    initialValue={1}
                     options={[
                         {
                             value: 0,

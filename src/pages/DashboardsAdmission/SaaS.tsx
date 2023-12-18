@@ -44,7 +44,7 @@ const SaaS: FC = () => {
     {
       number: 0,
       Icon: UserPlusIcon,
-      title: "Total registration",
+      title: "Registrations monthly",
       color: theme.palette.primary.red,
     }
   ];
@@ -72,10 +72,9 @@ const SaaS: FC = () => {
                 ))}
               </Avatar.Group>
             </Box>
-          </StyledCard>        </Grid>
-
+          </StyledCard>
+        </Grid>
       </Grid>
-
       <Grid container spacing={4} pt={4}>
         <Grid item lg={8} md={7} xs={12}>
           <TotalSpent />

@@ -157,7 +157,7 @@ const useEditPostModal = () => {
         if (fileList !== [] && description !== '') {
             setError('');
             confirm({
-                title: 'Do you want to create post?',
+                title: 'Do you want to edit post?',
                 icon: <ExclamationCircleFilled rev={undefined} />,
                 onOk: async () => {
                     setLoading(true)

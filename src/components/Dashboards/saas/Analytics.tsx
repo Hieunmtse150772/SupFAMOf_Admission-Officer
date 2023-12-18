@@ -7,8 +7,8 @@ import Chart from "react-apexcharts";
 import AnalyticsPopover from "./AnalyticsPopover";
 
 const data = {
-  series: [75, 50, 25],
-  categories: ["Sales", "Orders", "Return"],
+  series: [75, 50],
+  categories: ["Personnel needed", "Done"],
 };
 
 const Analytics: FC = () => {
@@ -17,7 +17,7 @@ const Analytics: FC = () => {
   const chartOptions: ApexOptions = {
     chart: { background: "transparent" },
     colors: [theme.palette.primary.main, "#FF9777", "#FF6B93"],
-    labels: ["Sales", "Orders", "Return"],
+    labels: ["Personnel needed ", "Done"],
     plotOptions: {
       radialBar: {
         dataLabels: {
@@ -51,7 +51,7 @@ const Analytics: FC = () => {
       enabled: true,
       style: { fontFamily: "inherit" },
       y: {
-        formatter: (value) => `$${value}`,
+        formatter: (value) => `${value} collaborator`,
       },
     },
     states: {

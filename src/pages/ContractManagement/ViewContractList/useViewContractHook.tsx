@@ -1,12 +1,13 @@
-import { CheckCircleOutlined, DeleteOutlined, DownOutlined, DownloadOutlined, EditOutlined, MoreOutlined } from "@ant-design/icons";
-import { ProColumns } from "@ant-design/pro-components";
+import { CheckCircleOutlined, DeleteOutlined, DownOutlined, DownloadOutlined, EditOutlined, ExclamationCircleFilled, MoreOutlined } from "@ant-design/icons";
+import { ProColumns, RequestData } from "@ant-design/pro-components";
 import { Box } from "@mui/material";
 import { green, grey, red, yellow } from "@mui/material/colors";
 import { unwrapResult } from "@reduxjs/toolkit";
-import { Avatar, Button, Dropdown, MenuProps, Space, Table, TableColumnsType, Tag, message } from "antd";
+import { Avatar, Button, Dropdown, MenuProps, Modal, Space, Table, TableColumnsType, Tag, message } from "antd";
+import { SortOrder } from "antd/es/table/interface";
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
-import { completeContractByAccountContractId, getCollabByContractId, getContractList } from "features/contractSlice";
+import { completeContractByAccountContractId, deleteContract, getCollabByContractId, getContractById, getContractList } from "features/contractSlice";
 import UserPlusIcon from "icons/UserPlusIcon";
 import { ContractInfoRows, ListContractI } from "models/contract.model";
 import moment from "moment";
@@ -19,6 +20,8 @@ type CollumsField = {
     sampleFile: string,
     totalSalary: number,
     isActive: boolean,
+    startDate: Date,
+    endDate: Date,
     createAt: Date
 }
 interface ExpandedDataType {
@@ -35,19 +38,26 @@ interface ExpandedDataType {
     contractName?: string;
     accountContractId?: number
 }
+type SearchParamsI = {
+    contractName?: string,
+    endDate?: Date,
+    startDate?: Date,
+    status?: string,
+    createAt?: Date
+    totalSalary?: number,
+}
 type SortModalI = {
     Sort: string,
     Order: string
 }
 const useViewContractHook = () => {
+    ;
     const Formatter = 'DD/MM/YYYY'
+    const { confirm } = Modal;
     const [currentRow, setCurrentRow] = useState<ContractInfoRows | null>(null);
-    // const [selectedRowsState, setSelectedRows] = useState<boolean>([]);
     const [showDetail, setShowDetail] = useState<boolean>(false);
-    const [openConFirmModal, setOpenConfirmModal] = useState<boolean>(false);
     const contractAPI = useAppSelector(state => state.contract.contractList);
-    const { collabList } = useAppSelector(state => state.contract);
-    const isLoading = useAppSelector(state => state.post.loading);
+    const { collabList, loading, contractInfo } = useAppSelector(state => state.contract);
     const [page, setPage] = useState<number>(1);
     const pageSizeOptions = [10, 20, 30]; // Các tùy chọn cho pageSize
     const total = contractAPI?.metadata?.total;
@@ -56,16 +66,18 @@ const useViewContractHook = () => {
     const [addCollabModal, setAddCollabModal] = useState<boolean>(false);
     const [contractId, setContractId] = useState<number | null>(null);
     const downloadRef = useRef<HTMLAnchorElement | null>(null);
+    const [openEditContractModal, setOpenEditContractModal] = useState<boolean>(false);
+    const [searchParams, setSearchParams] = useState<SearchParamsI>();
     const [sortModel, setSortModel] = useState<SortModalI>({
         Sort: 'createAt',
         Order: 'desc'
     });
     const columns: ProColumns<ContractInfoRows>[] = [
         {
-            title: 'Contract name',
+            title: 'Name',
             dataIndex: 'contractName',
             key: 'contractName',
-            width: 5,
+            width: 100,
             render: (dom, entity) => {
                 return (
                     // eslint-disable-next-line jsx-a11y/anchor-is-valid
@@ -87,7 +99,7 @@ const useViewContractHook = () => {
             dataIndex: 'contractDescription',
             key: 'contractDescription',
             valueType: 'text',
-            width: 15,
+            width: 100,
             hideInSearch: true,
             render: (value) => {
 
@@ -103,9 +115,34 @@ const useViewContractHook = () => {
             dataIndex: 'createAt',
             key: 'createAt',
             valueType: 'date',
-            width: 20,
+            width: 100,
             sorter: true,
         },
+        {
+            title: 'Signing date',
+            dataIndex: 'signingDate',
+            key: 'signingDate',
+            valueType: 'date',
+            width: 100,
+            sorter: true,
+        },
+        {
+            title: 'Start date',
+            dataIndex: 'startDate',
+            key: 'startDate',
+            valueType: 'date',
+            width: 100,
+            sorter: true,
+        },
+        {
+            title: 'End date',
+            dataIndex: 'endDate',
+            key: 'endDate',
+            valueType: 'date',
+            width: 100,
+            sorter: true,
+        },
+
         {
             title: 'Sample file',
             dataIndex: 'sampleFile',
@@ -121,6 +158,11 @@ const useViewContractHook = () => {
             title: 'Salary',
             dataIndex: 'totalSalary',
             key: 'totalSalary',
+            valueType: {
+                type: 'money',
+                moneySymbol: false,
+                locale: "en-VN"
+            },
             render: (value, valueEnum) => {
                 return <span>  {Intl.NumberFormat('vi-VN', {
                     style: 'currency',
@@ -141,7 +183,7 @@ const useViewContractHook = () => {
                 console.log('value: ', value)
                 return (
                     <Space size={0}>
-                        {value ? <Tag color="blue">Is Active</Tag> : <Tag color="red">InActive</Tag>}
+                        {value ? <Tag color="blue">Active</Tag> : <Tag color="red">InActive</Tag>}
                     </Space>
                 );
             }
@@ -163,7 +205,7 @@ const useViewContractHook = () => {
                         label: 'Edit',
                         key: '2',
                         icon: <EditOutlined color='green' rev={undefined} />,
-                        //   onClick: () => handleOpenEditPostModal(value),
+                        onClick: () => handleOpenEditContractModal(valueEnum as ContractInfoRows),
                     },
                     {
                         label: 'Add',
@@ -175,7 +217,7 @@ const useViewContractHook = () => {
                         label: 'Delete',
                         key: '4',
                         icon: <DeleteOutlined color='green' rev={undefined} />,
-                        //   onClick: () => handleOpenEditPostModal(value),
+                        onClick: () => handleDeleteContract(valueEnum as ContractInfoRows),
                         danger: true
                     },
 
@@ -312,6 +354,24 @@ const useViewContractHook = () => {
         //     setAddCollabModal(true);
         // }
     }
+    const handleDeleteContract = async (value: ContractInfoRows) => {
+        confirm({
+            title: `Do you want to delete ${value?.contractName}?`,
+            icon: <ExclamationCircleFilled rev={undefined} />,
+            onOk: async () => {
+                dispatch(deleteContract(value?.id)).then((response: any) => {
+                    if (response?.payload?.statusCode === 400) {
+                        message.error(response?.payload?.message);
+                    } else if (response?.payload?.data?.status?.success) {
+                        message.success(`Delete contract successfuly`);
+                        fetchContractList();
+                    } else message.error('Server internal error');
+                })
+            },
+            onCancel() {
+            },
+        });
+    }
     const handleDownload = (value: ContractInfoRows) => {
         if (value.sampleFile) {
             const fileUrl = value.sampleFile;
@@ -324,6 +384,11 @@ const useViewContractHook = () => {
         } else {
             message.error('Collaborators have not confirmed the contract yet!')
         }
+    }
+    const handleOpenEditContractModal = async (value: ContractInfoRows) => {
+        console.log('value: ', value)
+        setOpenEditContractModal(true);
+        await dispatch(getContractById(value?.id))
     }
     const handleCompleteContract = (value: ExpandedDataType) => {
         const params = {
@@ -351,8 +416,37 @@ const useViewContractHook = () => {
             message.error('Download contract fail!')
         }
     }
-    const handleSearch = () => {
+    const handleActionChange = async (params: any,
+        sorter: Record<string, SortOrder>,
+        filter: Record<string, (string | number)[] | null>): Promise<Partial<RequestData<any>>> => {
+        if (sorter && Object.keys(sorter).length > 0) {
+            const keys = Object.keys(sorter);
+            const fieldName = keys[0];
+            const sortOrder = sorter[fieldName] === 'ascend' ? 'asc' : 'desc';
+            setSortModel({ Sort: fieldName, Order: String(sortOrder) })
+        } else setSortModel({ Sort: 'createAt', Order: 'desc' })
 
+        return {
+            data: [],
+            success: true,
+            total: 10,
+        };
+    }
+    const handleSearch = async (value: CollumsField) => {
+        if (value) {
+            setSearchParams(value);
+            await dispatch(getContractList({
+                page: page,
+                PageSize: pageSize,
+                Sort: sortModel?.Sort,
+                Order: sortModel?.Order,
+                contractName: value?.contractName,
+                createAt: value?.createAt,
+                startDate: value?.startDate,
+                endDate: value?.endDate,
+                totalSalary: value?.totalSalary,
+            }))
+        }
     }
     const onPageChange = (value: any) => {
         setPage(value)
@@ -383,6 +477,11 @@ const useViewContractHook = () => {
             PageSize: pageSize,
             Sort: sortModel?.Sort,
             Order: sortModel?.Order,
+            contractName: searchParams?.contractName,
+            createAt: searchParams?.createAt,
+            endDate: searchParams?.endDate,
+            startDate: searchParams?.startDate,
+            totalSalary: searchParams?.totalSalary
         }))
     }
     const handleAddContract = () => {
@@ -390,7 +489,7 @@ const useViewContractHook = () => {
     }
     useEffect(() => {
         fetchContractList()
-    }, [page, pageSize])
+    }, [page, pageSize, sortModel])
     const handler = {
         onPageChange,
         onChangePageSize,
@@ -400,7 +499,9 @@ const useViewContractHook = () => {
         setAddCollabModal,
         fetchContractList,
         setCurrentRow,
-        setShowDetail
+        setShowDetail,
+        setOpenEditContractModal,
+        handleActionChange
     }
     const props = {
         columns,
@@ -410,14 +511,16 @@ const useViewContractHook = () => {
         page,
         pageSize,
         rows,
-        isLoading,
         openAddContractModal,
         rowsExpanded,
         collabList,
         contractId,
         addCollabModal,
         showDetail,
-        currentRow
+        currentRow,
+        openEditContractModal,
+        contractInfo,
+        loading
     }
     return {
         handler,
