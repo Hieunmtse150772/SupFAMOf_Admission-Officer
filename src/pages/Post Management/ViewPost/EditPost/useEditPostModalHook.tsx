@@ -33,7 +33,7 @@ interface PostPosition {
     isBusService: boolean,
     documentId: number
 }
-const useEditPostModal = () => {
+const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchPostList: () => void) => {
     const dispatch = useAppDispatch();
     const { confirm } = Modal;
     const [form] = ProForm.useForm();
@@ -59,7 +59,7 @@ const useEditPostModal = () => {
     const [description, setDescription] = useState<string>(postInfo?.data?.postDescription ? postInfo?.data?.postDescription : '');
     const [errorUrl, setErrorUrl] = useState<string>('');
     const [error, setError] = useState<string>('');
-    const [fileImage, setFileImage] = useState<any>('');
+    const [fileImage, setFileImage] = useState<any | null>(null);
     const [paramsCreatePost, setParamsCreatePost] = useState<PostUpdated>()
 
     const documentOptions = documentOptionsAPI?.map((title) => ({
@@ -82,10 +82,8 @@ const useEditPostModal = () => {
 
     const customRequest = async ({ file, onSuccess, onError }: any) => {
         try {
-            setTimeout(() => {
-                setFileImage(file);
-                onSuccess();
-            }, 2000);
+            setFileImage(file);
+            onSuccess();
             onSuccess();
         } catch (error) {
             console.error('Lỗi khi tải lên tệp:', error);
@@ -109,7 +107,7 @@ const useEditPostModal = () => {
     };
     const removeImage = () => {
         setFileList([]);
-        setFileImage('');
+        setFileImage(null);
     }
     const handleCancel = () => setPreviewOpen(false);
 
@@ -150,11 +148,11 @@ const useEditPostModal = () => {
             return false;
         }
     }
-    const handleUpdatePost = async (value: any, setOpenEditPostModal: (value: boolean) => void) => {
+    const handleUpdatePost = async (value: any) => {
         if (description !== '') {
             setError('');
         }
-        if (fileList !== [] && description !== '') {
+        if (fileList.length !== 0 && description !== '') {
             setError('');
             confirm({
                 title: 'Do you want to edit post?',
@@ -164,7 +162,9 @@ const useEditPostModal = () => {
                     const postPositionPromises = value?.postPositions?.map(async (postPosition: PositionUpdated) => handlePostPosition(postPosition));
                     try {
                         const postPositionsResults: PositionUpdated[] = await Promise.all(postPositionPromises);
-                        const photoUrl = fileImage ? await uploadImage(fileImage, setLoading) : postInfo?.data?.postImg; // Gọi hàm upload của bạn
+                        console.log('fileImage: ', fileImage);
+                        const photoUrl = (fileImage !== null) ? await uploadImage(fileImage, setLoading) : postInfo?.data?.postImg; // Gọi hàm upload của bạn
+                        setLoading(true);
                         const params: PostUpdated = {
                             postId: postInfo?.data.id ? postInfo?.data.id : 0,
                             postCategoryId: value?.postCategory,
@@ -175,7 +175,6 @@ const useEditPostModal = () => {
                             postImg: photoUrl ? photoUrl : 'https://fptcameraiq.vn/storage/festftel25.jpg',
                         }
                         setParamsCreatePost(params);
-                        setOpenEditPostModal(false);
                     } catch (error) {
                         console.error('Error in handlePostPosition:', error);
                         // Handle error appropriately
@@ -188,7 +187,7 @@ const useEditPostModal = () => {
             if (description === '') {
                 setError('Description is required!')
             }
-            if (fileList === []) {
+            if (fileList.length === 0) {
                 setErrorUrl('Image is required!')
             }
         }
@@ -214,18 +213,23 @@ const useEditPostModal = () => {
             return [];
         }
     };
-    const handleUpdatePostApi = async (params: PostUpdated) => {
+    const handleUpdatePostApi = async (params: PostUpdated): Promise<boolean> => {
+        let result = false;
         await dispatch(updatePostById(params)).then((response) => {
             const result2 = unwrapResult(response);
             if (result2.status === 200) {
-                setLoading(false)
-                message.success('Update post success!')
+                setLoading(false);
+                fetchPostList();
+                message.success('Update post success!');
+                result = true;
             }
         }).catch((error) => {
             message.error('Intenal server error!')
             setLoading(false)
             console.error(error)
+            result = false;
         })
+        return result;
     }
     const fetchDocumentOption = async () => {
         const result = await dispatch(getDocument());
@@ -240,7 +244,11 @@ const useEditPostModal = () => {
     }, [])
     useEffect(() => {
         if (paramsCreatePost) {
-            handleUpdatePostApi(paramsCreatePost)
+            handleUpdatePostApi(paramsCreatePost).then((response: boolean) => {
+                if (response) {
+                    setOpenEditPostModal(false);
+                }
+            })
         }
     }, [paramsCreatePost])
 

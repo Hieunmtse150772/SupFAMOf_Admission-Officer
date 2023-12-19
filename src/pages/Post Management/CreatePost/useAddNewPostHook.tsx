@@ -289,10 +289,8 @@ const useAddNewPostHook = () => {
 
     const customRequest = async ({ file, onSuccess, onError }: any) => {
         try {
-            setTimeout(() => {
-                setFileImage(file);
-                onSuccess();
-            }, 2000);
+            setFileImage(file);
+            onSuccess();
             onSuccess();
         } catch (error) {
             console.error('Lỗi khi tải lên tệp:', error);
@@ -331,6 +329,7 @@ const useAddNewPostHook = () => {
                         }
                         setParamsCreatePost(params);
                     } catch (error) {
+                        setLoading(false);
                         console.error('Error in handlePostPosition:', error);
                         // Handle error appropriately
                     }

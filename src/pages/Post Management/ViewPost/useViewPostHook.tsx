@@ -86,16 +86,18 @@ function useViewPostList() {
   let navigate = useNavigate();
 
   const columns: ProColumns[] = [
-    {
-      dataIndex: 'count',
-      key: 'count',
-      valueType: 'index',
-      hideInSearch: true
-    },
+    // {
+    //   dataIndex: 'count',
+    //   key: 'count',
+    //   valueType: 'index',
+    //   hideInSearch: true,
+    //   fixed: 'left',
+    // },
     {
       title: 'Post Code',
       dataIndex: 'postCode',
       key: 'postCode',
+      fixed: 'left',
       render: (dom, entity) => {
         return (
           // eslint-disable-next-line jsx-a11y/anchor-is-valid
@@ -109,13 +111,15 @@ function useViewPostList() {
           </a>
         );
       },
+      width: 100,
     },
     {
       title: 'Category',
       dataIndex: 'postCategoryId',
       key: 'postCategoryId',
       valueType: 'select',
-      valueEnum: valueEnum
+      valueEnum: valueEnum,
+      width: 100,
     },
     {
       title: 'Title',
@@ -123,6 +127,8 @@ function useViewPostList() {
       key: 'titleType',
       hideInTable: true,
       hideInSearch: true,
+      width: 100,
+
     },
     {
       title: 'Create at',
@@ -130,6 +136,7 @@ function useViewPostList() {
       key: 'createAt',
       valueType: 'date',
       sorter: true,
+      width: 100,
     },
     {
       title: 'Date From',
@@ -137,6 +144,7 @@ function useViewPostList() {
       key: 'dateFrom',
       valueType: 'date',
       sorter: true,
+      width: 120,
     },
     {
       title: 'Date To',
@@ -144,12 +152,15 @@ function useViewPostList() {
       key: 'dateTo',
       valueType: 'date',
       sorter: true,
+      width: 100,
+
     },
     {
       title: 'Description',
       dataIndex: 'description',
       key: 'Description',
       hideInSearch: true,
+      width: 100,
       render: (value) => {
 
         if (value !== '') {
@@ -168,6 +179,7 @@ function useViewPostList() {
         return (<Image src={String(value)}></Image>);
       },
       hideInTable: true,
+      width: 100,
     },
     {
       title: 'Status',
@@ -240,6 +252,7 @@ function useViewPostList() {
           </Typography>
         </Box>
       },
+      width: 120,
     },
     {
       title: 'Premium',
@@ -254,6 +267,7 @@ function useViewPostList() {
           return <Tag icon={<FolderOpenOutlined rev={undefined} />} color="default">Public</Tag>;
 
       },
+      width: 100,
     },
     // {
     //   title: 'Delete/Edit',
@@ -279,6 +293,8 @@ function useViewPostList() {
       title: 'Action',
       align: 'center',
       hideInSearch: true,
+      fixed: 'right',
+      width: 80,
       render: (value, valueEnum) => {
         const items: MenuProps['items'] = [
           {
@@ -318,14 +334,14 @@ function useViewPostList() {
       { title: 'Date', dataIndex: 'date', key: 'date', render: (value) => <span>{moment(value).format(Formatter)}</span> },
       { title: 'Time From', dataIndex: 'timeFrom', key: 'timeFrom' },
       { title: 'Time To', dataIndex: 'timeTo', key: 'timeTo' },
-      { title: 'Address', dataIndex: 'location', key: 'location' },
+      { title: 'Address', dataIndex: 'schoolName', key: 'schooName' },
       { title: 'Bus Option', dataIndex: 'isBusService', key: 'isBusService', render: (value) => { return value ? <span>Yes</span> : <span>No</span> } },
-      {
-        title: 'Document', dataIndex: 'documentId', key: 'documentId', render: (value) => {
-          const documentName = documentList.find((document) => document.id === Number(value))?.docName
-          return documentName ? <Tag color='green'>{documentName}</Tag> : <Tag color='red'>No document</Tag>
-        }
-      },
+      // {
+      //   title: 'Document', dataIndex: 'documentId', key: 'documentId', render: (value) => {
+      //     const documentName = documentList.find((document) => document.id === Number(value))?.docName
+      //     return documentName ? <Tag color='green'>{documentName}</Tag> : <Tag color='red'>No document</Tag>
+      //   }
+      // },
       {
         title: 'Training certificate', dataIndex: 'trainingCertificateId', key: 'trainingCertificateId', render: (value) => {
           const certificateName = certificateList.find((certificate) => certificate.id === Number(value))?.certificateName
@@ -349,6 +365,7 @@ function useViewPostList() {
       {
         title: 'Action',
         key: 'action',
+        fixed: 'right',
         render: (value) => <Button icon={<DeleteOutlined rev={undefined} />} onClick={() => {
           confirm({
             title: 'Do you want to delete this position?',
@@ -551,7 +568,8 @@ function useViewPostList() {
     onChangePageSize,
     handleAddPost,
     handleActionChange,
-    handleSearch
+    handleSearch,
+    fetchPostList
   }
   const props = {
     total,

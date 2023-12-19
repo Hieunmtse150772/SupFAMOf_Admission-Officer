@@ -43,13 +43,11 @@ const BanCollaboratorModal: FC<BanCollaboratorModalProps> = ({ open, setOpenBanC
             icon: <ExclamationCircleFilled rev={undefined} />,
             onOk: async () => {
                 dispatch(banCollaboratorById(params)).then((response: any) => {
-                    if (response?.payload?.statusCode === 400) {
-                        message.error(response?.payload?.message);
-                    } else if (response?.payload?.data?.status?.success) {
+                    if (response?.payload?.data?.status?.success) {
                         message.success(`Successfully banned ${accountName} account`);
                         setOpenBanCollaborator(false);
                         fetchCollabList();
-                    } else message.error('Server internal error');
+                    } else message.error(response?.payload?.message);
                 })
             },
             onCancel() {
@@ -60,7 +58,7 @@ const BanCollaboratorModal: FC<BanCollaboratorModalProps> = ({ open, setOpenBanC
     return (
         <>
             <ModalForm
-                title="Ban account collaborator"
+                title={`Ban ${accountName} account`}
                 open={open}
                 loading={loading}
                 onOpenChange={setOpenBanCollaborator}

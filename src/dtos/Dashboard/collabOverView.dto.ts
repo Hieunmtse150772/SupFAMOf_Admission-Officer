@@ -5,7 +5,9 @@ export default interface CollabOverViewDto {
             {
                 imgUrl: string
             }
-        ]
+        ],
+        totalPost: number,
+
     };
     status?: {
         success: boolean,

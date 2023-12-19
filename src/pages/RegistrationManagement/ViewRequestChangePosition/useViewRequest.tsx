@@ -96,6 +96,7 @@ function useViewRequest(postId: number, fetchPost: () => void) {
             dataIndex: 'postCategoryName',
             key: 'postCategoryName',
             hideInSearch: true,
+            hideInTable: true,
             width: 5,
         },
         {
@@ -104,6 +105,7 @@ function useViewRequest(postId: number, fetchPost: () => void) {
             dataIndex: 'createAt',
             key: 'createAt',
             valueType: 'date',
+            hideInTable: true,
             width: 30,
             sorter: true,
         },

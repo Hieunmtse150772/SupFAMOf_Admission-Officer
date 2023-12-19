@@ -53,6 +53,7 @@ const SFAMOGrid = ({ title, isLoading, rows, columns, rowsExpanded, page, total,
                 actionRef={actionRef}
                 headerTitle={title ? title : ''}
                 request={handleTableChange}
+                scroll={{ x: 900 }}
                 expandable={{ expandedRowRender }}
                 toolBarRender={() => [toolbar]}
                 onSubmit={value => handleSearch(value)}

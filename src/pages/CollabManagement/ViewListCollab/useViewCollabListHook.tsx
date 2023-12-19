@@ -54,13 +54,17 @@ const useViewCollablistHook = () => {
             dataIndex: 'count',
             key: 'count',
             hideInSearch: true,
-            valueType: 'index'
+            fixed: 'left',
+            valueType: 'index',
+            width: 50
         },
         {
             title: 'Avatar',
             dataIndex: 'imgUrl',
             key: 'imgUrl',
             hideInSearch: true,
+            fixed: 'left',
+            width: 70,
             render: (dom, entity) => {
                 console.log('entity: ', entity)
                 return (
@@ -80,6 +84,8 @@ const useViewCollablistHook = () => {
             title: 'Full name',
             dataIndex: 'name',
             key: 'name',
+            fixed: 'left',
+            width: 220,
             render: (dom, entity) => {
                 return (
                     // eslint-disable-next-line jsx-a11y/anchor-is-valid
@@ -100,18 +106,14 @@ const useViewCollablistHook = () => {
             title: 'Email',
             dataIndex: 'email',
             key: 'email',
-        },
-        {
-            title: 'Phone',
-            dataIndex: 'phone',
-            key: 'phone',
-            hideInSearch: true,
+            width: 220,
         },
         {
             title: 'Premium',
             dataIndex: 'isPremium',
             key: 'isPremium',
             hideInSearch: true,
+            width: 100,
             render: (isPremium) => {
 
                 return <Space size={0}>
@@ -131,6 +133,7 @@ const useViewCollablistHook = () => {
             dataIndex: 'certificates',
             hideInSearch: true,
             key: 'certificates',
+            width: 300,
             render: (certificates) => {
                 if (Array.isArray(certificates)) {
                     const filtercertificate = certificates.filter((certificate) => certificate.status === 1)
@@ -157,6 +160,8 @@ const useViewCollablistHook = () => {
             title: 'Status',
             dataIndex: 'isActive',
             hideInSearch: true,
+            hideInTable: true,
+            width: 100,
             key: 'isActive',
             render: (value, valueEnum) => {
                 if (valueEnum.isActive === true) {
@@ -165,32 +170,25 @@ const useViewCollablistHook = () => {
             }
         },
         {
-            title: 'Ban',
+            title: 'Status',
             dataIndex: 'isBanned',
             hideInSearch: true,
+            width: 100,
             key: 'isBanned',
             render: (value, valueEnum) => {
                 if (valueEnum.isBanned === true) {
                     return <Tag color="red">Banned</Tag>
-                } else return <Tag color="blue">Unbanned</Tag>
+                } else return <Tag color="blue">Active</Tag>
             }
         },
         {
             title: 'Action',
-            width: 100,
+            width: 70,
+            fixed: 'right',
             align: 'center',
+            key: 'action',
             hideInSearch: true,
             dataIndex: ['isActive'],
-            valueEnum: {
-                1: {
-                    text: 'Is active',
-                    status: 'Pending',
-                },
-                2: {
-                    text: 'Banned',
-                    status: 'Banned',
-                },
-            },
             render: (value, valueEnum, record) => {
                 const totalUpdateRegisterAmount = valueEnum?.totalUpdateRegisterAmount; // Access totalUpdateRegisterAmount from record
                 console.log('valueEnum.isActive: ', valueEnum.isActive)

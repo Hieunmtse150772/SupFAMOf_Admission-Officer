@@ -52,7 +52,7 @@ const ViewCollabList = () => {
                 </Space>
             ) : (
                 <Space size={0}>
-                    <Tag color="blue">Public</Tag>
+                    <Tag color="blue">Normal</Tag>
                 </Space>
             ),
         },
@@ -129,8 +129,6 @@ const ViewCollabList = () => {
                     columns={props?.columns}
                     isLoading={props.loading} />
             )}
-            {props.excelFile && <button onClick={handler.downloadExcelFile}>Download Received Excel</button>}
-
             <Drawer
                 width={1000}
                 open={props.showDetail}

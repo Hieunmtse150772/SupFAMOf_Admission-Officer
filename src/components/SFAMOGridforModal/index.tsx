@@ -53,6 +53,7 @@ const SFAMOGridForModal = ({ isLoading, rows, columns, rowsExpanded, page, total
                 request={handleTableChange}
                 expandable={{ expandedRowRender }}
                 toolBarRender={() => [toolbar]}
+                scroll={{ x: 900 }}
                 onSubmit={value => handleSearch(value)}
                 dataSource={rows} columns={columns}
                 loading={isLoading}

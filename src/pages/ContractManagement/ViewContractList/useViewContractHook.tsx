@@ -2,7 +2,6 @@ import { CheckCircleOutlined, DeleteOutlined, DownOutlined, DownloadOutlined, Ed
 import { ProColumns, RequestData } from "@ant-design/pro-components";
 import { Box } from "@mui/material";
 import { green, grey, red, yellow } from "@mui/material/colors";
-import { unwrapResult } from "@reduxjs/toolkit";
 import { Avatar, Button, Dropdown, MenuProps, Modal, Space, Table, TableColumnsType, Tag, message } from "antd";
 import { SortOrder } from "antd/es/table/interface";
 import { useAppSelector } from "app/hooks";
@@ -77,7 +76,8 @@ const useViewContractHook = () => {
             title: 'Name',
             dataIndex: 'contractName',
             key: 'contractName',
-            width: 100,
+            fixed: 'left',
+            width: 150,
             render: (dom, entity) => {
                 return (
                     // eslint-disable-next-line jsx-a11y/anchor-is-valid
@@ -147,7 +147,6 @@ const useViewContractHook = () => {
             title: 'Sample file',
             dataIndex: 'sampleFile',
             key: 'sampleFile',
-            width: 30,
             render: (value) => {
                 return <a ref={downloadRef} href={String(value)} download='downloaded_file.doc'>Link</a>
             },
@@ -171,14 +170,14 @@ const useViewContractHook = () => {
                 }).format(valueEnum?.totalSalary)}</span>
 
             },
-            width: 30,
+            width: 100,
         },
         {
             title: 'Status',
             dataIndex: 'isActive',
             key: 'isActive',
             hideInSearch: true,
-            width: 20,
+            width: 100,
             render: (value) => {
                 console.log('value: ', value)
                 return (
@@ -191,7 +190,8 @@ const useViewContractHook = () => {
         {
             title: 'Action',
             align: 'center',
-            width: 10,
+            fixed: 'right',
+            width: 80,
             hideInSearch: true,
             render: (value, valueEnum) => {
                 const items: MenuProps['items'] = [
@@ -240,13 +240,12 @@ const useViewContractHook = () => {
     }));
 
     const expandedRowRender = (record: any) => {
-        console.log('rowsExpanded: ', rowsExpanded)
         const columnsExpanded: TableColumnsType<ExpandedDataType> = [
-            { title: 'Avatar', dataIndex: 'imgUrl', key: 'imgUrl', render: (value) => (<Avatar src={value}></Avatar>) },
-            { title: 'Name', dataIndex: 'name', key: 'name' },
-            { title: 'Email', dataIndex: 'email', key: 'email' },
-            { title: 'Phone', dataIndex: 'phone', key: 'phone' },
-            { title: 'Signing date', dataIndex: 'signingDate', key: 'signingDate', render: (value) => <span>{moment(value).format(Formatter)}</span> },
+            { title: 'Avatar', dataIndex: 'imgUrl', key: 'imgUrl', render: (value) => (<Avatar src={value}></Avatar>), width: 50 },
+            { title: 'Name', dataIndex: 'name', key: 'name', width: 150 },
+            { title: 'Email', dataIndex: 'email', key: 'email', width: 100 },
+            { title: 'Phone', dataIndex: 'phone', key: 'phone', width: 100 },
+            { title: 'Signing date', dataIndex: 'signingDate', key: 'signingDate', render: (value) => <span>{moment(value).format(Formatter)}</span>, width: 150 },
             {
                 title: 'Status', dataIndex: 'status', key: 'status', render: (rows) => {
                     let color = grey[400].toString();
@@ -282,12 +281,15 @@ const useViewContractHook = () => {
                             <Tag color={color}>{statusText}</Tag>
                         </Space>
                     </Box>
-                }
+                },
+                width: 80
             },
             {
                 title: 'Action',
                 align: 'center',
-                width: 10,
+                fixed: 'right',
+                key: 'action',
+                width: 80,
                 render: (value, valueEnum) => {
                     const items: MenuProps['items'] = [
                         {
@@ -343,8 +345,13 @@ const useViewContractHook = () => {
     const handleAddCollab = async (value: ContractInfoRows) => {
         console.log('value111: ', value)
         setContractId(Number(value?.id));
-        const result = await dispatch(getCollabByContractId({ search: '', contractId: Number(value?.id) }));
-        unwrapResult(result);
+        await dispatch(getCollabByContractId({ search: '', contractId: Number(value?.id) })).then((response: any) => {
+            console.log('response:', response)
+            if (response?.payload?.status === 200) {
+            } else {
+                message.error('Server internal error, try again!')
+            }
+        });
         setAddCollabModal(true);
         // if (getCollabList.fulfilled.match(result)) {
         //     const filteredCollabs = result.payload.data.data.filter(collab => {
