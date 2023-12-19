@@ -222,6 +222,7 @@ const ViewPostList = () => {
             </Drawer >
             {(props.openEditPostModal && props.postInfoAPI !== null && props.isLoading !== true) &&
                 <EditPostModal
+                    fetchPostList={handler.fetchPostList}
                     postInfo={props.postInfoAPI}
                     postId={props.editPostModalId}
                     open={props.openEditPostModal}

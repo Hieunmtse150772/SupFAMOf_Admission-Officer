@@ -18,19 +18,19 @@ const ViewWorkListModal: FC<ViewWorkListModalProps> = ({ open, setOpenViewWorkLi
             width={1190}
             open={open}
             onOpenChange={setOpenViewWorkListModal}
-            // onFinish={async (value) => {
-            //     handler.handleConfirmCheckAttendance(value)
-            // }}
-            title='Work list'
+            onFinish={async (value) => {
+                setOpenViewWorkListModal(false);
+            }}
+            title={`Work list of ${props.workLists?.data[0]?.position?.positionName}`}
             submitter={{
                 searchConfig: {
-                    submitText: 'Submit',
+                    submitText: 'Ok',
                     resetText: 'Cancel'
                 }
             }}
         >
             {
-                props?.requests && (
+                props?.workLists && (
                     <SFAMOGridForModal
                         handleSearch={handler.handleSearch}
                         handleTableChange={handler.handleActionChange}
@@ -42,7 +42,7 @@ const ViewWorkListModal: FC<ViewWorkListModalProps> = ({ open, setOpenViewWorkLi
                         pageSize={props.pageSize}
                         rows={props.rows}
                         columns={props?.columns}
-                        isLoading={props.isLoading}
+                        isLoading={props.loading}
                     />
                 )
             }

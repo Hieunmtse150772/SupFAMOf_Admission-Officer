@@ -12,9 +12,8 @@ import { TitleContext } from "contexts/TitleContext";
 import UserInfo from "models/userInfor.model";
 import { FC, useContext } from "react";
 import { useLocation } from "react-router";
-import NotificationsPopover from "./popovers/NotificationsPopover";
 import ProfilePopover from "./popovers/ProfilePopover";
-import ServicePopover from "./popovers/ServicePopover";
+import ProfilePopoverAdmin from "./popovers/ProfilePopoverAdmin";
 // root component interface
 interface DashboardNavBarProps {
   setShowMobileSideBar: () => void;
@@ -59,41 +58,13 @@ const DashboardNavbarAdmin: FC<DashboardNavBarProps> = ({
   const path = location.pathname
   const items = [
     {
-      path: '/dashboard',
+      path: '/administrator/dashboard',
       title: 'Dashboard',
     },
     {
-      path: '/dashboard/add-post',
-      title: 'Add Post',
+      path: '/administrator/dashboard/admission-list',
+      title: 'Management admission',
     },
-    {
-      path: '/dashboard/user-profile',
-      title: 'User Profile',
-    },
-    {
-      path: '/dashboard/user-list',
-      title: 'Collaborator Management',
-    },
-    {
-      path: '/dashboard/post-list',
-      title: 'Post Management',
-    },
-    {
-      path: '/dashboard/registration-list',
-      title: 'Registration Management',
-    },
-    {
-      path: '/dashboard/contract-list',
-      title: 'Contract Management',
-    },
-    {
-      path: '/dashboard/add-contract',
-      title: 'Add Contract',
-    },
-    {
-      path: '/dashboard/certificate-list',
-      title: 'Certificate Management',
-    }
   ];
   const last = items.find((item) => item.path === location.pathname)?.title
 
@@ -140,13 +111,7 @@ const DashboardNavbarAdmin: FC<DashboardNavBarProps> = ({
 
         <Box flexGrow={1} ml={1} />
 
-        {upSm && (
-          <>
-            <NotificationsPopover />
-            <ServicePopover />
-          </>
-        )}
-        <ProfilePopover userInfo={userInfo} />
+        <ProfilePopoverAdmin userInfo={userInfo} />
       </StyledToolBar>
     </DashboardNavbarRoot>
   );

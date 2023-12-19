@@ -10,6 +10,7 @@ import { CollabListDto } from 'dtos/collabList.dto';
 import { searchCollabListByEmail } from 'features/collabSlice';
 import { createContract, getCollabByContractId, sendContractEmail } from 'features/contractSlice';
 import ContractCreated from 'models/contractCreated.model';
+import moment from 'moment';
 import { Key, useEffect, useState } from "react";
 import { uploadDocs } from '../../../firebase';
 const useAddContractHook = () => {
@@ -138,8 +139,8 @@ const useAddContractHook = () => {
                         contractDescription: description,
                         sampleFile: photoUrl,
                         signingDate: form.getFieldValue('signingDate'),
-                        startDate: dateFrom,
-                        endDate: dateTo,
+                        startDate: moment(dateFrom).format('YYYY-MM-DDTHH:mm:ss'),
+                        endDate: moment(dateTo).format('YYYY-MM-DDTHH:mm:ss'),
                         totalSalary: Number(form.getFieldValue('salary'))
                     }
                     if (params) {

@@ -33,7 +33,11 @@ export const contractService = {
     },
     getCollabByContractId: (params: SearchCollabContractParamDto): Promise<AxiosResponse<CollabListDto>> => {
         const url = `/admission/admission-contract/getCollaboratorContract?contractId=${params.contractId}`;
-        return axiosClient.get(url, { params })
+        return axiosClient.get(url, {
+            params: {
+                search: params.search
+            }
+        })
     },
     sendContractEmail: (params: SendContractParams): Promise<AxiosResponse<ContractDto>> => {
         const url = `/admission/admission-contract/sendContractEmail?contractId=${params.contractId}`;

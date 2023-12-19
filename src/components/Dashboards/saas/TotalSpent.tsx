@@ -52,14 +52,13 @@ const TotalSpent: FC = () => {
   const chartOptions: ApexOptions = {
     chart: {
       background: "transparent",
-      toolbar: { show: false },
     },
     colors: [theme.palette.primary.main],
     dataLabels: { enabled: false },
-    // fill: { opacity: 1 },
-    grid: {
-      show: false,
-    },
+    fill: { opacity: 1 },
+    // grid: {
+    //   show: false,
+    // },
     states: {
       active: {
         filter: { type: "none" },
@@ -83,17 +82,18 @@ const TotalSpent: FC = () => {
         },
       },
     },
-    yaxis: { show: false },
-
+    // stroke: {
+    //   lineCap: "round",
+    //   curve: "smooth",
+    // },
     plotOptions: {
       bar: {
-        borderRadius: 0,
         columnWidth: "60%",
+        borderRadius: 5,
         rangeBarOverlap: false,
       },
     },
     tooltip: {
-
       x: { show: false },
       y: {
         formatter: (val: number) => {
@@ -104,8 +104,6 @@ const TotalSpent: FC = () => {
           }).format(val);
           return `${formattedAmount}`
         }
-
-
       },
     },
 
@@ -141,8 +139,6 @@ const TotalSpent: FC = () => {
 
   const chartSeries = data.series;
   const handleChangeYear = (value: string) => {
-    console.log('con các')
-    console.log('year: ', value);
     setYear(Number(value));
   }
   return (
@@ -156,7 +152,6 @@ const TotalSpent: FC = () => {
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-
         <div>
           <H5>Total Spent</H5>
           <H2 color="primary.main">{total}</H2>

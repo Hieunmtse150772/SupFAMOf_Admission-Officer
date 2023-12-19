@@ -6,7 +6,7 @@ import Analytics from "components/Dashboards/saas/Analytics";
 import SaaSCard, { StyledCard } from "components/Dashboards/saas/Card";
 import TotalSpent from "components/Dashboards/saas/TotalSpent";
 import { H5 } from "components/Typography";
-import { getCollabOverview } from "features/manageDashboardSlice";
+import { getCollabOverview, getRegistrationComplete } from "features/manageDashboardSlice";
 import useTitle from "hooks/useTitle";
 import ProfileIcon from "icons/ProfileIcon";
 import UploadIcon from "icons/UploadIcon";
@@ -17,12 +17,16 @@ const SaaS: FC = () => {
   // change navbar title
   useTitle("Saas");
   const dispatch = useAppDispatch();
-  const { collabOverview } = useAppSelector(state => state.dashboard)
+  const { collabOverview, totalRegistration } = useAppSelector(state => state.dashboard)
   const fetchDashboard = async () => {
     await dispatch(getCollabOverview()).catch((error) => {
       message.error('Server internal error!');
     });
+    await dispatch(getRegistrationComplete()).catch((error) => {
+      message.error('Server internal error!');
+    });
   }
+
   useEffect(() => {
     fetchDashboard()
   }, [])
@@ -36,13 +40,13 @@ const SaaS: FC = () => {
       color: theme.palette.primary.main,
     },
     {
-      number: 0,
+      number: collabOverview?.data?.totalPost,
       title: "Total post",
       Icon: UploadIcon,
       color: theme.palette.primary.purple,
     },
     {
-      number: 0,
+      number: totalRegistration?.data?.totalRegistration,
       Icon: UserPlusIcon,
       title: "Registrations monthly",
       color: theme.palette.primary.red,

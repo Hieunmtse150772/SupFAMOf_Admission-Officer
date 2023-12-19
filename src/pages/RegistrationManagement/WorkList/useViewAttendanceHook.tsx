@@ -1,8 +1,12 @@
 import { ProColumns, RequestData } from "@ant-design/pro-components";
+import { FiberManualRecord } from "@mui/icons-material";
+import { Box, Typography } from "@mui/material";
+import { green, grey, red } from "@mui/material/colors";
 import { Avatar, Modal, message } from 'antd';
 import { SortOrder } from 'antd/es/table/interface';
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
+import StatusPostRegistration from "enums/statusPostRegistration.enum";
 import { confirmAttendanceByPositionId, getWorkListsByPositionId, paramsConfirmAttendance } from 'features/attendenceSlice';
 import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router';
@@ -50,9 +54,6 @@ function useViewAttendanceHook(positionId: string, fetchPost: () => void) {
     const [showDetail, setShowDetail] = useState<boolean>(false);
     const [openEditPostModal, setOpenEditPostModal] = useState<boolean>(false);
     const [editPostModalId, setEditPostModalId] = useState<string>('');
-    const requests = useAppSelector(state => state.request.requests)
-    const postInfoAPI = useAppSelector(state => state.post.postInfo);
-    const isLoading = useAppSelector(state => state.post.loading);
     const [postInfo, setPostInfo] = useState<any>();
     const [page, setPage] = useState<number>(1);
     const [sortModel, setSortModel] = useState<SortModalI>({
@@ -62,7 +63,7 @@ function useViewAttendanceHook(positionId: string, fetchPost: () => void) {
     const [searchParams, setSearchParams] = useState<SearchParamsI>()
 
     const pageSizeOptions = [10, 20, 30]; // Các tùy chọn cho pageSize
-    const total = requests?.metadata?.total
+    const total = workLists?.metadata?.total
     const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
     let navigate = useNavigate();
 
@@ -72,12 +73,14 @@ function useViewAttendanceHook(positionId: string, fetchPost: () => void) {
             dataIndex: 'count',
             key: 'count',
             hideInSearch: true,
+            width: 50,
             valueType: 'index'
         },
         {
             title: 'Avatar',
             dataIndex: 'imgUrl',
             key: 'imgUrl',
+            width: 50,
             hideInSearch: true,
             render: (dom, entity) => {
                 return (
@@ -93,10 +96,12 @@ function useViewAttendanceHook(positionId: string, fetchPost: () => void) {
                 );
             },
         },
+
         {
             title: 'Full name',
             dataIndex: 'name',
             key: 'name',
+            width: 150,
             render: (dom, entity) => {
                 return (
                     // eslint-disable-next-line jsx-a11y/anchor-is-valid
@@ -118,6 +123,66 @@ function useViewAttendanceHook(positionId: string, fetchPost: () => void) {
             dataIndex: 'phone',
             key: 'phone',
             hideInSearch: true,
+            width: 100
+        },
+        {
+            title: 'Bus Option',
+            dataIndex: 'isBusService',
+            key: 'isBusService', render: (value) => {
+                return value ? <span>Yes</span> : <span>No</span>
+            },
+            width: 100
+        },
+        {
+            title: 'Status',
+            dataIndex: 'status',
+            key: 'status',
+            hideInSearch: true,
+            width: 100,
+            render: (value, valueEnum) => {
+                let color = grey[400].toString();
+                let statusText = 'Unknown';
+                switch (valueEnum?.status) {
+                    case StatusPostRegistration.Pending:
+                        color = '#1890ff';
+                        statusText = 'Pending';
+                        break;
+
+                    case StatusPostRegistration.Confirmed:
+                        color = green[500];
+                        statusText = 'Confirmed';
+                        break;
+                    case StatusPostRegistration.Cancel:
+                        color = red[500];
+                        statusText = 'Cancel';
+                        break;
+                    case StatusPostRegistration.CheckIn:
+                        color = green[500];
+                        statusText = 'CheckIn';
+                        break;
+                    case StatusPostRegistration.Checkout:
+                        color = green[500];
+                        statusText = 'Checkout';
+                        break;
+
+                    case StatusPostRegistration.Rejected:
+                        color = red[500];
+                        statusText = 'Rejected';
+                        break;
+                    case StatusPostRegistration.Quit:
+                        color = red[500];
+                        statusText = 'Quit';
+                        break;
+                    default:
+                        break;
+                }
+                return <Box display="flex" alignItems="center">
+                    <FiberManualRecord sx={{ fontSize: 14, marginRight: 1, color }} />
+                    <Typography variant="subtitle1" color={color}>
+                        {statusText}
+                    </Typography>
+                </Box>
+            },
         },
         // {
         //     title: 'Status',
@@ -225,6 +290,7 @@ function useViewAttendanceHook(positionId: string, fetchPost: () => void) {
         imgUrl: collab?.account?.imgUrl,
         status: collab?.status,
         confirmTime: collab?.confirmTime,
+        isBusService: collab?.schoolBusOption
     }));
 
     const fetchAttendence = async () => {
@@ -250,7 +316,6 @@ function useViewAttendanceHook(positionId: string, fetchPost: () => void) {
     const props = {
         total,
         columns,
-        requests,
         loading,
         rows,
         showDetail,
@@ -258,11 +323,10 @@ function useViewAttendanceHook(positionId: string, fetchPost: () => void) {
         openEditPostModal,
         editPostModalId,
         postInfo,
-        postInfoAPI,
-        isLoading,
         page,
         pageSize,
-        pageSizeOptions
+        pageSizeOptions,
+        workLists
     }
     return {
         handler,

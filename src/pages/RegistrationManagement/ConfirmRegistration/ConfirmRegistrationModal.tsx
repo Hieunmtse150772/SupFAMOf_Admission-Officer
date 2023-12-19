@@ -104,18 +104,14 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
                     }
                     try {
                         await dispatch(confirmPositionByCollabList(params))
-                            .then((result) => {
-                                unwrapResult(result)
-                                console.log('result: ', result)
-                                if (result.meta.requestStatus === "rejected") {
-                                    message.warning('Slot already full!');
-                                    setLoading(false)
-                                } else if (result.meta.requestStatus === "fulfilled") {
+                            .then((response: any) => {
+                                console.log('response: ', response)
+                                if (response.meta.requestStatus === "fulfilled") {
                                     message.success('Confirm collab successfull');
                                     setLoading(false)
                                     fetchPostList();
                                     setOpenConfirmModal(false);
-                                }
+                                } else message.error(response?.payload?.message)
                             }
                             )
                             .catch((error) => {

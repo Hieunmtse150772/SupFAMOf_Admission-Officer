@@ -5,8 +5,8 @@ type ContractUpdated = {
     contractDescription: string,
     sampleFile: string,
     signingDate: Date,
-    startDate: Date,
-    endDate: Date,
+    startDate: string,
+    endDate: string,
     totalSalary: number
 }
 export default ContractUpdated;

@@ -28,6 +28,7 @@ const ForgetPassword = Loadable(
 const DashboardSaaS = Loadable(lazy(() => import("./pages/DashboardsAdmission/SaaS")));
 // user profile
 const UserProfile = Loadable(lazy(() => import("./pages/UserProfile")));
+const AdmissionList = Loadable(lazy(() => import("./pages/AdmissionManagement")));
 
 // user management
 const UserList = Loadable(
@@ -205,33 +206,9 @@ const routes = [
         element: <DashboardSaaS />,
       },
       {
-        path: "user-profile",
-        element: <UserProfile />,
+        path: "admission-list",
+        element: <AdmissionList />,
       },
-      {
-        path: "user-list",
-        element: <UserList />,
-      },
-      {
-        path: "user-grid",
-        element: <UserGrid />,
-      },
-      {
-        path: "add-user",
-        element: <AddNewUser />,
-      },
-      {
-        path: "post-list",
-        element: <ViewPostList />,
-      },
-      {
-        path: "add-post",
-        element: <AddNewPost />,
-      },
-      {
-        path: "registration-list",
-        element: <ViewRegistration />
-      }
     ],
   },
   {

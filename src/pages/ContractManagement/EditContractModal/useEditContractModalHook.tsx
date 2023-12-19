@@ -9,8 +9,9 @@ import dayjs from "dayjs";
 import { updateContract } from "features/contractSlice";
 import ContractInfo from "models/contract.model";
 import ContractUpdated from "models/contractUpdated.model";
-import { useState } from "react";
-import { uploadDocs } from "../../../firebase";
+import moment from "moment";
+import { useEffect, useState } from "react";
+import { uploadContracts } from "../../../firebase";
 
 export type ContractFormValue = {
     dateFrom_dateTo: Date[],
@@ -38,11 +39,9 @@ function useEditContractModalHook(fetchContractList: () => void, setOpenEditCont
     const [disableDate, setDisableDate] = useState<boolean>(true)
     const [error, setError] = useState<string>('');
     const [description, setDescription] = useState<string>(contractInfo?.contractDescription ? contractInfo?.contractDescription : '');
-
+    const [paramsUpdateContract, setParamsUpdateContract] = useState<ContractUpdated>()
 
     const handleSubmitEditContract = async (value: ContractFormValue) => {
-        console.log('description: ', description)
-        console.log('value: ', value)
         let result = false;
         if (description !== '') {
             setError('');
@@ -56,9 +55,9 @@ function useEditContractModalHook(fetchContractList: () => void, setOpenEditCont
                     setLoading(true)
                     const dateFrom_dateTo = value?.dateFrom_dateTo;
                     console.log("dateFrom_dateTo: ", dateFrom_dateTo);
-                    const dateFrom = new Date(dateFrom_dateTo[0]);
-                    const dateTo = new Date(dateFrom_dateTo[1]);
-                    const contractUrl = FileContract ? await uploadDocs(FileContract, setLoading) : contractInfo?.sampleFile; // Gọi hàm upload của bạn
+                    const dateFrom = moment(dateFrom_dateTo[0]).format('YYYY-MM-DDTHH:mm:ss');
+                    const dateTo = moment(dateFrom_dateTo[1]).format('YYYY-MM-DDTHH:mm:ss');
+                    const contractUrl = FileContract !== '' ? await uploadContracts(FileContract, setLoading) : contractInfo?.sampleFile; // Gọi hàm upload của bạn
                     const params: ContractUpdated = {
                         contractId: contractInfo?.id,
                         contractName: value?.contractName,
@@ -69,34 +68,7 @@ function useEditContractModalHook(fetchContractList: () => void, setOpenEditCont
                         endDate: dateTo,
                         totalSalary: Number(value?.salary)
                     }
-                    console.log('params: ', params);
-                    if (params) {
-                        await dispatch(updateContract(params)).then((response: any) => {
-                            console.log('repsonse: ', response)
-                            if (response?.payload?.status === 200) {
-                                setLoading(false)
-                                message.success('Create contract success!')
-                                fetchContractList()
-                                form.submit();
-                                result = true;
-                                setOpenEditContractModal(false);
-                            } else if (response?.payload?.status === 400) {
-                                message.error('Description too long')
-                                setLoading(false);
-                                result = false;
-                            } else {
-                                message.error(response?.payload?.message)
-                                setLoading(false);
-                                result = false;
-                            }
-
-                        }).catch((error) => {
-                            message.error('Intenal server error!')
-                            setLoading(false)
-                            console.error(error)
-                            result = false;
-                        })
-                    }
+                    setParamsUpdateContract(params);
                 },
                 onCancel() {
                     result = false;
@@ -109,15 +81,45 @@ function useEditContractModalHook(fetchContractList: () => void, setOpenEditCont
             }
         }
         return result;
-
     }
-
+    const handleUpdateContractApi = async (params: ContractUpdated): Promise<boolean> => {
+        let result = false;
+        await dispatch(updateContract(params)).then((response: any) => {
+            if (response?.payload?.status === 200) {
+                setLoading(false);
+                message.success('Update contract success!');
+                fetchContractList();
+                result = true;
+            } else if (response?.payload?.status === 400) {
+                message.error('Description too long');
+                result = false;
+                setLoading(false);
+            } else {
+                message.error(response?.payload?.message);
+                result = false;
+                setLoading(false);
+            }
+        }).catch((error) => {
+            message.error('Intenal server error!');
+            setLoading(false);
+            result = false;
+            console.error(error);
+        })
+        return result;
+    }
+    useEffect(() => {
+        if (paramsUpdateContract) {
+            handleUpdateContractApi(paramsUpdateContract).then((repsonse: boolean) => {
+                if (repsonse) {
+                    setOpenEditContractModal(false);
+                }
+            })
+        }
+    }, [paramsUpdateContract])
     const customRequest = async ({ file, onSuccess, onError }: any) => {
         try {
-            setTimeout(() => {
-                setFileContract(file);
-                onSuccess();
-            }, 2000);
+            setFileContract(file);
+            onSuccess();
             onSuccess();
         } catch (error) {
             console.error('Lỗi khi tải lên tệp:', error);
