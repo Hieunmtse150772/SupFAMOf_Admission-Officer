@@ -14,11 +14,12 @@ interface EditPostModalProps {
     setOpenEditPostModal: React.Dispatch<React.SetStateAction<boolean>>,
     postId: string,
     postInfo: PostInfoDto | null,
+    fetchPostList: () => void
 }
-const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, postId, postInfo }) => {
+const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, postId, postInfo, fetchPostList }) => {
     const [position, setPosition] = useState<'bottom' | 'top'>('bottom');
 
-    const { handler, props } = useEditPostModalHook();
+    const { handler, props } = useEditPostModalHook(setOpenEditPostModal, fetchPostList);
     props.form.setFieldValue('description', postInfo?.data.postDescription)
     // const { postInfo } = props;
 
@@ -47,7 +48,7 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
             form={props.form}
             title={`Edit post information`}
             open={open}
-            onFinish={(value) => handler.handleUpdatePost(value, setOpenEditPostModal)}
+            onFinish={(value) => handler.handleUpdatePost(value)}
             onOpenChange={setOpenEditPostModal}
             // submitter={{
             //     searchConfig: {

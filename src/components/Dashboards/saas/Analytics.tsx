@@ -1,34 +1,53 @@
 import { Box, Card, useTheme } from "@mui/material";
+import { DatePicker } from "antd";
 import { ApexOptions } from "apexcharts";
+import { useAppSelector } from "app/hooks";
+import { useAppDispatch } from "app/store";
 import FlexBox from "components/FlexBox";
 import { H5 } from "components/Typography";
-import { FC } from "react";
+import { getAnalytics } from "features/manageDashboardSlice";
+import { FC, useEffect, useState } from "react";
 import Chart from "react-apexcharts";
-import AnalyticsPopover from "./AnalyticsPopover";
 
-const data = {
-  series: [75, 50],
-  categories: ["Personnel needed", "Done"],
-};
 
+type AnalyticsParams = {
+  month: number,
+  year: number
+}
 const Analytics: FC = () => {
   const theme = useTheme();
-
+  const dispatch = useAppDispatch();
+  const [monthYear, setMonthYear] = useState<AnalyticsParams>({
+    month: 12,
+    year: 2023
+  })
+  const analytics = useAppSelector(state => state.dashboard.analytics);
+  useEffect(() => {
+    const fetch = async () => {
+      await dispatch(getAnalytics(monthYear))
+    }
+    fetch();
+  }, [monthYear])
+  const data = {
+    series: [
+      {
+        name: "Personel",
+        data: [analytics.data?.collaboratorNeeded, analytics.data?.collaboratorCompleteJob],
+      },
+    ],
+    categories: [
+      ["Personnel needed", "Done"]
+    ],
+  };
   const chartOptions: ApexOptions = {
     chart: { background: "transparent" },
-    colors: [theme.palette.primary.main, "#FF9777", "#FF6B93"],
-    labels: ["Personnel needed ", "Done"],
+    colors: [theme.palette.primary.main, "#FF9777"],
+    labels: ["Personnel needed", "Done"],
     plotOptions: {
-      radialBar: {
-        dataLabels: {
-          name: { show: false },
-          value: { show: false },
-        },
-        hollow: { size: "28%" },
-        track: {
-          background: theme.palette.divider,
-          margin: 12,
-        },
+      bar: {
+        columnWidth: "60%",
+        borderRadius: 5,
+        rangeBarOverlap: false,
       },
     },
     theme: {
@@ -44,12 +63,11 @@ const Analytics: FC = () => {
       fontFamily: "inherit",
       fontSize: "13px",
       fontWeight: 500,
-      onItemClick: { toggleDataSeries: false },
+      onItemClick: { toggleDataSeries: true },
       onItemHover: { highlightDataSeries: true },
     },
     tooltip: {
-      enabled: true,
-      style: { fontFamily: "inherit" },
+      x: { show: false },
       y: {
         formatter: (value) => `${value} collaborator`,
       },
@@ -63,7 +81,10 @@ const Analytics: FC = () => {
       },
     },
   };
-
+  const handleChangeMonth = (value: string) => {
+    console.log('value: ', value)
+    setMonthYear({ month: Number(value?.split('-')[1]), year: Number(value?.split('-')[0]) });
+  }
   const chartSeries = data.series;
   return (
     <Card
@@ -75,30 +96,33 @@ const Analytics: FC = () => {
     >
       <FlexBox alignItems="center" justifyContent="space-between">
         <H5>Analytics</H5>
-        <AnalyticsPopover />
+        <DatePicker onChange={(value, dateString) => handleChangeMonth(dateString)} picker="month" size="large" style={{ marginBottom: 10 }} />
       </FlexBox>
 
       <Box
         sx={{
-          paddingTop: 2,
+          "& .apexcharts-tooltip *": {
+            fontFamily: theme.typography.fontFamily,
+            fontWeight: 500,
+          },
           "& .apexcharts-tooltip": {
-            boxShadow: "none",
-            "& .apexcharts-active": { paddingBottom: 0 },
-            "&.apexcharts-theme-light": {
-              border: "none",
-              color: "white",
-              borderRadius: "8px",
+            boxShadow: 0,
+            borderRadius: 4,
+            alignItems: "center",
+            "& .apexcharts-tooltip-text-y-value": { color: "primary.main" },
+            "& .apexcharts-tooltip.apexcharts-theme-light": {
+              border: `1px solid ${theme.palette.divider}`,
+            },
+            "& .apexcharts-tooltip-series-group:last-child": {
+              paddingBottom: 0,
             },
           },
-          "& .apexcharts-legend.position-bottom.apexcharts-align-center, .apexcharts-legend.position-top.apexcharts-align-center":
-            { justifyContent: "space-evenly" },
-          [theme.breakpoints.down(425)]: { padding: 0 },
         }}
       >
         <Chart
           options={chartOptions}
           series={chartSeries}
-          type="radialBar"
+          type="bar"
           height={300}
         />
       </Box>

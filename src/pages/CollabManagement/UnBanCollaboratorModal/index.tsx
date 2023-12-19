@@ -44,13 +44,11 @@ const UnBanCollaboratorModal: FC<UnBanCollaboratorModalProps> = ({ open, setOpen
                 try {
                     dispatch(updateBanCollaboratorById(params)).then((response: any) => {
                         console.log('response: ', response)
-                        if (response?.payload?.errorCode === 4002) {
-                            message.error(response?.payload?.message)
-                        } else if (response?.payload?.data?.status?.success) {
+                        if (response?.payload?.data?.status?.success) {
                             message.success(`Successfully un banned ${accountName} account`);
                             setOpenUnBanCollaborator(false);
                             fetchCollabList();
-                        } else message.error('Server internal error');
+                        } else message.error(response?.payload?.message);
                     })
                 } catch (error) {
                     message.error('Server internal error');
@@ -64,7 +62,7 @@ const UnBanCollaboratorModal: FC<UnBanCollaboratorModalProps> = ({ open, setOpen
     return (
         <>
             <ModalForm
-                title="Ban account collaborator"
+                title={`Unban ${accountName} account`}
                 open={open}
                 loading={loading}
                 onOpenChange={setOpenUnBanCollaborator}
@@ -82,7 +80,7 @@ const UnBanCollaboratorModal: FC<UnBanCollaboratorModalProps> = ({ open, setOpen
                         width='lg'
                         name="note"
                         label="Note"
-                        placeholder="Reason for account ban"
+                        placeholder="Reason for account unban"
                         rules={[{ required: true, message: 'The note is required!' }]}
                     />
                 </ProForm.Group>

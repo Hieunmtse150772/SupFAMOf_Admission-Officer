@@ -3,6 +3,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
 import addressReducer from '../features/addressSlice';
+import admissionReducer from '../features/admissionSlice';
 import applicationReducer from '../features/applicationSlice';
 import attendenceReducer from '../features/attendenceSlice';
 import authReducer from '../features/authSlice';
@@ -19,6 +20,7 @@ import postTitleReducer from '../features/postTitleSlice';
 import registrationReducer from '../features/registrationSlice';
 import reportReducer from '../features/reportSlice';
 import requestReducer from '../features/requestSlice';
+
 
 export const store = configureStore({
   reducer: {
@@ -38,7 +40,8 @@ export const store = configureStore({
     report: reportReducer,
     class: classReducer,
     attendence: attendenceReducer,
-    application: applicationReducer
+    application: applicationReducer,
+    admission: admissionReducer
   },
 });
 

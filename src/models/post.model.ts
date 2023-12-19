@@ -74,8 +74,10 @@ export type PositionI = {
     timeFrom: Date;
     timeTo: Date;
     positionRegisterAmount: number;
+    totalPositionRegisterAmount: number,
     amount: number,
     salary: number,
+    schoolName: string,
 }
 export type ListPositionI = {
     key: string,

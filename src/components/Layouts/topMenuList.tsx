@@ -64,14 +64,9 @@ const administratorMenu = [
     path: "/administrator/dashboard",
   },
   {
-    title: "Collaborator Management",
+    title: "Admisstion Management",
     Icon: Icons.UserManagementIcon,
-    path: "/administrator/dashboard/user-list",
-  },
-  {
-    title: "Class Management",
-    Icon: Icons.SchoolIcon,
-    path: "/administrator/dashboard/class-list",
+    path: "/administrator/dashboard/admission-list",
   },
 ];
 

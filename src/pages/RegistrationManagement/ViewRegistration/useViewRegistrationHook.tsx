@@ -31,6 +31,7 @@ interface ExpandedDataType {
     timeFrom: Date,
     timeTo: Date,
     percent: number,
+    totalPositionRegisterAmount: number
 }
 type SortModalI = {
     Sort: string,
@@ -105,6 +106,7 @@ function useViewRegistrationHook() {
             title: 'Post Code',
             dataIndex: 'postCode',
             key: 'postCode',
+            fixed: 'left',
             render: (dom, entity) => {
                 return (
                     // eslint-disable-next-line jsx-a11y/anchor-is-valid
@@ -118,19 +120,23 @@ function useViewRegistrationHook() {
                     </a>
                 );
             },
+            width: 100,
         },
         {
             title: 'Category',
             dataIndex: 'postCategoryId',
             valueType: 'select',
             key: 'postCategoryId',
-            valueEnum: valueEnum
+            valueEnum: valueEnum,
+            width: 125,
         },
         {
-            title: 'Positions count',
+            title: 'Number of positions',
             dataIndex: 'numberOfPosition',
             key: 'numberOfPosition',
             hideInSearch: true,
+            width: 120,
+            align: 'center'
         },
         {
             title: 'Create at',
@@ -138,6 +144,7 @@ function useViewRegistrationHook() {
             key: 'createAt',
             valueType: 'date',
             sorter: true,
+            width: 100,
         },
         {
             title: 'Date From',
@@ -145,6 +152,7 @@ function useViewRegistrationHook() {
             key: 'dateFrom',
             valueType: 'date',
             sorter: true,
+            width: 100,
         },
         {
             title: 'Date To',
@@ -152,11 +160,14 @@ function useViewRegistrationHook() {
             key: 'dateTo',
             sorter: true,
             valueType: 'date',
+            width: 100,
+
         },
         {
             title: 'Description',
             dataIndex: 'description',
             key: 'Description',
+            width: 100,
             hideInSearch: true,
             render: (value) => {
 
@@ -172,6 +183,7 @@ function useViewRegistrationHook() {
             title: 'Post Image',
             dataIndex: 'postImg',
             key: 'postImg',
+            width: 100,
             render: (value) => {
                 return (<Image src={String(value)}></Image>);
             },
@@ -182,6 +194,7 @@ function useViewRegistrationHook() {
             title: 'Status',
             dataIndex: 'status',
             key: 'status',
+            width: 120,
             valueEnum: {
                 1: {
                     text: 'Pending',
@@ -251,7 +264,7 @@ function useViewRegistrationHook() {
         },
         {
             title: 'Action',
-            width: 100,
+            width: 80,
             align: 'center',
             hideInSearch: true,
             dataIndex: ['status', 'totalUpdateRegisterAmount'],
@@ -281,6 +294,7 @@ function useViewRegistrationHook() {
                     status: 'Re-open',
                 },
             },
+            fixed: 'right',
             render: (value, valueEnum, record) => {
                 const totalUpdateRegisterAmount = valueEnum?.totalUpdateRegisterAmount; // Access totalUpdateRegisterAmount from record
                 const items: MenuProps['items'] = [
@@ -361,26 +375,30 @@ function useViewRegistrationHook() {
 
     const expandedRowRender = (record: any) => {
         const columnsExpanded: TableColumnsType<ExpandedDataType> = [
-            { title: 'Position name', dataIndex: 'positionName', key: 'positionName' },
-            { title: 'Amount', dataIndex: 'amount', key: 'amount' },
-            { title: 'Confirmed', dataIndex: 'positionRegisterAmount', key: 'positionRegisterAmount' },
+            { title: 'Position name', dataIndex: 'positionName', key: 'positionName', width: 200 },
+            { title: 'Amount', dataIndex: 'amount', key: 'amount', align: 'center', width: 50 },
+            { title: 'Confirmed', dataIndex: 'positionRegisterAmount', key: 'positionRegisterAmount', align: 'center', width: 100 },
             {
-                title: 'Progress', dataIndex: 'percent', render: (value) => <Progress style={{ maxWidth: '90%' }} percent={Number(value)} size="small" />
+                title: 'Progress', dataIndex: 'percent', render: (value) => <Progress style={{ maxWidth: '90%' }} percent={Number(value)} size="small" />, width: 100
             },
-            { title: 'Date', dataIndex: 'date', key: 'date', render: (value) => <span>{moment(value).format(Formatter)}</span> },
-            { title: 'Time From', dataIndex: 'timeFrom', key: 'timeFrom' },
-            { title: 'Time To', dataIndex: 'timeTo', key: 'timeTo' },
+            { title: 'Date', dataIndex: 'date', key: 'date', render: (value) => <span>{moment(value).format(Formatter)}</span>, width: 100 },
+            { title: 'Time From', dataIndex: 'timeFrom', key: 'timeFrom', width: 120 },
+            { title: 'Time To', dataIndex: 'timeTo', key: 'timeTo', width: 120 },
             {
                 title: 'Salary', dataIndex: 'salary', key: 'salary', render: (value, valueEnum) => <span>{Intl.NumberFormat('vi-VN', {
                     style: 'currency',
                     currency: 'VND',
                     minimumFractionDigits: 0, // Số lẻ tối thiểu (0 để làm tròn)
                 }).format(valueEnum.salary)}</span>
+                , width: 100
             },
             {
                 title: 'Action',
                 align: 'center',
+                fixed: 'right',
                 render: (value, valueEnum) => {
+                    const totalRegistration = valueEnum.totalPositionRegisterAmount
+                    console.log('totalRegistration: ', totalRegistration)
                     const items: MenuProps['items'] = [
                         {
                             label: 'Registration',
@@ -404,12 +422,15 @@ function useViewRegistrationHook() {
                     const menuProps = {
                         items,
                     };
-                    return <Box>
-                        <Dropdown menu={menuProps} trigger={['click']} placement='bottomLeft'>
-                            <Button icon={<DownOutlined rev={undefined} />}></Button>
-                        </Dropdown>
-                    </Box>
+                    return <Badge count={totalRegistration}>
+                        <Box>
+                            <Dropdown menu={menuProps} trigger={['click']} placement='bottomLeft'>
+                                <Button icon={<DownOutlined rev={undefined} />}></Button>
+                            </Dropdown>
+                        </Box>
+                    </Badge>
                 },
+                width: 80
             },
             // {
             //     title: 'Action',
@@ -437,6 +458,7 @@ function useViewRegistrationHook() {
                 timeTo: value.timeTo,
                 salary: value.salary,
                 percent: Number((value.positionRegisterAmount * 100 / value.amount).toFixed(1)),
+                totalPositionRegisterAmount: value.totalPositionRegisterAmount
             }
         })
         return <Table
