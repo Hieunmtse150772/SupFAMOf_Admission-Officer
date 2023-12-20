@@ -4,7 +4,7 @@ import { FiberManualRecord } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import { green, grey, red, yellow } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { Badge, Button, Dropdown, Image, MenuProps, Modal, Popover, Progress, StepsProps, Table, TableColumnsType, message } from 'antd';
+import { Badge, Button, Dropdown, Image, MenuProps, Modal, Popover, StepsProps, Table, TableColumnsType, message } from 'antd';
 import { SortOrder } from 'antd/es/table/interface';
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
@@ -378,9 +378,9 @@ function useViewRegistrationHook() {
             { title: 'Position name', dataIndex: 'positionName', key: 'positionName', width: 200 },
             { title: 'Amount', dataIndex: 'amount', key: 'amount', align: 'center', width: 50 },
             { title: 'Confirmed', dataIndex: 'positionRegisterAmount', key: 'positionRegisterAmount', align: 'center', width: 100 },
-            {
-                title: 'Progress', dataIndex: 'percent', render: (value) => <Progress style={{ maxWidth: '90%' }} percent={Number(value)} size="small" />, width: 100
-            },
+            // {
+            //     title: 'Progress', dataIndex: 'percent', render: (value) => <Progress style={{ maxWidth: '90%' }} percent={Number(value)} size="small" />, width: 100
+            // },
             { title: 'Date', dataIndex: 'date', key: 'date', render: (value) => <span>{moment(value).format(Formatter)}</span>, width: 100 },
             { title: 'Time From', dataIndex: 'timeFrom', key: 'timeFrom', width: 120 },
             { title: 'Time To', dataIndex: 'timeTo', key: 'timeTo', width: 120 },
@@ -404,6 +404,7 @@ function useViewRegistrationHook() {
                             label: 'Registration',
                             key: '1',
                             icon: <FolderViewOutlined rev={undefined} />,
+                            itemIcon: <Badge count={totalRegistration} />,
                             onClick: () => handleOpenConfirmModal(valueEnum),
                         },
                         {

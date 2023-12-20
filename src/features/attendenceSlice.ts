@@ -3,6 +3,7 @@ import { AxiosError } from 'axios';
 import AttendenceDto from 'dtos/Attendence/attendence.dto';
 import WorkListDto from 'dtos/Registration/workLists.dto';
 import ErrorDto from 'dtos/error.dto';
+import SearchWorkListParamsDto from 'dtos/searchWorkList.dto';
 import AttendenceI from 'models/attendence.model';
 import WorkLists from 'models/worklist.model';
 import { attendenceService } from 'services/attendence.service';
@@ -52,7 +53,7 @@ export const getAttendenceByPositionId = createAsyncThunk(
 );
 export const getWorkListsByPositionId = createAsyncThunk(
     'registration/get-workLists',
-    async (params: paramI, { rejectWithValue }) => {
+    async (params: SearchWorkListParamsDto, { rejectWithValue }) => {
         try {
             const result = await attendenceService.getWorkListByPositionId(params)
             return result.data;
