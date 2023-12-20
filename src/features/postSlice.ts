@@ -77,7 +77,7 @@ export const deletePostById = createAsyncThunk('post/delete-post-by-PostId',
             return rejectWithValue(axiosError.response?.data)
         }
     })
-export const deletePositionById = createAsyncThunk('post/delete-post-by-PostId',
+export const deletePositionById = createAsyncThunk('post/delete-position-by-positionId',
     async (id: string, { rejectWithValue }) => {
         try {
             const result = await postService.deletePositionById(id);

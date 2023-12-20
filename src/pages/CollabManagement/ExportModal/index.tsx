@@ -35,6 +35,8 @@ const ExportModal: FC<ExportModalProps> = ({ open, setOpenExportModal, nameFile 
             } else {
                 message.error('Does not have post or account to generate in that month of the year');
             }
+        }).catch((error) => {
+            console.log("Error in getting the data", error)
         })
     }
     const handleExportMonthlyReportExcelTuyenSinh = async (params: ParamsExportI) => {
@@ -45,6 +47,8 @@ const ExportModal: FC<ExportModalProps> = ({ open, setOpenExportModal, nameFile 
             } else {
                 message.error('Does not have post or account to generate in that month of the year');
             }
+        }).catch((error) => {
+            console.log("Error in getting the data", error)
         })
     }
     const handleExport = async (value: any) => {

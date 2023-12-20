@@ -24,7 +24,9 @@ const Analytics: FC = () => {
   const analytics = useAppSelector(state => state.dashboard.analytics);
   useEffect(() => {
     const fetch = async () => {
-      await dispatch(getAnalytics(monthYear))
+      await dispatch(getAnalytics(monthYear)).catch((error) => {
+        console.log("Error in getting the data", error)
+      })
     }
     fetch();
   }, [monthYear])

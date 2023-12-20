@@ -166,6 +166,8 @@ function useViewAdmissionListHook() {
                         } else {
                             message.error(response?.payload?.message);
                         }
+                    }).catch((error) => {
+                        console.log("Error in getting the data", error)
                     })
                 } else {
                     dispatch(updatePermission(value?.key)).then((response: any) => {
@@ -175,6 +177,8 @@ function useViewAdmissionListHook() {
                         } else {
                             message.error(response?.payload?.message);
                         }
+                    }).catch((error) => {
+                        console.log("Error in getting the data", error)
                     })
                 }
 
@@ -213,6 +217,8 @@ function useViewAdmissionListHook() {
             } else {
                 message.error('Server internal error, please try again!');
             }
+        }).catch((error) => {
+            console.log("Error in getting the data", error)
         })
     }
     useEffect(() => {

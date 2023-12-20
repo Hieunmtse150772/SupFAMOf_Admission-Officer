@@ -85,8 +85,12 @@ const useAddContractHook = () => {
     };
     const handleSearchCollabByEmail = async (email: string) => {
         if (email !== '') {
-            await dispatch(searchCollabListByEmail({ email: email }));
-        } else await dispatch(getCollabByContractId({ search: email, contractId: contractId }));
+            await dispatch(searchCollabListByEmail({ email: email })).catch((error) => {
+                console.log("Error in getting the data", error)
+            });
+        } else await dispatch(getCollabByContractId({ search: email, contractId: contractId })).catch((error) => {
+            console.log("Error in getting the data", error)
+        });
     }
     const handleChangeContractName = (value: any) => {
         if (value) {
@@ -196,6 +200,8 @@ const useAddContractHook = () => {
                 } else {
                     message.error(response?.payload?.message);
                 }
+            }).catch((error) => {
+                console.log("Error in getting the data", error)
             })
         } catch (error) {
         } finally {
@@ -217,7 +223,9 @@ const useAddContractHook = () => {
                 contractId: contractId,
                 page: page,
                 PageSize: pageSize
-            }));
+            })).catch((error) => {
+                console.log("Error in getting the data", error)
+            })
         }
     }
 

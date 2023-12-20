@@ -351,6 +351,8 @@ const useViewContractHook = () => {
             } else {
                 message.error('Server internal error, try again!')
             }
+        }).catch((error) => {
+            console.log("Error in getting the data", error)
         });
         setAddCollabModal(true);
         // if (getCollabList.fulfilled.match(result)) {
@@ -373,6 +375,8 @@ const useViewContractHook = () => {
                         message.success(`Delete contract successfuly`);
                         fetchContractList();
                     } else message.error('Server internal error');
+                }).catch((error) => {
+                    console.log("Error in getting the data", error)
                 })
             },
             onCancel() {
@@ -406,6 +410,8 @@ const useViewContractHook = () => {
             if (response?.payload.status) {
                 message.success('Contract completed successfully')
             } else message.error(response?.payload?.message);
+        }).catch((error) => {
+            console.log("Error in getting the data", error)
         })
     }
     const handleDownloadSubmitFile = (value: ExpandedDataType) => {
@@ -452,7 +458,9 @@ const useViewContractHook = () => {
                 startDate: value?.startDate,
                 endDate: value?.endDate,
                 totalSalary: value?.totalSalary,
-            }))
+            })).catch((error) => {
+                console.log("Error in getting the data", error)
+            })
         }
     }
     const onPageChange = (value: any) => {
@@ -489,7 +497,9 @@ const useViewContractHook = () => {
             endDate: searchParams?.endDate,
             startDate: searchParams?.startDate,
             totalSalary: searchParams?.totalSalary
-        }))
+        })).catch((error) => {
+            console.log("Error in getting the data", error)
+        })
     }
     const handleAddContract = () => {
         setOpenAddContractModal(true);

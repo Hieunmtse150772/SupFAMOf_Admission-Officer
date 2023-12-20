@@ -189,7 +189,9 @@ function useViewTrainingHook() {
     const handleEditRoom = async (value: any) => {
         setOpenEditRoom(true);
         setRoomId(value?.id);
-        await dispatch(getClassById({ id: value?.id }))
+        await dispatch(getClassById({ id: value?.id })).catch((error) => {
+            console.log("Error in getting the data", error)
+        })
     }
     const handleOpenAddMoreRoom = () => {
         setOpenAddMoreClassModal(true)
@@ -203,7 +205,9 @@ function useViewTrainingHook() {
             date: value?.date
         }
         setSearchParams(params);
-        await dispatch(getAllClassTraining(params))
+        await dispatch(getAllClassTraining(params)).catch((error) => {
+            console.log("Error in getting the data", error)
+        })
     }
     const handleActionChange = async (params: any,
         sorter: Record<string, SortOrder>,

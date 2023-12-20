@@ -22,7 +22,9 @@ function useViewCertificate() {
             PageSize: pageSize,
             certificateName: keywords
         }
-        await dispatch(getCertificateRegistration(params));
+        await dispatch(getCertificateRegistration(params)).catch((error) => {
+            console.log("Error in getting the data", error)
+        });
     }
     const fetchCertificateRegistration = async () => {
         try {
@@ -31,7 +33,9 @@ function useViewCertificate() {
                 page: page,
                 PageSize: pageSize
             }
-            await dispatch(getCertificateRegistration(params))
+            await dispatch(getCertificateRegistration(params)).catch((error) => {
+                console.log("Error in getting the data", error)
+            })
 
         } catch (error) {
             console.error(error)
@@ -39,8 +43,9 @@ function useViewCertificate() {
     }
     const fetchCertificate = async () => {
         try {
-            await dispatch(getCertificate())
-
+            await dispatch(getCertificate()).catch((error) => {
+                console.log("Error in getting the data", error)
+            })
         } catch (error) {
             console.error(error)
         }

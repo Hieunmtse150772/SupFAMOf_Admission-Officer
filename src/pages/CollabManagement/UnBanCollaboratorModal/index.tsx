@@ -42,13 +42,15 @@ const UnBanCollaboratorModal: FC<UnBanCollaboratorModalProps> = ({ open, setOpen
             icon: <ExclamationCircleFilled rev={undefined} />,
             onOk: async () => {
                 try {
-                    dispatch(updateBanCollaboratorById(params)).then((response: any) => {
+                    await dispatch(updateBanCollaboratorById(params)).then((response: any) => {
                         console.log('response: ', response)
                         if (response?.payload?.data?.status?.success) {
                             message.success(`Successfully un banned ${accountName} account`);
                             setOpenUnBanCollaborator(false);
                             fetchCollabList();
                         } else message.error(response?.payload?.message);
+                    }).catch((error) => {
+                        console.log("Error in getting the data", error)
                     })
                 } catch (error) {
                     message.error('Server internal error');
