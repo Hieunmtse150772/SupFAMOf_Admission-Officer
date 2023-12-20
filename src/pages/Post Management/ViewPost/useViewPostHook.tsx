@@ -1,4 +1,4 @@
-import { DeleteOutlined, EditOutlined, ExclamationCircleFilled, FolderOpenOutlined, MoreOutlined, SafetyCertificateOutlined } from '@ant-design/icons'; // Import the icon from the library
+import { DeleteOutlined, DownOutlined, EditOutlined, ExclamationCircleFilled, FolderOpenOutlined, MoreOutlined, SafetyCertificateOutlined } from '@ant-design/icons'; // Import the icon from the library
 import { ProColumns, RequestData } from "@ant-design/pro-components";
 import { FiberManualRecord } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
@@ -362,22 +362,46 @@ function useViewPostList() {
           );
         }
       },
+      // {
+      //   title: 'Action',
+      //   key: 'action',
+      //   fixed: 'right',
+      //   render: (value) => <Button icon={<DeleteOutlined rev={undefined} />} onClick={() => {
+      //     confirm({
+      //       title: 'Do you want to delete this position?',
+      //       icon: <ExclamationCircleFilled rev={undefined} />,
+      //       onOk: () => {
+      //         handleDeletePosition(value)
+      //       },
+      //       onCancel() {
+      //       },
+      //     });
+      //   }} danger>Delete</Button>,
+      // },
       {
         title: 'Action',
-        key: 'action',
+        align: 'center',
         fixed: 'right',
-        render: (value) => <Button icon={<DeleteOutlined rev={undefined} />} onClick={() => {
-          confirm({
-            title: 'Do you want to delete this position?',
-            icon: <ExclamationCircleFilled rev={undefined} />,
-            onOk: () => {
-              handleDeletePosition(value)
+        render: (value, valueEnum) => {
+          const items: MenuProps['items'] = [
+            {
+              label: 'Delete',
+              key: '1',
+              icon: <DeleteOutlined rev={undefined} />,
+              onClick: () => handleDeletePosition(valueEnum),
             },
-            onCancel() {
-            },
-          });
-        }} danger>Delete</Button>,
-      }
+          ];
+          const menuProps = {
+            items,
+          };
+          return <Box>
+            <Dropdown menu={menuProps} trigger={['click']} placement='bottomLeft'>
+              <Button icon={<DownOutlined rev={undefined} />}></Button>
+            </Dropdown>
+          </Box>
+        },
+        width: 80
+      },
     ];
 
     const data = rowsExpanded.find((value) => value.key === record?.id);
@@ -425,14 +449,23 @@ function useViewPostList() {
     setEditPostModalId(value?.id)
   }
   const handleDeletePosition = async (value: any) => {
-    await dispatch(deletePositionById(value?.id)).then((response: any) => {
-      if (response?.payload?.errorCode === 4006) {
-        message.warning(response?.payload?.message)
-      } else if (response?.payload?.status === 200) {
-        message.success('Delete position success!');
-        fetchPostList();
-      }
-    })
+    confirm({
+      title: 'Do you want to delete this position?',
+      icon: <ExclamationCircleFilled rev={undefined} />,
+      onOk: async () => {
+        await dispatch(deletePositionById(value?.id)).then((response: any) => {
+          if (response?.payload?.errorCode === 4006) {
+            message.warning(response?.payload?.message)
+          } else if (response?.payload?.status === 200) {
+            message.success('Delete position success!');
+            fetchPostList();
+          }
+        })
+      },
+      onCancel() {
+      },
+    });
+
   }
   const handleDeletePost = async (value: any) => {
     confirm({

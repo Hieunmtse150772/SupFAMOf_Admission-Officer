@@ -19,19 +19,19 @@ type SearchParamsI = {
 
 const useViewCollablistHook = () => {
     const Formatter = 'DD/MM/YYYY'
+    const excelFile = useAppSelector(state => state.report.excelFile);
+    const loadingExport = useAppSelector(state => state.report.loading);
+    const certificateOptionsAPI = useAppSelector(state => state.certificate.certificateOption);
     const [currentRow, setCurrentRow] = useState<any>();
-    // const [selectedRowsState, setSelectedRows] = useState<boolean>([]);
     const [showDetail, setShowDetail] = useState<boolean>(false);
     const [openCertificateModal, setOpenCertificateModal] = useState<boolean>(false)
     const [certificateList, setCertificateList] = useState<Certificate[]>([])
     const { collabList, loading } = useAppSelector(state => state.collab);
     const [page, setPage] = useState<number>(1);
-    const pageSizeOptions = [10, 20, 30]; // Các tùy chọn cho pageSize
+    const pageSizeOptions = [10, 20, 30];
     const total = collabList?.metadata?.total;
     const [totalCollab, setTotalCollab] = useState<number>(0);
     const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
-    const excelFile = useAppSelector(state => state.report.excelFile);
-    const option = [{ label: 'true', value: true }, { label: 'false', value: false }];
     const [openDisableAccountModal, setOpendisableAccountModal] = useState<boolean>(false);
     const [openUnbanAccountModal, setOpenUnbanAccountModal] = useState<boolean>(false);
     const [accountId, setAccountId] = useState<string>()
@@ -40,8 +40,6 @@ const useViewCollablistHook = () => {
     const [openExportModal, setOpenExportModal] = useState<boolean>(false);
     const [nameFileExport, setNameFileExport] = useState<string>('false');
     const [searchParams, setSearchParams] = useState<SearchParamsI>();
-    const loadingExport = useAppSelector(state => state.report.loading);
-    const certificateOptionsAPI = useAppSelector(state => state.certificate.certificateOption);
     const certificateOptions = certificateOptionsAPI?.map((title) => ({
         id: title?.id,
         value: title?.id,
@@ -327,7 +325,7 @@ const useViewCollablistHook = () => {
             total: 10, // Total number of data items (if available)
         };
     }
-    const rows = collabList?.data.map((collab, index) => ({
+    const rows = collabList?.data?.map((collab, index) => ({
         count: index,
         key: collab?.id,
         name: collab?.name,
@@ -353,10 +351,10 @@ const useViewCollablistHook = () => {
     const downloadExcelFile = () => {
         if (excelFile) {
             const url = window.URL.createObjectURL(excelFile);
-            const link = document.createElement('a');
+            const link = document?.createElement('a');
             link.href = url;
             link.setAttribute('download', 'account_report.xlsx');
-            document.body.appendChild(link);
+            document?.body?.appendChild(link);
             link.click();
             // Kiểm tra xem link có được chèn vào DOM hay không trước khi loại bỏ
             if (link.parentNode) {
