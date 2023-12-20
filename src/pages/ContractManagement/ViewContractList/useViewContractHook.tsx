@@ -63,7 +63,7 @@ const useViewContractHook = () => {
     const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
     const [openAddContractModal, setOpenAddContractModal] = useState<boolean>(false);
     const [addCollabModal, setAddCollabModal] = useState<boolean>(false);
-    const [contractId, setContractId] = useState<number | null>(null);
+    const [contractId, setContractId] = useState<string>('');
     const downloadRef = useRef<HTMLAnchorElement | null>(null);
     const [openEditContractModal, setOpenEditContractModal] = useState<boolean>(false);
     const [searchParams, setSearchParams] = useState<SearchParamsI>();
@@ -344,8 +344,8 @@ const useViewContractHook = () => {
     const dispatch = useAppDispatch();
     const handleAddCollab = async (value: ContractInfoRows) => {
         console.log('value111: ', value)
-        setContractId(Number(value?.id));
-        await dispatch(getCollabByContractId({ search: '', contractId: Number(value?.id) })).then((response: any) => {
+        setContractId(value?.id);
+        await dispatch(getCollabByContractId({ search: '', contractId: value?.id })).then((response: any) => {
             console.log('response:', response)
             if (response?.payload?.status === 200) {
             } else {
