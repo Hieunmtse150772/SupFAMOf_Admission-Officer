@@ -47,9 +47,11 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
     const rowSelection = {
         selectedRowKeys,
         onChange: (keys: Key[]) => {
-            if ((percent === 100) && (selectedRowKeys.length < keys.length)) { message.error('The number of participants is sufficient!') } else {
-                setSelectedRowKeys(keys)
-            }
+            if (activeKey === 'tab1') {
+                if ((percent === 100) && (selectedRowKeys.length < keys.length)) { message.error('The number of participants is sufficient!') } else {
+                    setSelectedRowKeys(keys);
+                }
+            } else setSelectedRowKeys(keys);
         },
     };
     const [percent, setPercent] = useState<number>((registerAmount * 100) / total);

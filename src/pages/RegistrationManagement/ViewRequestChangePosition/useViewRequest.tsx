@@ -72,24 +72,11 @@ function useViewRequest(postId: number, fetchPost: () => void) {
 
     const columns: ProColumns[] = [
         {
-            title: 'Post Code',
-            dataIndex: 'postCode',
-            key: 'postCode',
-            hideInSearch: true,
-            width: 10,
-            render: (dom, entity) => {
-                return (
-                    // eslint-disable-next-line jsx-a11y/anchor-is-valid
-                    <a
-                        onClick={() => {
-                            setCurrentRow(entity);
-                            setShowDetail(true);
-                        }}
-                    >
-                        {dom}
-                    </a>
-                );
-            },
+            title: 'Collaborator name',
+            dataIndex: 'collabName',
+            key: 'collabName',
+            fixed: 'left',
+            width: 200,
         },
         {
             title: 'Category',
@@ -97,7 +84,7 @@ function useViewRequest(postId: number, fetchPost: () => void) {
             key: 'postCategoryName',
             hideInSearch: true,
             hideInTable: true,
-            width: 5,
+            width: 100,
         },
         {
             title: 'Date',
@@ -106,7 +93,7 @@ function useViewRequest(postId: number, fetchPost: () => void) {
             key: 'createAt',
             valueType: 'date',
             hideInTable: true,
-            width: 30,
+            width: 100,
             sorter: true,
         },
         {
@@ -114,7 +101,7 @@ function useViewRequest(postId: number, fetchPost: () => void) {
             dataIndex: 'dateFrom',
             key: 'dateFrom',
             valueType: 'date',
-            width: 30,
+            width: 100,
             hideInSearch: true,
             sorter: true,
         },
@@ -123,34 +110,20 @@ function useViewRequest(postId: number, fetchPost: () => void) {
             dataIndex: 'originalPositionName',
             key: 'originalPositionName',
             hideInSearch: true,
-            width: 30,
-        },
-        {
-            title: 'Amount',
-            dataIndex: 'currentPositionAmount',
-            key: 'currentPositionAmount',
-            hideInSearch: true,
-            width: 30,
+            width: 100,
         },
         {
             title: 'Expected Position',
             dataIndex: 'positionNeedToUpdateName',
             key: 'positionNeedToUpdateName',
             hideInSearch: true,
-            width: 30,
-        },
-        {
-            title: 'Amount',
-            dataIndex: 'expectedPositionAmount',
-            key: 'expectedPositionAmount',
-            hideInSearch: true,
-            width: 30,
+            width: 100,
         },
         {
             title: 'Status',
             dataIndex: 'status',
             key: 'stauts',
-            width: 30,
+            width: 60,
             hideInSearch: true,
             render: (rows) => {
                 switch (rows) {
@@ -180,9 +153,10 @@ function useViewRequest(postId: number, fetchPost: () => void) {
         {
             title: 'Action',
             align: 'center',
-            width: 10,
+            width: 60,
             dataIndex: 'status',
             hideInSearch: true,
+            fixed: 'right',
             valueEnum: {
                 1: {
                     text: 'Pending',
@@ -273,15 +247,13 @@ function useViewRequest(postId: number, fetchPost: () => void) {
                     IsApproved: IsApproved
                 }
                 await dispatch(updateRequest(params)).then((result: any) => {
-                    if (result.payload.errorCode === 4005) {
-                        message.warning('Update request has already been approved!');
-                    } else if (result.payload.errorCode === 4006) {
-                        message.warning('Update request has already been rejected!');
-                    }
-                    else if (result.meta.requestStatus === "fulfilled") {
+                    console.log('response: ', result)
+                    if (result.meta.requestStatus === "fulfilled") {
                         message.success('Update request success');
                         fetchRequest();
                         fetchPost();
+                    } else {
+                        message.error(result?.payload?.message)
                     }
                 }
                 )
@@ -335,7 +307,8 @@ function useViewRequest(postId: number, fetchPost: () => void) {
         attendanceComplete: request.post.attendanceComplete,
         createAt: request.createAt,
         expectedPositionAmount: `${request.originalPosition.positionRegisterAmount}/${request.originalPosition.amount}`,
-        currentPositionAmount: `${request.postPositionNeedToBeUpdated.positionRegisterAmount}/${request.postPositionNeedToBeUpdated.amount}`
+        currentPositionAmount: `${request.postPositionNeedToBeUpdated.positionRegisterAmount}/${request.postPositionNeedToBeUpdated.amount}`,
+        collabName: request.account.name
     }));
 
     const fetchRequest = async () => {
