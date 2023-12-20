@@ -3,6 +3,7 @@ import { AxiosResponse } from 'axios';
 
 import AttendenceDto from 'dtos/Attendence/attendence.dto';
 import WorkListDto from 'dtos/Registration/workLists.dto';
+import SearchWorkListParamsDto from 'dtos/searchWorkList.dto';
 import axiosClient from './axiosClient';
 type paramI = {
     positionId: string,
@@ -27,7 +28,7 @@ export const attendenceService = {
         const url = `/admission/admission-attendance/confirm-attendance/${params.positionId}`;
         return axiosClient.put(url, params.data);
     },
-    getWorkListByPositionId: (params: paramI): Promise<AxiosResponse<WorkListDto>> => {
+    getWorkListByPositionId: (params: SearchWorkListParamsDto): Promise<AxiosResponse<WorkListDto>> => {
         const url = '/admission/admission-post-registration/get-work-list-position';
         return axiosClient.get(url, { params });
     },

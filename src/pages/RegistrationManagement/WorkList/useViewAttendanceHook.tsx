@@ -60,8 +60,7 @@ function useViewAttendanceHook(positionId: string, fetchPost: () => void) {
         Sort: 'createAt',
         Order: 'desc'
     });
-    const [searchParams, setSearchParams] = useState<SearchParamsI>()
-
+    const [searchParams, setSearchParams] = useState<SearchParamsI>();
     const pageSizeOptions = [10, 20, 30]; // Các tùy chọn cho pageSize
     const total = workLists?.metadata?.total
     const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
@@ -241,6 +240,13 @@ function useViewAttendanceHook(positionId: string, fetchPost: () => void) {
     const handleActionChange = async (params: any,
         sorter: Record<string, SortOrder>,
         filter: Record<string, (string | number)[] | null>): Promise<Partial<RequestData<any>>> => {
+        if (sorter && Object.keys(sorter).length > 0) {
+            const keys = Object.keys(sorter);
+            const fieldName = keys[0];
+            const sortOrder = sorter[fieldName] === 'ascend' ? 'asc' : 'desc';
+            setSortModel({ Sort: fieldName, Order: String(sortOrder) })
+        } else setSortModel({ Sort: 'createAt', Order: 'desc' })
+
         return {
             data: [],
             success: true,
@@ -295,12 +301,16 @@ function useViewAttendanceHook(positionId: string, fetchPost: () => void) {
 
     const fetchAttendence = async () => {
         await dispatch(getWorkListsByPositionId({
-            positionId: positionId
+            positionId: positionId,
+            page: page,
+            PageSize: pageSize,
+            Sort: sortModel.Sort,
+            Order: sortModel.Order
         }))
     }
     useEffect(() => {
         fetchAttendence()
-    }, [])
+    }, [page, pageSize, sortModel])
 
     const handler = {
         setCurrentRow,

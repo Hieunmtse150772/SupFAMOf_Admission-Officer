@@ -182,6 +182,7 @@ const TotalSpent: FC = () => {
         }}
       >
         <Chart
+
           height={245}
           options={chartOptions}
           series={chartSeries}
