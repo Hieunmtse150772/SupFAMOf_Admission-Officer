@@ -1,7 +1,7 @@
 import { ModalForm } from "@ant-design/pro-components";
 import SFAMOGridForModal from "components/SFAMOGridforModal";
 import { FC } from "react";
-import useViewRequest from "./useViewAttendanceHook";
+import useViewWorkListHook from "./useViewWorkListHook";
 
 interface ViewWorkListModalProps {
     open: boolean,
@@ -11,7 +11,7 @@ interface ViewWorkListModalProps {
 }
 
 const ViewWorkListModal: FC<ViewWorkListModalProps> = ({ open, setOpenViewWorkListModal, positionId, fetchPost }) => {
-    const { handler, props } = useViewRequest(positionId, fetchPost);
+    const { handler, props } = useViewWorkListHook(positionId, fetchPost);
 
     return (
         <ModalForm

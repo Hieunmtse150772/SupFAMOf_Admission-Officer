@@ -263,7 +263,7 @@ const ViewPostList = () => {
                 <ViewAttendanceModal
                     fetchPost={handler.fetchPostList}
                     open={props.openViewAttendenceModal}
-                    setOpenViewRequestModal={handler.setOpenViewAttendenceModal}
+                    setOpenCheckAttendanceModal={handler.setOpenViewAttendenceModal}
                     positionId={props.positionId}
                 />
             }
