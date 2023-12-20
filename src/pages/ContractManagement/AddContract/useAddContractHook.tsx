@@ -222,7 +222,7 @@ const useAddContractHook = () => {
 
     useEffect(() => {
         fetchCollabList()
-    }, [page, pageSize])
+    }, [page, pageSize, contractId])
     useEffect(() => {
         setDataSource(collabLists.data)
     }, [collabLists])
