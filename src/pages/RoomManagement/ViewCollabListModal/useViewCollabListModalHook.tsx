@@ -55,13 +55,7 @@ function useViewCollabListModalHook(
     let navigate = useNavigate();
 
     const columns: ProColumns[] = [
-        {
-            title: 'Number',
-            dataIndex: 'count',
-            key: 'count',
-            hideInSearch: true,
-            valueType: 'index'
-        },
+
         {
             title: 'Avatar',
             dataIndex: 'imgUrl',
@@ -197,7 +191,7 @@ function useViewCollabListModalHook(
             key: 'checkAttendence',
             dataIndex: 'status',
             align: 'center',
-            width: 100,
+            width: 150,
             render: (value, valueEnum) => {
                 return <Switch
                     style={{
@@ -207,8 +201,8 @@ function useViewCollabListModalHook(
                         justifySelf: 'center'
                     }}
                     defaultChecked={Boolean(valueEnum?.status === 3)}
-                    checkedChildren="passed"
-                    unCheckedChildren="not passed"
+                    checkedChildren="Passed"
+                    unCheckedChildren="Not passed"
                     onChange={(value) => { handleChangeStatus(valueEnum.id, valueEnum.status, value) }}
                 />
             },
@@ -258,9 +252,7 @@ function useViewCollabListModalHook(
                     data: checkAttendanceData,
                     eventDayId: eventDayId
                 }
-                console.log('paramsL: ', params)
                 dispatch(confirmAttendanceByEvenDayId(params)).then((response: any) => {
-                    console.log('response: ', response)
                     if (response?.payload?.status?.success) {
                         message.success('Confirm attendance success');
                         setOpenViewCollabListModal(false);

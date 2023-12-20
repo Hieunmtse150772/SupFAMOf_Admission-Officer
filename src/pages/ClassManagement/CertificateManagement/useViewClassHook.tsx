@@ -9,7 +9,6 @@ import { useAppDispatch } from "app/store";
 import SearchTrainingRegistrationParamsDto from "dtos/searchTrainingRegistration.dto";
 import StatusTrainingRegistration from "enums/statusTrainingRegistration.enum";
 import { assignTrainingClass, getCertificateRegistration } from 'features/certificateSlice';
-import { getPostByAccountId } from "features/postSlice";
 import AssignTrainingClass from "models/assignTraining.model";
 import { Key, useEffect, useState } from "react";
 import { useParams } from 'react-router';
@@ -40,7 +39,7 @@ function UseViewClassHook() {
     const valueEnum: { [key: number]: { text: string } } = {};
     const [showDetail, setShowDetail] = useState<boolean>(false);
     const [page, setPage] = useState<number>(1);
-    const [statusFilter, setStatusFilter] = useState<number | null>();
+    const [statusFilter, setStatusFilter] = useState<number | null>(1);
     const pageSizeOptions = [10, 20, 30]; // Các tùy chọn cho pageSize
     const total = certificateRegistrationList?.metadata?.total;
     const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
@@ -50,18 +49,7 @@ function UseViewClassHook() {
         Order: 'desc'
     });
     const [openAssignClassModal, setOpenAssignClassModal] = useState<boolean>(false);
-    const fetchCertificateRegistration = async () => {
-        try {
-            const params: SearchTrainingRegistrationParamsDto = {
-                id: Number(id),
-                isActive: true
-            }
-            await dispatch(getCertificateRegistration(params))
 
-        } catch (error) {
-            console.error(error)
-        }
-    }
     const [searchParams, setSearchParams] = useState<SearchParamsI>();
 
     const customDot: StepsProps['progressDot'] = (dot, { status, index }) => (
@@ -116,7 +104,6 @@ function UseViewClassHook() {
                 );
             },
             hideInSearch: true,
-
         },
         {
             title: 'Email',
@@ -198,23 +185,63 @@ function UseViewClassHook() {
     const handleSearch = async (value: any) => {
         if (value) {
             setSearchParams(value)
-            await dispatch(getPostByAccountId({
+            // await dispatch(getPostByAccountId({
+            //     page: page,
+            //     PageSize: pageSize,
+            //     Status: statusFilter,
+            //     Sort: sortModel?.Sort,
+            //     Order: sortModel?.Order,
+            //     dateFrom: value?.dateFrom,
+            //     dateTo: value?.dateTo,
+            //     postCode: value?.postCode,
+            //     postName: value?.postName,
+            //     postCategoryId: value?.postCategoryId
+            // }))
+        }
+    }
+    const handleSetStatus = async (value: any) => {
+        if (value.radio === 0) {
+            setStatusFilter(null)
+            setPage(1)
+            await dispatch(getCertificateRegistration({
+                id: Number(id),
+                isActive: true,
+                page: 1,
+                PageSize: 10,
+                Sort: 'createAt',
+                Order: 'desc'
+            }))
+        } else {
+            setStatusFilter(value?.radio);
+            setPage(1)
+            await dispatch(getCertificateRegistration({
+                id: Number(id),
+                isActive: true,
+                page: 1,
+                PageSize: 10,
+                Status: value?.radio
+            }))
+        }
+    }
+    const fetchCertificateRegistration = async () => {
+        try {
+            const params: SearchTrainingRegistrationParamsDto = {
+                id: Number(id),
+                isActive: true,
                 page: page,
                 PageSize: pageSize,
-                Status: statusFilter,
-                Sort: sortModel?.Sort,
-                Order: sortModel?.Order,
-                dateFrom: value?.dateFrom,
-                dateTo: value?.dateTo,
-                postCode: value?.postCode,
-                postName: value?.postName,
-                postCategoryId: value?.postCategoryId
-            }))
+                Sort: sortModel.Sort,
+                Order: sortModel.Order,
+                Status: statusFilter
+            }
+            await dispatch(getCertificateRegistration(params))
+
+        } catch (error) {
+            console.error(error)
         }
     }
     const handleAssignClass = (evenDayId: Key[]) => {
         console.log('evenDayId: ', evenDayId)
-
         const params: AssignTrainingClass[] = selectedRowsState.map((row) => (
             {
                 trainingRegistrationId: row.key,
@@ -238,7 +265,6 @@ function UseViewClassHook() {
             const sortOrder = sorter[fieldName] === 'ascend' ? 'asc' : 'desc';
             setSortModel({ Sort: fieldName, Order: String(sortOrder) })
         } else setSortModel({ Sort: 'createAt', Order: 'desc' })
-
         return {
             data: [],
             success: true,
@@ -282,7 +308,8 @@ function UseViewClassHook() {
         handleAssignClass,
         setOpenAssignClassModal,
         hanldeOpenAssignClass,
-        fetchCertificateRegistration
+        fetchCertificateRegistration,
+        handleSetStatus
     }
     const props = {
         openConFirmModal,

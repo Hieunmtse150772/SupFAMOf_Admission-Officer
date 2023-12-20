@@ -13,7 +13,7 @@ interface AddContractModalProps {
     setOpenAddCollabModal: React.Dispatch<React.SetStateAction<boolean>>,
     amountUnConfirmed: number,
     collabList: CollabListInfo[],
-    contractId: number | null,
+    contractId: string,
     fetchContractList: () => void
 }
 const AddContractModal: FC<AddContractModalProps> = (

@@ -8,7 +8,6 @@ import {
   Tooltip,
   useMediaQuery,
 } from "@mui/material";
-import { unwrapResult } from "@reduxjs/toolkit";
 import { useAppDispatch } from "app/store";
 import AppConstants from "enums/app";
 import { getUserProfile } from "features/authSlice";
@@ -61,8 +60,9 @@ const DashboardSideBar: FC<SideNavBarProps> = ({
   const userInfo = localStorage.getItem(AppConstants.USER)
 
   const handleGetProfile = async () => {
-    const result = await dispatch(getUserProfile());
-    unwrapResult(result);
+    await dispatch(getUserProfile()).catch((error) => {
+
+    });
   };
   useEffect(() => {
     if (userInfo) {
