@@ -326,7 +326,6 @@ function useViewRegistrationHook() {
                         icon: <EyeOutlined rev={undefined} />,
                         itemIcon: <Badge count={totalUpdateRegisterAmount} />,
                         onClick: () => handleOpenViewRequestModal(value),
-                        disabled: Boolean(totalUpdateRegisterAmount === 0)
                     },
                 ];
                 const menuProps = {
