@@ -80,12 +80,12 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
     }, [classList])
     const columns: ProColumns<ClassTrainingViewI>[] = [
         {
-            title: 'Class Name',
+            title: 'Room Name',
             dataIndex: 'class',
             formItemProps: (form, { rowIndex }) => {
                 return {
                     rules:
-                        rowIndex > 1 ? [{ required: true, message: 'Class name is required' }] : [],
+                        rowIndex > 1 ? [{ required: true, message: 'Room name is required' }] : [],
                 };
             },
             width: '15%',

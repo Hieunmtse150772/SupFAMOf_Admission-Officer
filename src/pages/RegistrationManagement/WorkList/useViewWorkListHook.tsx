@@ -45,7 +45,7 @@ type SearchParamsI = {
     status?: string,
     postCategoryId?: number
 }
-function useViewAttendanceHook(positionId: string, fetchPost: () => void) {
+function useViewWorkListHook(positionId: string, fetchPost: () => void) {
     const Formatter = 'DD/MM/YYYY'
     const [currentRow, setCurrentRow] = useState<any>();
     const { confirm } = Modal;
@@ -343,4 +343,4 @@ function useViewAttendanceHook(positionId: string, fetchPost: () => void) {
         props,
     }
 }
-export default useViewAttendanceHook;
+export default useViewWorkListHook;

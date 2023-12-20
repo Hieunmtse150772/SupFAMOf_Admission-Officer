@@ -305,7 +305,7 @@ const AddNewPost: FC = () => {
                                                 width="sm"
                                                 options={optionDate}
                                                 name="date"
-                                                label="Date Option"
+                                                label="Working date"
                                                 tooltip="Choose one options of Date"
                                                 rules={[{ required: true, message: 'Choose one options of Date!' }]}
                                             />

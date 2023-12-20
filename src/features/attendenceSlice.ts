@@ -3,6 +3,7 @@ import { AxiosError } from 'axios';
 import AttendenceDto from 'dtos/Attendence/attendence.dto';
 import WorkListDto from 'dtos/Registration/workLists.dto';
 import ErrorDto from 'dtos/error.dto';
+import SearchAttendanceParamsDto from 'dtos/searchAttendance.dto';
 import SearchWorkListParamsDto from 'dtos/searchWorkList.dto';
 import AttendenceI from 'models/attendence.model';
 import WorkLists from 'models/worklist.model';
@@ -41,7 +42,7 @@ const initialState: AttendenceState = {
 }
 export const getAttendenceByPositionId = createAsyncThunk(
     'attendence/get-attendence',
-    async (params: paramI, { rejectWithValue }) => {
+    async (params: SearchAttendanceParamsDto, { rejectWithValue }) => {
         try {
             const result = await attendenceService.getAttendenceByPositionId(params)
             return result.data;
