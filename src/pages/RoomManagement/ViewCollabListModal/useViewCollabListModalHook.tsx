@@ -202,7 +202,6 @@ function useViewCollabListModalHook(
                         justifySelf: 'center'
                     }}
                     defaultChecked={Boolean(valueEnum?.status === 3)}
-
                     checkedChildren="passed"
                     unCheckedChildren="not passed"
                     onChange={(value) => { handleChangeStatus(valueEnum.id, valueEnum.status, value) }}

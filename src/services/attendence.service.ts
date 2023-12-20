@@ -3,6 +3,7 @@ import { AxiosResponse } from 'axios';
 
 import AttendenceDto from 'dtos/Attendence/attendence.dto';
 import WorkListDto from 'dtos/Registration/workLists.dto';
+import SearchAttendanceParamsDto from 'dtos/searchAttendance.dto';
 import SearchWorkListParamsDto from 'dtos/searchWorkList.dto';
 import axiosClient from './axiosClient';
 type paramI = {
@@ -20,7 +21,7 @@ type paramsConfirmAttendance = {
 
 }
 export const attendenceService = {
-    getAttendenceByPositionId: (params: paramI): Promise<AxiosResponse<AttendenceDto>> => {
+    getAttendenceByPositionId: (params: SearchAttendanceParamsDto): Promise<AxiosResponse<AttendenceDto>> => {
         const url = '/admission/admission-attendance/getByPositionId';
         return axiosClient.get(url, { params });
     },

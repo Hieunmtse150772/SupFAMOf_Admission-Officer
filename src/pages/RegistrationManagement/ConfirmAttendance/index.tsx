@@ -3,25 +3,26 @@ import SFAMOGridForModal from "components/SFAMOGridforModal";
 import { FC } from "react";
 import useViewRequest from "./useViewAttendanceHook";
 
-interface ViewAttendenceModalProps {
+interface ViewAttendanceModalProps {
     open: boolean,
-    setOpenViewRequestModal: React.Dispatch<React.SetStateAction<boolean>>,
+    setOpenCheckAttendanceModal: React.Dispatch<React.SetStateAction<boolean>>,
     positionId: string,
     fetchPost: () => void
 }
 
-const ViewAttendanceModal: FC<ViewAttendenceModalProps> = ({ open, setOpenViewRequestModal, positionId, fetchPost }) => {
-    const { handler, props } = useViewRequest(positionId, fetchPost);
+const ViewAttendanceModal: FC<ViewAttendanceModalProps> = ({ open, setOpenCheckAttendanceModal, positionId, fetchPost }) => {
+    const { handler, props } = useViewRequest(positionId, fetchPost, setOpenCheckAttendanceModal);
 
     return (
         <ModalForm
             width={1190}
             open={open}
-            onOpenChange={setOpenViewRequestModal}
+            onOpenChange={setOpenCheckAttendanceModal}
             onFinish={async (value) => {
                 handler.handleConfirmCheckAttendance(value)
             }}
-            title='ATTENDANCE'
+
+            title='Attendance'
             submitter={{
                 searchConfig: {
                     submitText: 'Submit',
@@ -30,7 +31,7 @@ const ViewAttendanceModal: FC<ViewAttendenceModalProps> = ({ open, setOpenViewRe
             }}
         >
             {
-                props?.requests && (
+                props?.attendenceList && (
                     <SFAMOGridForModal
                         handleSearch={handler.handleSearch}
                         handleTableChange={handler.handleActionChange}
@@ -42,7 +43,7 @@ const ViewAttendanceModal: FC<ViewAttendenceModalProps> = ({ open, setOpenViewRe
                         pageSize={props.pageSize}
                         rows={props.rows}
                         columns={props?.columns}
-                        isLoading={props.isLoading}
+                        isLoading={props.loading}
                     />
                 )
             }
