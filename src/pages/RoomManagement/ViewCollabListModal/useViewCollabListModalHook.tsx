@@ -124,6 +124,7 @@ function useViewCollabListModalHook(
             title: 'Student ID',
             dataIndex: 'idStudent',
             key: 'idStudent',
+            width: 100,
             hideInSearch: true,
         },
         {
@@ -131,6 +132,8 @@ function useViewCollabListModalHook(
             dataIndex: 'certificateName',
             key: 'certificateName',
             hideInSearch: true,
+            width: 100,
+
             render: (value, valueEnum) => {
                 return <Tag color="green">{valueEnum.certificateName}</Tag>
             }
@@ -139,6 +142,7 @@ function useViewCollabListModalHook(
             title: 'Status',
             dataIndex: 'status',
             key: 'status',
+            width: 100,
             valueEnum: {
                 1: {
                     text: 'Pending',
@@ -193,6 +197,7 @@ function useViewCollabListModalHook(
             key: 'checkAttendence',
             dataIndex: 'status',
             align: 'center',
+            width: 100,
             render: (value, valueEnum) => {
                 return <Switch
                     style={{
