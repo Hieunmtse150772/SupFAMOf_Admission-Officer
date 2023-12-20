@@ -7,7 +7,36 @@ type RequestInfo = {
     createAt: string,
     postPositionNeedToBeUpdated: PosttPositionNeedToBeUpdatedI,
     originalPosition: OriginalPositionI,
-    post: PostInfoI
+    post: PostInfoI,
+    account: {
+        id: number,
+        roleId: number,
+        accountInformationId: number,
+        name: string,
+        email: string,
+        phone: number,
+        dateOfBirth: Date,
+        imgUrl: string,
+        postPermission: boolean,
+        isPremium: boolean,
+        isActive: boolean,
+        isBanned: boolean,
+        createAt: string,
+        updateAt: string,
+        accountInformation: {
+            id: number,
+            accountId: number,
+            identityNumber: string,
+            idStudent: string,
+            fbUrl: string,
+            address: string,
+            identityIssueDate: Date,
+            placeOfIssue: string,
+            identityFrontImg: string,
+            identityBackImg: string,
+            taxNumber: string
+        }
+    }
 }
 type PosttPositionNeedToBeUpdatedI = {
     id: number,
