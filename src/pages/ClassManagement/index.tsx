@@ -72,10 +72,10 @@ function ClassManagement() {
                 renderItem={(listDom, action) => (
                     <Tooltip title='Click to view registration list' placement="top" key={listDom.id}>
 
-                        <div style={{ margin: '10px' }} onClick={() => hanldeClickViewClass(listDom.id)}>
-                            <Badge.Ribbon color='green' text={`Total registration: ${listDom.registerAmount}`}>
+                        <div style={{ margin: '10px' }} onClick={() => hanldeClickViewClass(listDom?.id)}>
+                            <Badge.Ribbon color='green' text={`Total registration: ${listDom?.registerAmount}`}>
                                 <Card title={<div style={{ display: 'flex', alignItems: 'center' }}>
-                                    <ClassOutlined style={{ color: 'green' }} /> {listDom.certificateName}
+                                    <ClassOutlined style={{ color: 'green' }} /> {listDom?.certificateName}
                                 </div>} size="small">
                                     <Tag color='cyan' style={{ fontWeight: 700 }}>{moment(listDom.createAt).format('DD/MM/YY')}</Tag>
                                 </Card>
@@ -108,7 +108,7 @@ function ClassManagement() {
                         search: false,
                         render: (text, row, index, action) => {
                             return (
-                                <>{row.certificateName}</>
+                                <>{row?.certificateName}</>
                             )
                         }
                     },

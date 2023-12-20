@@ -43,9 +43,9 @@ const useViewCollablistHook = () => {
     const loadingExport = useAppSelector(state => state.report.loading);
     const certificateOptionsAPI = useAppSelector(state => state.certificate.certificateOption);
     const certificateOptions = certificateOptionsAPI?.map((title) => ({
-        id: title.id,
-        value: title.id,
-        label: title.certificateName
+        id: title?.id,
+        value: title?.id,
+        label: title?.certificateName
     }));
     const { confirm } = Modal;
     const columns: ProColumns[] = [
@@ -136,11 +136,11 @@ const useViewCollablistHook = () => {
             width: 300,
             render: (certificates) => {
                 if (Array.isArray(certificates)) {
-                    const filtercertificate = certificates.filter((certificate) => certificate.status === 1)
+                    const filtercertificate = certificates?.filter((certificate) => certificate?.status === 1)
                     if (filtercertificate.length !== 0) {
                         return filtercertificate.map((certificate) =>
                         (
-                            <Space size={0} key={certificate.id}>
+                            <Space size={0} key={certificate?.id}>
                                 <Tag color="green">{certificate?.certificateName}</Tag>
                             </Space>
                         )
@@ -191,7 +191,7 @@ const useViewCollablistHook = () => {
             dataIndex: ['isActive'],
             render: (value, valueEnum, record) => {
                 const totalUpdateRegisterAmount = valueEnum?.totalUpdateRegisterAmount; // Access totalUpdateRegisterAmount from record
-                console.log('valueEnum.isActive: ', valueEnum.isActive)
+                console.log('valueEnum.isActive: ', valueEnum?.isActive)
                 const premiumTitle = `${valueEnum?.isPremium ? 'Downgrade normal' : 'Upgrade premium'}`
                 const items: MenuProps['items'] = [
                     {
@@ -341,10 +341,10 @@ const useViewCollablistHook = () => {
         bankName: collab?.bankName,
         branch: collab?.branch,
         certificates: collab?.certificates,
-        isActive: collab.isActive,
-        endTime: collab.endTime,
-        isBanned: collab.isBanned,
-        startTime: collab.startTime
+        isActive: collab?.isActive,
+        endTime: collab?.endTime,
+        isBanned: collab?.isBanned,
+        startTime: collab?.startTime
         // ...
     }));
     const fetchCollabList = async () => {

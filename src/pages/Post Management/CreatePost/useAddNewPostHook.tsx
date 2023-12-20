@@ -94,7 +94,7 @@ const useAddNewPostHook = () => {
     }));
     const certificateOptions = certificateOptionsAPI?.map((title) => ({
         value: title.id,
-        label: title.certificateName
+        label: title?.certificateName
     }));
     const loading = useAppSelector(state => state.postTitle.loading);
     const [openAddTitleModal, setOpenAddTitleModal] = useState(false);

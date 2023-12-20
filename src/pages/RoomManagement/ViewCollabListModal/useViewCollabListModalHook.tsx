@@ -135,7 +135,7 @@ function useViewCollabListModalHook(
             width: 100,
 
             render: (value, valueEnum) => {
-                return <Tag color="green">{valueEnum.certificateName}</Tag>
+                return <Tag color="green">{valueEnum?.certificateName}</Tag>
             }
         },
         {

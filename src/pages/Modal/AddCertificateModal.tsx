@@ -68,7 +68,7 @@ const AddCertificateModal: FC<AddCertificateModalProps> = ({ open, setOpenCertif
     const handlerSaveChange = async (row: DataItem) => {
         const params = {
             trainingTypeId: row.trainingTypeId,
-            certificateName: row.certificateName,
+            certificateName: row?.certificateName,
             trainingCertificateId: row?.id
         }
         await dispatch(updateCertificate(params)).then((response: any) => {

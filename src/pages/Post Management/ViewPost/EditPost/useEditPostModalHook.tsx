@@ -69,7 +69,7 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
 
     const certificateOptions = certificateOptionsAPI?.map((title) => ({
         value: title.id,
-        label: title.certificateName
+        label: title?.certificateName
     }));
     const options = optionsAPI?.map((title) => ({
         value: title.id,
