@@ -52,7 +52,7 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
             }
         },
     };
-    const [percent, setPercent] = useState<number>(0);
+    const [percent, setPercent] = useState<number>((registerAmount * 100) / total);
 
     const waitTime = (time: number = 100) => {
         return new Promise((resolve) => {
@@ -188,7 +188,7 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
         );
     };
     useEffect(() => {
-        setPercent((selectedRowKeys.length * 100) / total)
+        setPercent(percent + ((selectedRowKeys.length * 100) / total))
     }, [selectedRowKeys])
     return (
         <Spin spinning={isLoading}>
