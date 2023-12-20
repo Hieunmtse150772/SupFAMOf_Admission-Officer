@@ -34,7 +34,7 @@ function UseViewClassHook() {
     const [selectedRowsState, setSelectedRows] = useState<any[]>([]);
     const [openConFirmModal, setOpenConfirmModal] = useState<boolean>(false);
     const certificateRegistrationList = useAppSelector(state => state.certificate.trainingRegistration);
-    const title = certificateRegistrationList.data[0].certificateName;
+    const title = certificateRegistrationList.data[0]?.certificateName;
     const certificateList = useAppSelector(state => state.certificate.certificateOption);
     const isLoading = useAppSelector(state => state.certificate.loading);
     const valueEnum: { [key: number]: { text: string } } = {};
