@@ -65,10 +65,10 @@ const ViewCollabList = () => {
             key: '8',
             label: 'Certificate',
             children:
-                Array.isArray(props.currentRow?.certificates) && props.currentRow?.certificates.filter((certificate: any) => certificate.status === 1).length !== 0 ?
+                Array.isArray(props.currentRow?.certificates) && props.currentRow?.certificates?.filter((certificate: any) => certificate?.status === 1).length !== 0 ?
                     (
-                        props.currentRow?.certificates.map((value: any) => (
-                            <Space size={0} key={value.id}>
+                        props.currentRow?.certificates?.map((value: any) => (
+                            <Space size={0} key={value?.id}>
                                 <Tag color="green">{value?.certificateName}</Tag>
                             </Space>
                         ))

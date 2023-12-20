@@ -282,7 +282,7 @@ const AddContract = () => {
                                 collapsible
                                 style={{
                                     marginBlockEnd: 16,
-                                    minWidth: 1000,
+                                    width: 1000,
                                     maxWidth: '100%',
                                 }}
                             >
@@ -293,7 +293,6 @@ const AddContract = () => {
                                     style={{ width: '100%' }}
                                     headerTitle="List Collab"
                                     dataSource={props.dataSource}
-
                                     toolbar={{
                                         search: {
                                             onSearch: (value: string) => {

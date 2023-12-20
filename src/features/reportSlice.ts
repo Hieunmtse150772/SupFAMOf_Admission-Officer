@@ -25,10 +25,10 @@ export const handleDownloadAccountReport = createAsyncThunk(
             const link = document.createElement('a');
             link.href = url;
             link.setAttribute('download', 'account_report.xlsx');
-            document.body.appendChild(link);
+            document?.body?.appendChild(link);
             link.click();
             // Xóa đường link và URL tạm thời
-            document.body.removeChild(link);
+            document?.body?.removeChild(link);
             window.URL.revokeObjectURL(url);
             return response;
 
@@ -48,7 +48,7 @@ export const handleDownloadMonthLyReportOpenDay = createAsyncThunk(
             const link = document.createElement('a');
             link.href = url;
             link.setAttribute('download', `Monthly_Report_OpenDay_${params.Month}/${params.Year}.xlsx`);
-            document.body.appendChild(link);
+            document?.body?.appendChild(link);
             link.click();
             // Xóa đường link và URL tạm thời
             document.body.removeChild(link);
@@ -70,10 +70,10 @@ export const handleDownloadMonthLyReportTuyenSinh = createAsyncThunk(
             const link = document.createElement('a');
             link.href = url;
             link.setAttribute('download', `Monthly_Report_TuyenSinh_${params.Month}/${params.Year}.xlsx`);
-            document.body.appendChild(link);
+            document?.body?.appendChild(link);
             link.click();
             // Xóa đường link và URL tạm thời
-            document.body.removeChild(link);
+            document?.body?.removeChild(link);
             window.URL.revokeObjectURL(url);
             return response;
 
@@ -93,11 +93,11 @@ export const handleDownloadReport = createAsyncThunk(
             const link = document.createElement('a');
             link.href = url;
             link.setAttribute('download', 'account_report.xlsx');
-            document.body.appendChild(link);
+            document?.body?.appendChild(link);
             link.click();
             // Xóa đường link và URL tạm thời
-            document.body.removeChild(link);
-            window.URL.revokeObjectURL(url);
+            document?.body?.removeChild(link);
+            window?.URL.revokeObjectURL(url);
             return response;
         } catch (error) {
             // Xử lý lỗi nếu cần
