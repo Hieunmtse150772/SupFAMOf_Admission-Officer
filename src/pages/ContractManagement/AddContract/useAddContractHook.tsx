@@ -34,7 +34,7 @@ const useAddContractHook = () => {
     const [dataSource, setDataSource] = useState<DataItem[]>(collabLists.data);
     const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
     const [collabPicker, setCollabPicker] = useState<DataItem[]>();
-    const [contractId, setContractId] = useState<number | null>(null)
+    const [contractId, setContractId] = useState<string>('')
     const [isEdit, setEdit] = useState<boolean>(false);
     const [dateFrom, setDateFrom] = useState<Date | null>(null)
     const [dateTo, setDateTo] = useState<Date | null>(null)
@@ -162,7 +162,6 @@ const useAddContractHook = () => {
                                 setLoading(false);
                                 result = false;
                             }
-
                         }).catch((error) => {
                             message.error('Intenal server error!')
                             setLoading(false)
@@ -213,11 +212,13 @@ const useAddContractHook = () => {
         }
     }
     const fetchCollabList = async () => {
-        await dispatch(getCollabByContractId({
-            contractId: contractId,
-            page: page,
-            PageSize: pageSize
-        }));
+        if (contractId !== '') {
+            await dispatch(getCollabByContractId({
+                contractId: contractId,
+                page: page,
+                PageSize: pageSize
+            }));
+        }
     }
 
     useEffect(() => {

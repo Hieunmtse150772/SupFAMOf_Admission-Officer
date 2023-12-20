@@ -1,3 +1,4 @@
+import { ExclamationCircleFilled } from "@ant-design/icons";
 import { ProColumns, RequestData } from "@ant-design/pro-components";
 import { FiberManualRecord } from "@mui/icons-material";
 import { Box, Typography } from "@mui/material";
@@ -193,7 +194,7 @@ function useViewAttendanceHook(positionId: string, fetchPost: () => void, setOpe
             dataIndex: 'status',
             align: 'center',
             fixed: 'right',
-            width: 120,
+            width: 150,
             render: (value, valueEnum) => {
                 return <Switch
                     style={{
@@ -203,8 +204,8 @@ function useViewAttendanceHook(positionId: string, fetchPost: () => void, setOpe
                         justifySelf: 'center'
                     }}
                     defaultChecked={Boolean(valueEnum?.status === 2)}
-                    checkedChildren="attend"
-                    unCheckedChildren="absend"
+                    checkedChildren="Attend"
+                    unCheckedChildren="Absend"
                     onChange={(value) => { handleChangeStatus(valueEnum.id, valueEnum.status, value) }}
                 />
             },
@@ -257,15 +258,24 @@ function useViewAttendanceHook(positionId: string, fetchPost: () => void, setOpe
             data: checkAttendanceData,
             positionId: positionId
         }
-        dispatch(confirmAttendanceByPositionId(params)).then((response: any) => {
-            if (response?.payload?.data?.status?.success) {
-                message.success('Confirm attendance success');
-                setOpenCheckAttendanceModal(false)
-                fetchPost();
-            } else if (response?.payload?.statusCode === 400) {
-                message.error(response?.payload?.message);
-            }
-        })
+        confirm({
+            title: 'Do you want to confirm check attendance?',
+            icon: <ExclamationCircleFilled rev={undefined} />,
+            onOk() {
+                dispatch(confirmAttendanceByPositionId(params)).then((response: any) => {
+                    if (response?.payload?.data?.status?.success) {
+                        message.success('Confirm attendance success');
+                        setOpenCheckAttendanceModal(false)
+                        fetchPost();
+                    } else if (response?.payload?.statusCode === 400) {
+                        message.error(response?.payload?.message);
+                    }
+                })
+            },
+            onCancel() {
+            },
+        });
+
     }
 
     const rows = attendenceList.data.map((attendence, index) => ({

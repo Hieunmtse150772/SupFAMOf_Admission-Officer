@@ -1,6 +1,6 @@
 
 type SendContractParams = {
-    contractId: number | null,
+    contractId: string,
     accountIds: number[]
 }
 export default SendContractParams;
