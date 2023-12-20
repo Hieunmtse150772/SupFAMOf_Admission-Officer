@@ -33,6 +33,8 @@ function useAddMoreRoomModalHook(fetchClass: () => void, setOpenAddMoreRoomModal
                         } else {
                             message.error(response?.payload?.message);
                         }
+                    }).catch((error) => {
+                        console.log("Error in getting the data", error)
                     })
                 }
             },

@@ -97,7 +97,9 @@ const AddContractModal: FC<AddContractModalProps> = (
                 search: email,
                 page: 1,
                 PageSize: 10
-            }))
+            })).catch((error) => {
+                console.log("Error in getting the data", error)
+            })
     }
 
     const fetchCollabByContractId = async () => {
@@ -107,7 +109,9 @@ const AddContractModal: FC<AddContractModalProps> = (
                 search: searchByEmail,
                 page: page,
                 PageSize: pageSize
-            }))
+            })).catch((error) => {
+                console.log("Error in getting the data", error)
+            })
     }
     useEffect(() => {
         setDataSource(collabList);

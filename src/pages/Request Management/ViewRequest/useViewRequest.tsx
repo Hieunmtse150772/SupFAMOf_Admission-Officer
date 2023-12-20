@@ -266,7 +266,9 @@ function useViewRequest() {
                         fetchRequest();
                     }
                 }
-                )
+                ).catch((error) => {
+                    console.log("Error in getting the data", error)
+                })
             },
             onCancel() {
             },
@@ -324,7 +326,9 @@ function useViewRequest() {
         await dispatch(getRequestByAccountId({
             page: page,
             PageSize: pageSize
-        }))
+        })).catch((error) => {
+            console.log("Error in getting the data", error)
+        })
     }
     const handleAddPost = () => {
         navigate('/dashboard/add-post')

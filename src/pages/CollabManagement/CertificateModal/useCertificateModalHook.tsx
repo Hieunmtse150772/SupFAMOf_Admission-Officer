@@ -45,6 +45,8 @@ const useEditPostModal = (
                         fetchCollabList();
                         setOpenCertificateModal(false);
                     } else message.error('Remove certificate fail');
+                }).catch((error) => {
+                    console.log("Error in getting the data", error)
                 })
                 console.log('params: ', params)
             },
@@ -59,13 +61,15 @@ const useEditPostModal = (
             accountId: accountId,
             trainingCertificates: value?.trainingCertificateId?.map((id: number) => ({ trainingCertificateId: id }))
         }
-        dispatch(giveCertificateByAccountId(params)).then((response: any) => {
+        await dispatch(giveCertificateByAccountId(params)).then((response: any) => {
             console.log('response: ', response)
             if (response?.payload?.data?.status?.success) {
                 message.success(response?.payload?.data?.status?.message);
                 fetchCollabList();
                 setOpenCertificateModal(false);
             } else message.error('Give certificate fail');
+        }).catch((error) => {
+            console.log("Error in getting the data", error)
         })
         console.log('params: ', params)
     }

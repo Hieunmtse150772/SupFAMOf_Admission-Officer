@@ -44,7 +44,9 @@ const TotalSpent: FC = () => {
     ],
   };
   const fetchMoneyReport = async () => {
-    await dispatch(getMoneyYearReport({ year: year }))
+    await dispatch(getMoneyYearReport({ year: year })).catch((error) => {
+      console.log("Error in getting the data", error)
+    })
   }
   useEffect(() => {
     fetchMoneyReport()

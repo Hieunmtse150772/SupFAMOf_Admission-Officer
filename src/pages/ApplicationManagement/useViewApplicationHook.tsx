@@ -216,7 +216,9 @@ function useViewApplicationHook() {
                 Order: sortModel?.Order,
                 ReportDate: value?.reportDate,
                 ReplyDate: value?.replyDate
-            }))
+            })).catch((error) => {
+                console.log("Error in getting the data", error)
+            })
         }
     }
     const handleOpenReplyApplicationModal = (value: number, status: boolean) => {
@@ -265,7 +267,9 @@ function useViewApplicationHook() {
             Order: sortModel.Order,
             ReportDate: searchParams?.reportDate,
             ReplyDate: searchParams?.replyDate
-        }))
+        })).catch((error) => {
+            console.log("Error in getting the data", error)
+        })
     }
     useEffect(() => {
         fetchApplicationList()

@@ -210,7 +210,9 @@ function UseViewClassHook() {
                 PageSize: 10,
                 Sort: 'createAt',
                 Order: 'desc'
-            }))
+            })).catch((error) => {
+                console.log("Error in getting the data", error)
+            })
         } else {
             setStatusFilter(value?.radio);
             setPage(1)
@@ -220,7 +222,9 @@ function UseViewClassHook() {
                 page: 1,
                 PageSize: 10,
                 Status: value?.radio
-            }))
+            })).catch((error) => {
+                console.log("Error in getting the data", error)
+            })
         }
     }
     const fetchCertificateRegistration = async () => {
@@ -234,26 +238,29 @@ function UseViewClassHook() {
                 Order: sortModel.Order,
                 Status: statusFilter
             }
-            await dispatch(getCertificateRegistration(params))
+            await dispatch(getCertificateRegistration(params)).catch((error) => {
+                console.log("Error in getting the data", error)
+            })
 
         } catch (error) {
             console.error(error)
         }
     }
-    const handleAssignClass = (evenDayId: Key[]) => {
+    const handleAssignClass = async (evenDayId: Key[]) => {
         console.log('evenDayId: ', evenDayId)
         const params: AssignTrainingClass[] = selectedRowsState.map((row) => (
             {
                 trainingRegistrationId: row.key,
                 eventDayId: Number(evenDayId[0])
             }))
-        console.log('params: ', params)
-        dispatch(assignTrainingClass(params)).then((response: any) => {
+        await dispatch(assignTrainingClass(params)).then((response: any) => {
             if (response?.payload?.data?.status?.success) {
                 message.success('Assign success');
                 fetchCertificateRegistration();
                 setOpenAssignClassModal(false);
             } else message.error(response?.payload?.message)
+        }).catch((error) => {
+            console.log("Error in getting the data", error)
         })
     }
     const handleActionChange = async (params: any,

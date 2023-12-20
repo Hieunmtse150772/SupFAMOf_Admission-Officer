@@ -42,12 +42,14 @@ const BanCollaboratorModal: FC<BanCollaboratorModalProps> = ({ open, setOpenBanC
             title: `Do you want to ban ${accountName}?`,
             icon: <ExclamationCircleFilled rev={undefined} />,
             onOk: async () => {
-                dispatch(banCollaboratorById(params)).then((response: any) => {
+                await dispatch(banCollaboratorById(params)).then((response: any) => {
                     if (response?.payload?.data?.status?.success) {
                         message.success(`Successfully banned ${accountName} account`);
                         setOpenBanCollaborator(false);
                         fetchCollabList();
                     } else message.error(response?.payload?.message);
+                }).catch((error) => {
+                    console.log("Error in getting the data", error)
                 })
             },
             onCancel() {

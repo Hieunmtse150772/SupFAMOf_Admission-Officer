@@ -62,6 +62,8 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
                     message.error(response?.payload?.message);
                     fetchClass();
                 }
+            }).catch((error) => {
+                console.log("Error in getting the data", error)
             })
         }
     }
@@ -70,7 +72,9 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
         return current && current < dayjs().endOf('day');
     };
     const fetchClass = async () => {
-        await dispatch(getClassTraining())
+        await dispatch(getClassTraining()).catch((error) => {
+            console.log("Error in getting the data", error)
+        })
     }
     useEffect(() => {
         fetchClass()
