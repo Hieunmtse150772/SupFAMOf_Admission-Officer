@@ -119,13 +119,6 @@ function useViewAttendanceHook(positionId: string, fetchPost: () => void, setOpe
             },
         },
         {
-            title: 'Student ID',
-            dataIndex: 'idStudent',
-            key: 'idStudent',
-            hideInSearch: true,
-            width: 100,
-        },
-        {
             title: 'CheckIn time',
             dataIndex: 'checkInTime',
             key: 'checkinTime',
