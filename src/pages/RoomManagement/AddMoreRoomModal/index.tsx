@@ -31,6 +31,9 @@ const AddMoreRoomModal: FC<AddMoreRoomModalProps> = ({ open, setOpenAddMoreRoomM
                         width="xl"
                         name="date"
                         label="Date"
+                        fieldProps={{
+                            disabledDate: props.disabledDate
+                        }}
                         rules={[{ required: true, message: 'Date is required!' }]}
 
                     />

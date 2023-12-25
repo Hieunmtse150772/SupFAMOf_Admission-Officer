@@ -181,6 +181,22 @@ function useViewPostList() {
       hideInTable: true,
       width: 100,
     },
+
+    {
+      title: 'Premium',
+      dataIndex: 'isPremium',
+      key: 'isPremium',
+      hideInSearch: true,
+      render: (value) => {
+
+        if (value === true) {
+          return <Tag icon={<SafetyCertificateOutlined rev={undefined} />} color="default">Private</Tag>;
+        } else
+          return <Tag icon={<FolderOpenOutlined rev={undefined} />} color="default">Public</Tag>;
+
+      },
+      width: 100,
+    },
     {
       title: 'Status',
       dataIndex: 'status',
@@ -188,8 +204,8 @@ function useViewPostList() {
       hideInSearch: true,
       valueEnum: {
         1: {
-          text: 'Pending',
-          status: 'Pending',
+          text: 'Opening',
+          status: 'Opening',
         },
         2: {
           text: 'Closed',
@@ -218,7 +234,7 @@ function useViewPostList() {
         switch (valueEnum?.status) {
           case Status.opening:
             color = '#1890ff';
-            statusText = 'Pending';
+            statusText = 'Opening';
             break;
 
           case Status.closed:
@@ -228,11 +244,11 @@ function useViewPostList() {
 
           case Status.ended:
             color = red[500];
-            statusText = 'Ending';
+            statusText = 'Ended';
             break;
           case Status.canceled:
             color = yellow[500];
-            statusText = 'Re-open';
+            statusText = 'Canceled';
             break;
           case Status.deleted:
             color = red[500];
@@ -253,21 +269,6 @@ function useViewPostList() {
         </Box>
       },
       width: 120,
-    },
-    {
-      title: 'Premium',
-      dataIndex: 'isPremium',
-      key: 'isPremium',
-      hideInSearch: true,
-      render: (value) => {
-
-        if (value === true) {
-          return <Tag icon={<SafetyCertificateOutlined rev={undefined} />} color="default">Private</Tag>;
-        } else
-          return <Tag icon={<FolderOpenOutlined rev={undefined} />} color="default">Public</Tag>;
-
-      },
-      width: 100,
     },
     // {
     //   title: 'Delete/Edit',

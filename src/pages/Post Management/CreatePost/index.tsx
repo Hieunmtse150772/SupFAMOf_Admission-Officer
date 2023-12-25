@@ -223,7 +223,6 @@ const AddNewPost: FC = () => {
                             creatorButtonProps={{
                                 position,
                                 creatorButtonText: 'Add more position',
-
                             }}
                             creatorRecord={{
                                 name: 'position',
@@ -275,16 +274,15 @@ const AddNewPost: FC = () => {
                                                 label="Address"
                                                 showSearch
                                                 key='key'
+                                                valuePropName=''
                                                 debounceTime={300}
+                                                onChange={(value, option) => { props.form.setFieldValue(`location${index}`, option) }}
                                                 width='lg'
                                                 request={async ({ keyWords }) => {
                                                     const result = await handler.handleSearchAddressGeoapifi(keyWords);
-                                                    console.log('result:', result);
                                                     return result
                                                 }}
-                                                fieldProps={{
-                                                    filterOption: false
-                                                }}
+                                                getValueFromEvent={(value) => value}
                                                 placeholder="Please select a address"
                                                 rules={[{ required: true, message: 'Please select your address!' }]}
                                             />

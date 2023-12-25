@@ -107,6 +107,7 @@ function useViewRegistrationHook() {
             dataIndex: 'postCode',
             key: 'postCode',
             fixed: 'left',
+
             render: (dom, entity) => {
                 return (
                     // eslint-disable-next-line jsx-a11y/anchor-is-valid

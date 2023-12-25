@@ -42,7 +42,7 @@ export type ClassTrainingViewI = {
     class?: string,
     timeFrom?: Date | string,
     timeTo?: Date | string,
-    status?: string,
+    status?: number,
     timeFrom_timeTo?: Moment[]
 }
 export type ClassTrainingViewI2 = {
@@ -50,6 +50,6 @@ export type ClassTrainingViewI2 = {
     class: string,
     timeFrom: Date | string,
     timeTo: Date | string,
-    status: string,
+    status: number,
     timeFrom_timeTo: Moment[]
 }
