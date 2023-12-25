@@ -40,6 +40,8 @@ const ReplyApplicationModal: FC<ReplyApplicationProps> = ({ open, setOpenReplyMo
                             setOpenReplyModal(false);
                             fetchApplicationList();
                         } else message.error('Server internal error');
+                    }).catch((error) => {
+                        console.log("Error in getting the data", error)
                     })
                 } else {
                     dispatch(rejectApplication(params)).then((response: any) => {
@@ -50,6 +52,8 @@ const ReplyApplicationModal: FC<ReplyApplicationProps> = ({ open, setOpenReplyMo
                             setOpenReplyModal(false);
                             fetchApplicationList();
                         } else message.error('Server internal error');
+                    }).catch((error) => {
+                        console.log("Error in getting the data", error)
                     })
                 }
 

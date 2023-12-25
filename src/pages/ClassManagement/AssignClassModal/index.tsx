@@ -1,6 +1,8 @@
+import { DeleteOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { ActionType, EditableProTable, ModalForm, ProColumns } from "@ant-design/pro-components";
-import { DatePicker, TimePicker, message } from "antd";
+import { Button, DatePicker, Popconfirm, Space, Tag, TimePicker, message } from "antd";
 import { RangePickerProps } from "antd/es/date-picker";
+import { RowSelectionType } from "antd/es/table/interface";
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import dayjs from "dayjs";
@@ -33,17 +35,36 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
     const [timeFrom, setTimeFrom] = useState<Date | null>(null)
     const [dateString, setDateString] = useState<string>('');
     const actionRef = useRef<ActionType>();
+    const [page, setPage] = useState<number>(1);
+    const pageSizeOptions = [10, 20, 30]; // Các tùy chọn cho pageSize
+    const total = classList?.metadata?.total;
+    const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
     const [position, setPosition] = useState<'top' | 'bottom' | 'hidden'>(
         'bottom',
     );
+    const customPagination = {
+        current: page,
+        pageSize: pageSize,
+        total: total,
+        showSizeChanger: true,
+        showQuickJumper: true,
+        pageSizeOptions: pageSizeOptions,
+        onChange: (page: number) => onPageChange(page),
+        onShowSizeChange: (current: number, size: number) => onChangePageSize(size),
+    };
     const rowSelection = {
+        type: "radio" as RowSelectionType,
         selectedRowKeys,
         onChange: (keys: Key[]) => {
-            if (keys.length <= 1) {
-                setSelectedRowKeys(keys)
-            } else message.warning('You can only choose one class to assign')
+            setSelectedRowKeys(keys)
         },
     };
+    const onPageChange = (value: any) => {
+        setPage(value)
+    }
+    const onChangePageSize = (value: any) => {
+        setPageSize(value)
+    }
     const handleSave = async (data: ClassTrainingViewI2, rowKey: any) => {
         if (data) {
             const params: ClassCreated = {
@@ -62,15 +83,22 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
                     message.error(response?.payload?.message);
                     fetchClass();
                 }
+            }).catch((error) => {
+                console.log("Error in getting the data", error)
             })
         }
+    }
+    const handleDelete = async (data: ClassTrainingViewI2) => {
+
     }
     const disabledDate: RangePickerProps['disabledDate'] = (current) => {
         // Can not select days before today and today
         return current && current < dayjs().endOf('day');
     };
     const fetchClass = async () => {
-        await dispatch(getClassTraining())
+        await dispatch(getClassTraining()).catch((error) => {
+            console.log("Error in getting the data", error)
+        })
     }
     useEffect(() => {
         fetchClass()
@@ -88,14 +116,14 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
                         rowIndex > 1 ? [{ required: true, message: 'Room name is required' }] : [],
                 };
             },
-            width: '15%',
+            width: 100,
         },
         {
             title: 'Date',
             dataIndex: 'date',
             valueType: 'date',
             tooltip: 'Start date',
-            width: '15%',
+            width: 100,
             renderFormItem: (_, { record }) => {
                 return (
                     <DatePicker
@@ -136,6 +164,7 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
                     />
                 );
             },
+            width: 200
         },
         {
             title: 'Status',
@@ -143,20 +172,48 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
             dataIndex: 'status',
             readonly: true,
             editable: false,
-            width: '10%'
+            render: (value, valueEnum) => {
+                switch (valueEnum.status) {
+                    case 1:
+                        return (
+                            <Space size={0}>
+                                <Tag color="green">Opening</Tag>
+                            </Space>
+                        )
+                    case 2:
+                        return (
+                            <Space size={0}>
+                                <Tag color="blue">Closed</Tag>
+                            </Space>
+                        )
+                    case 3:
+                        return (
+                            <Space size={0}>
+                                <Tag color="red">Delete</Tag>
+                            </Space>
+                        )
+                    default:
+                        break;
+                }
+            },
+            width: 100
         },
         {
             title: 'Action',
             valueType: 'option',
-            width: 200,
-            render: (text, record, _, action) => [
-                <a
-                    key="delete"
-                    onClick={() => { }}
+            width: 50,
+            render: (text, record, _, action) => {
+                return <Popconfirm
+                    style={{ justifyContent: 'center', display: 'flex', alignItems: 'center' }}
+                    title="Delete the task"
+                    description="Are you sure to delete this room?"
+                    onConfirm={() => handleDelete(record as ClassTrainingViewI2)}
+                    icon={<QuestionCircleOutlined rev={undefined} style={{ color: 'red' }} />}
                 >
-                    Delete
-                </a>,
-            ],
+                    <Button style={{ alignContent: 'center', }} danger icon={<DeleteOutlined rev={undefined} />} />
+                </Popconfirm>
+            },
+            align: 'center'
         },
     ];
     const hanldeAssignClass2 = async (value: any) => {
@@ -164,12 +221,15 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
     }
     return (
         <ModalForm
-            title="Choose room to assign"
+            title="Room interview"
             open={open}
             onFinish={async () => {
                 if (selectedRowKeys.length === 0) {
                     message.warning('Select one class to assign!');
-                } else hanldeAssignClass(selectedRowKeys)
+                } else {
+                    console.log('select: ', selectedRowKeys)
+                    hanldeAssignClass(selectedRowKeys)
+                }
             }}
             onOpenChange={setOpenAssignClassModal}
             submitter={{
@@ -193,9 +253,9 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
             </Button> */}
             <EditableProTable<ClassTrainingViewI>
                 rowKey="id"
-                headerTitle="Room training"
+                headerTitle="Choose one room to assign"
                 scroll={{
-                    x: 960,
+                    x: 900,
                 }}
                 actionRef={actionRef}
                 loading={loading}
@@ -203,6 +263,7 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
                 columns={columns}
                 value={dataSource}
                 onChange={setDataSource}
+                pagination={customPagination}
                 editable={{
                     type: 'single',
                     formProps: {
@@ -222,7 +283,6 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
 
                 }}
                 revalidateOnFocus={true}
-
                 recordCreatorProps={{
                     newRecordType: 'dataSource',
                     record: (index, dataSource) => ({

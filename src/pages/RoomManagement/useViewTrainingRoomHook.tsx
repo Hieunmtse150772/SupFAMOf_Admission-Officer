@@ -117,19 +117,19 @@ function useViewTrainingHook() {
                     case 1:
                         return (
                             <Space size={0}>
-                                <Tag color="green">Pending</Tag>
+                                <Tag color="green">Opening</Tag>
                             </Space>
                         )
                     case 2:
                         return (
                             <Space size={0}>
-                                <Tag color="blue">Approved</Tag>
+                                <Tag color="blue">Closed</Tag>
                             </Space>
                         )
                     case 3:
                         return (
                             <Space size={0}>
-                                <Tag color="red">Rejected</Tag>
+                                <Tag color="red">Delete</Tag>
                             </Space>
                         )
                     default:
@@ -189,7 +189,9 @@ function useViewTrainingHook() {
     const handleEditRoom = async (value: any) => {
         setOpenEditRoom(true);
         setRoomId(value?.id);
-        await dispatch(getClassById({ id: value?.id }))
+        await dispatch(getClassById({ id: value?.id })).catch((error) => {
+            console.log("Error in getting the data", error)
+        })
     }
     const handleOpenAddMoreRoom = () => {
         setOpenAddMoreClassModal(true)
@@ -203,7 +205,9 @@ function useViewTrainingHook() {
             date: value?.date
         }
         setSearchParams(params);
-        await dispatch(getAllClassTraining(params))
+        await dispatch(getAllClassTraining(params)).catch((error) => {
+            console.log("Error in getting the data", error)
+        })
     }
     const handleActionChange = async (params: any,
         sorter: Record<string, SortOrder>,

@@ -249,7 +249,9 @@ const useViewCollablistHook = () => {
                 PageSize: pageSize,
                 name: value?.name,
                 email: value?.email
-            }))
+            })).catch((error) => {
+                console.log("Error in getting the data", error)
+            })
         }
     }
     const handleOpenExportExcel = (name: string) => {
@@ -264,7 +266,9 @@ const useViewCollablistHook = () => {
                 hideLoading();
                 message.success('Download file export account successful');
             }
-        });
+        }).catch((error) => {
+            console.log("Error in getting the data", error)
+        })
     }
 
     const handlePremium = (value: any) => {
@@ -318,7 +322,9 @@ const useViewCollablistHook = () => {
     const handleActionChange = async (params: any,
         sorter: Record<string, SortOrder>,
         filter: Record<string, (string | number)[] | null>): Promise<Partial<RequestData<any>>> => {
-        await dispatch(getCollabList({}))
+        await dispatch(getCollabList({})).catch((error) => {
+            console.log("Error in getting the data", error)
+        })
         return {
             data: [],
             success: true, // Set to true if the request was successful
@@ -346,7 +352,9 @@ const useViewCollablistHook = () => {
         // ...
     }));
     const fetchCollabList = async () => {
-        await dispatch(getCollabList({ page: page, PageSize: pageSize, name: searchParams?.name, email: searchParams?.email }))
+        await dispatch(getCollabList({ page: page, PageSize: pageSize, name: searchParams?.name, email: searchParams?.email })).catch((error) => {
+            console.log("Error in getting the data", error)
+        })
     }
     const downloadExcelFile = () => {
         if (excelFile) {

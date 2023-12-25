@@ -78,6 +78,8 @@ const AddCertificateModal: FC<AddCertificateModalProps> = ({ open, setOpenCertif
             } else {
                 message.error(response?.payload?.message)
             }
+        }).catch((error) => {
+            console.log("Error in getting the data", error)
         })
     }
     useEffect(() => {

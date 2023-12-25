@@ -260,6 +260,8 @@ function useViewCollabListModalHook(
                     } else if (response?.payload?.statusCode === 400) {
                         message.error(response?.payload?.message);
                     }
+                }).catch((error) => {
+                    console.log("Error in getting the data", error)
                 })
             },
             onCancel() {

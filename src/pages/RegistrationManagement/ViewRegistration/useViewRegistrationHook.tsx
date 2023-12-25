@@ -107,6 +107,7 @@ function useViewRegistrationHook() {
             dataIndex: 'postCode',
             key: 'postCode',
             fixed: 'left',
+
             render: (dom, entity) => {
                 return (
                     // eslint-disable-next-line jsx-a11y/anchor-is-valid
@@ -620,7 +621,9 @@ function useViewRegistrationHook() {
                 postName: value?.postName,
                 postCategoryId: value?.postCategoryId,
                 createAt: value?.createAt
-            }))
+            })).catch((error) => {
+                console.log("Error in getting the data", error)
+            })
         }
     }
     const handleActionChange = async (params: any,
@@ -685,7 +688,9 @@ function useViewRegistrationHook() {
             postName: searchParams?.postName,
             postCategoryId: searchParams?.postCategoryId,
             createAt: searchParams?.createAt
-        }))
+        })).catch((error) => {
+            console.log("Error in getting the data", error)
+        })
     }
 
     const fetchPostTitleOption = async () => {

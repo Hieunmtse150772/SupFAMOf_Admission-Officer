@@ -54,7 +54,10 @@ interface GooglePlacePrediction {
     // ...
 }
 type RangeType = 'start' | 'end';
-
+type LocationI = {
+    longitude: number,
+    latitude: number
+}
 type RangeDisabledTime = (
     now: Dayjs | null,
     type: RangeType,
@@ -70,7 +73,7 @@ const useAddNewPostHook = () => {
         formState: { errors },
         setValue, reset, getValues
     } = useForm();
-    const Formater = 'DD/MM/YYYY';
+    const Formater = 'YYYY-MM-DD';
     const dispatch = useAppDispatch();
     const { confirm } = Modal;
     const [form] = ProForm.useForm();
@@ -178,19 +181,18 @@ const useAddNewPostHook = () => {
         try {
             // Thực hiện gọi API Google ở đây
             const response = await dispatch(getGeoApiFi({ address: keyWords, key: '6f44e55eb27841738cbd3be2852d936c' }));
-            unwrapResult(response)
+            unwrapResult(response);
             if (getGeoApiFi.fulfilled.match(response)) {
-                console.log('response: ', response);
                 const optionsFromAPI = response.payload.data?.features?.map((feature) => {
                     return {
                         label: feature.properties.formatted,
-                        value: feature.properties.formatted,
-                        key: feature.properties.place_id
+                        value: `${feature.properties.formatted}+${String(feature.properties.lat)}+${String(feature.properties.lon)}`,
+                        key: feature.properties.place_id,
                     }
                 });
-                console.log('optionsFromAPI: ', optionsFromAPI)
                 return optionsFromAPI;
             } else {
+                message.error('Search address fail!');
                 throw new Error('Failed to fetch data');
             }
         } catch (error) {
@@ -247,44 +249,79 @@ const useAddNewPostHook = () => {
         }
         return Promise.resolve();
     }
-    const handlePostPosition = async (postPosition: PostPosition) => {
-        const geocodingParams: paramLeafLetI = {
-            q: postPosition.location,
-            format: 'json',
-            limit: 1
-        }
-        const response = await dispatch(geocodingLeafLetApi(geocodingParams))
-        const result: AxiosResponse<geocodingLeafLetI[], any> = unwrapResult(response)
+    // const handlePostPosition = async (postPosition: PostPosition) => {
+    //     const geocodingParams: paramLeafLetI = {
+    //         q: postPosition.location,
+    //         format: 'json',
+    //         limit: 1
+    //     }
+    //     const response = await dispatch(geocodingLeafLetApi(geocodingParams))
+    //     const result: AxiosResponse<geocodingLeafLetI[], any> = unwrapResult(response)
+    //     const parts = postPosition.date.split('/'); // Tách chuỗi thành mảng các phần tử, sử dụng dấu '/' để tách
+    //     // Lưu ý: Đối với định dạng 'DD/MM/YYYY', parts[0] là ngày, parts[1] là tháng và parts[2] là năm
+    //     const day = parseInt(parts[0], 10); // Chuyển phần tử đầu tiên thành số nguyên
+    //     const month = parseInt(parts[1], 10) - 1; // Chuyển phần tử thứ hai thành số nguyên, trừ đi 1 vì index của tháng trong Date bắt đầu từ 0
+    //     const year = parseInt(parts[2], 10);
+    //     const dateObject = new Date(year, month, day);
+    //     const formattedDate = moment(dateObject).format('YYYY-MM-DDTHH:mm:ss'); //ToIsoTostring sẽ tự đổi theo UTC nên sẽ chênh lệch múi giờ, thay vào đó sẽ xài moment
+    //     if (result.data.length !== 0) {
+    //         const repsonse = {
+    //             trainingCertificateId: postPosition.certificateOption,
+    //             positionDescription: postPosition.positionDescription,
+    //             documentId: postPosition.documentOption,
+    //             positionName: postPosition.positionName,
+    //             amount: postPosition.amount,
+    //             salary: postPosition.salary,
+    //             timeFrom: postPosition.timeFrom_timeTo[0],
+    //             timeTo: postPosition.timeFrom_timeTo[1],
+    //             isBusService: postPosition.isBusService,
+    //             schoolName: postPosition.schoolName,
+    //             location: postPosition.location,
+    //             latitude: result.data[0].lat,
+    //             longitude: result.data[0].lon,
+    //             date: formattedDate
+    //         }
+    //         return repsonse;
+    //     } else {
+    //         message.warning('Your address enter was not found, please enter the right address!');
+    //         setLoading(false);
+    //         return false;
+    //     }
+    // }
+    const handlePostPosition2 = async (postPosition: PostPosition, index: number) => {
+        const location = postPosition.location.split('+')
+        const address = location[0];
+        const latitude = location[1];
+        const longitude = location[2];
         const parts = postPosition.date.split('/'); // Tách chuỗi thành mảng các phần tử, sử dụng dấu '/' để tách
         // Lưu ý: Đối với định dạng 'DD/MM/YYYY', parts[0] là ngày, parts[1] là tháng và parts[2] là năm
         const day = parseInt(parts[0], 10); // Chuyển phần tử đầu tiên thành số nguyên
         const month = parseInt(parts[1], 10) - 1; // Chuyển phần tử thứ hai thành số nguyên, trừ đi 1 vì index của tháng trong Date bắt đầu từ 0
         const year = parseInt(parts[2], 10);
         const dateObject = new Date(year, month, day);
-        const formattedDate = moment(dateObject).format('YYYY-MM-DDTHH:mm:ss'); //ToIsoTostring sẽ tự đổi theo UTC nên sẽ chênh lệch múi giờ, thay vào đó sẽ xài moment
-        if (result.data.length !== 0) {
-            const repsonse = {
-                trainingCertificateId: postPosition.certificateOption,
-                positionDescription: postPosition.positionDescription,
-                documentId: postPosition.documentOption,
-                positionName: postPosition.positionName,
-                amount: postPosition.amount,
-                salary: postPosition.salary,
-                timeFrom: postPosition.timeFrom_timeTo[0],
-                timeTo: postPosition.timeFrom_timeTo[1],
-                isBusService: postPosition.isBusService,
-                schoolName: postPosition.schoolName,
-                location: postPosition.location,
-                latitude: result.data[0].lat,
-                longitude: result.data[0].lon,
-                date: formattedDate
-            }
-            return repsonse;
-        } else {
-            message.warning('Your address enter was not found, please enter the right address!');
-            setLoading(false);
-            return false;
+        console.log("formattedDate", dateObject)
+        const formattedDate = moment(dateObject).format('YYYY-MM-DDTHH:mm:ss');
+        console.log("formattedDate", formattedDate)
+
+        // const formattedDate = moment(postPosition.date).format('YYYY-MM-DDTHH:mm:ss'); //ToIsoTostring sẽ tự đổi theo UTC nên sẽ chênh lệch múi giờ, thay vào đó sẽ xài moment
+        const repsonse = {
+            trainingCertificateId: postPosition.certificateOption,
+            positionDescription: postPosition.positionDescription,
+            documentId: postPosition.documentOption,
+            positionName: postPosition.positionName,
+            amount: postPosition.amount,
+            salary: postPosition.salary,
+            timeFrom: postPosition.timeFrom_timeTo[0],
+            timeTo: postPosition.timeFrom_timeTo[1],
+            isBusService: postPosition.isBusService,
+            schoolName: postPosition.schoolName,
+            location: address,
+            latitude: latitude,
+            longitude: longitude,
+            date: formattedDate
         }
+        return repsonse;
+
     }
 
     const customRequest = async ({ file, onSuccess, onError }: any) => {
@@ -299,6 +336,8 @@ const useAddNewPostHook = () => {
     };
 
     const handleSubmitAnt = async (value: any) => {
+        console.log('value: ', value);
+        console.log('location: ', form.getFieldValue('location1'))
         if (description !== '') {
             setError('');
         }
@@ -312,7 +351,7 @@ const useAddNewPostHook = () => {
                 // content: 'Some descriptions',
                 onOk: async () => {
                     setLoading(true)
-                    const postPositionPromises = value?.postPositions?.map(async (postPosition: PostPosition) => handlePostPosition(postPosition));
+                    const postPositionPromises = value?.postPositions?.map(async (postPosition: PostPosition, index: number) => handlePostPosition2(postPosition, index));
                     try {
                         const postPositionsResults = await Promise.all(postPositionPromises);
                         const photoUrl = await uploadImage(fileImage, setLoading); // Gọi hàm upload của bạn
@@ -379,7 +418,7 @@ const useAddNewPostHook = () => {
                 currentDate.setDate(currentDate.getDate() + 1);
             }
             const optionDatePicker: any[] = dateArray?.map((date) => ({
-                value: moment(date).format(Formater),
+                value: moment(date).format('DD/MM/YYYY'),
                 label: moment(date).format(Formater)
             }));
             setOptionDate(optionDatePicker);

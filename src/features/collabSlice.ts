@@ -39,7 +39,7 @@ export const getCollabList = createAsyncThunk('collabs/get-collab-list',
             return rejectWithValue(axiosError.response?.data)
         }
     })
-export const searchCollabListByEmail = createAsyncThunk('collabs/get-collab-list',
+export const searchCollabListByEmail = createAsyncThunk('collabs/search-collab-list',
     async (params: SearchCollabParamDto, { rejectWithValue }) => {
         try {
             const result = await collabService.searchCollabListByEmail(params);

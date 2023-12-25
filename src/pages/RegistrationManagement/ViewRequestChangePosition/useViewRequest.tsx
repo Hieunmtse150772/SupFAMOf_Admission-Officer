@@ -317,7 +317,9 @@ function useViewRequest(postId: number, fetchPost: () => void) {
             PageSize: pageSize,
             postId: postId,
             Status: statusFilter
-        }))
+        })).catch((error) => {
+            console.log("Error in getting the data", error)
+        })
     }
     useEffect(() => {
         fetchRequest()
