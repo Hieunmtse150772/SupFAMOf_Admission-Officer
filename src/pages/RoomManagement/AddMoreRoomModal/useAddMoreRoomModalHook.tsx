@@ -1,7 +1,9 @@
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import { ProForm } from "@ant-design/pro-components";
 import { Modal, message } from "antd";
+import { RangePickerProps } from "antd/es/date-picker";
 import { useAppDispatch } from "app/store";
+import dayjs from "dayjs";
 import { createClass } from "features/classSlice";
 import ClassCreated from "models/classCreated.model";
 import { ClassTrainingViewI2 } from "models/classTraining.model";
@@ -43,11 +45,16 @@ function useAddMoreRoomModalHook(fetchClass: () => void, setOpenAddMoreRoomModal
         });
 
     }
+    const disabledDate: RangePickerProps['disabledDate'] = (current) => {
+        // Can not select days before today and today
+        return current && current < dayjs().endOf('day');
+    };
     const handler = {
         handleAddRoom
     }
     const props = {
-        form
+        form,
+        disabledDate
     }
     return { handler, props }
 }

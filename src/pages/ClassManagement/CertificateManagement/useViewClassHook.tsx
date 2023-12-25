@@ -3,7 +3,7 @@ import { FiberManualRecord } from "@mui/icons-material";
 import { Box, Typography } from "@mui/material";
 import { blue, green, grey, red } from "@mui/material/colors";
 import { Avatar, Modal, Popover, StepsProps, message } from 'antd';
-import { SortOrder } from 'antd/es/table/interface';
+import { RowSelectionType, SortOrder } from 'antd/es/table/interface';
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import SearchTrainingRegistrationParamsDto from "dtos/searchTrainingRegistration.dto";
@@ -26,11 +26,21 @@ type SearchParamsI = {
     status?: string,
     postCategoryId?: number
 }
+type TableType = {
+    key: number,
+    name: string,
+    email: string,
+    phone: string,
+    imgUrl: string,
+    isPremium: boolean,
+    idStudent: string,
+    status: number,
+}
 function UseViewClassHook() {
     const Formatter = 'DD/MM/YYYY'
     const { id } = useParams<{ id: string }>();
     const [currentRow, setCurrentRow] = useState<any>();
-    const [selectedRowsState, setSelectedRows] = useState<any[]>([]);
+    const [selectedRowKeys, setSelectedRows] = useState<any[]>([]);
     const [openConFirmModal, setOpenConfirmModal] = useState<boolean>(false);
     const certificateRegistrationList = useAppSelector(state => state.certificate.trainingRegistration);
     const title = certificateRegistrationList.data[0]?.certificateName;
@@ -44,6 +54,17 @@ function UseViewClassHook() {
     const total = certificateRegistrationList?.metadata?.total;
     const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
     const [postId, setPostId] = useState<number | null>(null);
+    const rowSelection = {
+        type: "checkbox" as RowSelectionType,
+        selectedRowKeys,
+        onChange: (keys: Key[]) => {
+            setSelectedRows(keys);
+        },
+        getCheckboxProps: (record: TableType) => ({
+            disabled: record.status === 3 || record.status === 4, // Column configuration not to be checked
+            name: record.name
+        }),
+    };
     const [sortModel, setSortModel] = useState<SortModalI>({
         Sort: 'createAt',
         Order: 'desc'
@@ -200,6 +221,7 @@ function UseViewClassHook() {
         }
     }
     const handleSetStatus = async (value: any) => {
+        setSelectedRows([]);
         if (value.radio === 0) {
             setStatusFilter(null)
             setPage(1)
@@ -227,6 +249,19 @@ function UseViewClassHook() {
             })
         }
     }
+    const fetchCertificatRegistrationAssigned = async () => {
+        setStatusFilter(2);
+        setPage(1)
+        await dispatch(getCertificateRegistration({
+            id: Number(id),
+            isActive: true,
+            page: 1,
+            PageSize: 10,
+            Status: 2
+        })).catch((error) => {
+            console.log("Error in getting the data", error)
+        })
+    }
     const fetchCertificateRegistration = async () => {
         try {
             const params: SearchTrainingRegistrationParamsDto = {
@@ -245,18 +280,20 @@ function UseViewClassHook() {
         } catch (error) {
             console.error(error)
         }
-    }
+    };
     const handleAssignClass = async (evenDayId: Key[]) => {
         console.log('evenDayId: ', evenDayId)
-        const params: AssignTrainingClass[] = selectedRowsState.map((row) => (
+        const params: AssignTrainingClass[] = selectedRowKeys.map((row) => (
             {
-                trainingRegistrationId: row.key,
+                trainingRegistrationId: row,
                 eventDayId: Number(evenDayId[0])
             }))
+        console.log('params: ', params)
         await dispatch(assignTrainingClass(params)).then((response: any) => {
             if (response?.payload?.data?.status?.success) {
                 message.success('Assign success');
-                fetchCertificateRegistration();
+                setSelectedRows([]);
+                fetchCertificatRegistrationAssigned();
                 setOpenAssignClassModal(false);
             } else message.error(response?.payload?.message)
         }).catch((error) => {
@@ -285,7 +322,7 @@ function UseViewClassHook() {
         setPageSize(value)
     }
 
-    const rows = certificateRegistrationList?.data[0]?.registrations.map(collab => ({
+    const rows: TableType[] = certificateRegistrationList?.data[0]?.registrations.map(collab => ({
         key: collab?.id,
         name: collab?.name,
         email: collab?.email,
@@ -296,7 +333,6 @@ function UseViewClassHook() {
         status: collab?.status,
         // ...
     }));
-
     useEffect(() => {
         fetchCertificateRegistration()
     }, [page, pageSize, sortModel])
@@ -330,9 +366,11 @@ function UseViewClassHook() {
         certificateList,
         certificateRegistrationList,
         isLoading,
-        selectedRowsState,
+        selectedRowKeys,
         openAssignClassModal,
-        title
+        title,
+        statusFilter,
+        rowSelection
     }
     return {
         handler,

@@ -1,6 +1,6 @@
 import { ActionType, ProColumns, ProTable, RequestData } from "@ant-design/pro-components";
-import { SortOrder, TableLocale } from "antd/es/table/interface";
-import React, { useRef } from "react";
+import { RowSelectionType, SortOrder, TableLocale } from "antd/es/table/interface";
+import React, { Key, useRef } from "react";
 import { useNavigate } from "react-router";
 import './style.scss';
 interface SFAMOGridProps {
@@ -24,9 +24,17 @@ interface SFAMOGridProps {
         filter: Record<string, (string | number)[] | null>
     ) => Promise<Partial<RequestData<any>>>;
     handleSearch: (value: any) => void,
-    setSelectedRows?: React.Dispatch<React.SetStateAction<any[]>>
+    rowSelection?: {
+        type: RowSelectionType,
+        selectedRowKeys: any[],
+        onChange: (keys: Key[]) => void,
+        getCheckboxProps: (record: any) => {
+            disabled: boolean, // Column configuration not to be checked
+            name: string,
+        },
+    }
 }
-const SFAMOGrid = ({ title, isLoading, rows, columns, rowsExpanded, page, total, pageSize, onPageChange, onChangePageSize, pageSizeOptions, expandedRowRender, action, toolbar, handleTableChange, handleSearch, setSelectedRows }: SFAMOGridProps) => {
+const SFAMOGrid = ({ title, isLoading, rows, columns, rowsExpanded, page, total, pageSize, onPageChange, onChangePageSize, pageSizeOptions, expandedRowRender, action, toolbar, handleTableChange, handleSearch, rowSelection }: SFAMOGridProps) => {
     let navigate = useNavigate();
     const actionRef = useRef<ActionType>();
     console.log('total: ', total)
@@ -57,15 +65,12 @@ const SFAMOGrid = ({ title, isLoading, rows, columns, rowsExpanded, page, total,
                 expandable={{ expandedRowRender }}
                 toolBarRender={() => [toolbar]}
                 onSubmit={value => handleSearch(value)}
-                dataSource={rows} columns={columns}
+                dataSource={rows}
+                columns={columns}
                 loading={isLoading}
                 locale={customLocale}
                 pagination={customPagination}
-                rowSelection={setSelectedRows ? {
-                    onChange: (_, selectedRows) => {
-                        setSelectedRows(selectedRows);
-                    },
-                } : false}
+                rowSelection={rowSelection}
             >
             </ProTable>
         </>

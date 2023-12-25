@@ -117,19 +117,19 @@ function useViewTrainingHook() {
                     case 1:
                         return (
                             <Space size={0}>
-                                <Tag color="green">Pending</Tag>
+                                <Tag color="green">Opening</Tag>
                             </Space>
                         )
                     case 2:
                         return (
                             <Space size={0}>
-                                <Tag color="blue">Approved</Tag>
+                                <Tag color="blue">Closed</Tag>
                             </Space>
                         )
                     case 3:
                         return (
                             <Space size={0}>
-                                <Tag color="red">Rejected</Tag>
+                                <Tag color="red">Delete</Tag>
                             </Space>
                         )
                     default:

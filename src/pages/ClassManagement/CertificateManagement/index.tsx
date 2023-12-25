@@ -2,7 +2,7 @@ import { CheckCircleOutlined, FilterOutlined } from "@ant-design/icons";
 import { LightFilter, ProFormRadio } from "@ant-design/pro-components";
 import { Button } from "antd";
 import SFAMOGrid from "components/SFAMOGrid";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router";
 import AssignClassModal from "../AssignClassModal";
 import UseViewClassHook from "./useViewClassHook";
@@ -18,19 +18,20 @@ const Index = () => {
         <Button
             type="primary"
             key="primary"
-            disabled={props.selectedRowsState.length === 0}
+            disabled={props.selectedRowKeys.length === 0 || props.statusFilter === 3}
             onClick={handler.hanldeOpenAssignClass}
         >
             < CheckCircleOutlined rev={undefined} /> Assign room
         </Button >
     )
+    useEffect(() => {
+
+    }, [props.statusFilter])
+    console.log('first: ', props.selectedRowKeys)
     const LightFilterCustom = (
         <div ref={yourRef}>
             <LightFilter
                 key="light-filter2"
-                initialValues={{
-                    sex: 1,
-                }}
                 bordered
                 collapseLabel={<FilterOutlined rev={undefined} />}
                 onFinish={async (values) => handler.handleSetStatus(values)}
@@ -38,7 +39,7 @@ const Index = () => {
                 <ProFormRadio.Group
                     name="radio"
                     radioType="button"
-                    initialValue={1}
+                    initialValue={props.statusFilter}
                     options={[
                         {
                             value: 0,
@@ -79,7 +80,6 @@ const Index = () => {
                     <SFAMOGrid
                         title={props.title}
                         toolbar={[LightFilterCustom, AssignRegistration]}
-
                         handleSearch={handler.handleSearch}
                         handleTableChange={handler.handleActionChange}
                         pageSizeOptions={props.pageSizeOptions}
@@ -91,7 +91,7 @@ const Index = () => {
                         rows={props.rows}
                         columns={props?.columns}
                         isLoading={props.isLoading}
-                        setSelectedRows={handler.setSelectedRows}
+                        rowSelection={props.rowSelection}
                     />
                 )
 

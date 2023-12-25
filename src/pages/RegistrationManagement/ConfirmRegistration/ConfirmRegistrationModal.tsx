@@ -46,7 +46,8 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
 
     const rowSelection = {
         selectedRowKeys,
-        onChange: (keys: Key[]) => {
+        onChange: (keys: Key[], value: any) => {
+            console.log('value: ', value)
             if (activeKey === 'tab1') {
                 if ((percent === 100) && (selectedRowKeys.length < keys.length)) { message.error('The number of participants is sufficient!') } else {
                     setSelectedRowKeys(keys);
@@ -277,6 +278,7 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
                             style={{ width: '100%' }}
                             headerTitle="List Collab Register"
                             dataSource={dataSource}
+
                             toolbar={{
                                 menu: {
                                     activeKey,
@@ -314,11 +316,12 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
                                     },
                                     placeholder: 'Enter email'
                                 },
+
                             }}
                             metas={{
                                 id: {
                                     dataIndex: 'id',
-                                    search: false
+                                    search: false,
                                 },
                                 title: {
                                     dataIndex: 'row.account.name',
@@ -365,6 +368,7 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
                             pagination={{
                                 pageSize: 5,
                             }}
+
                             rowSelection={rowSelection}
                         />
                     </ProCard>
