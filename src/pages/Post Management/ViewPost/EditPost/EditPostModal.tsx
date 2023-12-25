@@ -4,7 +4,8 @@ import { Grid } from "@mui/material";
 import { Button, Modal, Upload } from "antd";
 import { Small } from "components/Typography";
 import PostInfoDto from "dtos/Post/Post View/postInfo.dto";
-import { FC, useState } from "react";
+import moment from "moment";
+import { FC, useEffect, useState } from "react";
 import ReactQuill from "react-quill";
 import 'react-quill/dist/quill.snow.css'; // Import Quill styles
 import './style.scss';
@@ -26,6 +27,25 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
     // useEffect(() => {
     //     handler.fetchPost(postId)
     // }, [])
+    useEffect(() => {
+        const dateFrom = new Date(postInfo?.data.dateFrom ? postInfo?.data.dateFrom : '');
+        const dateTo = new Date(postInfo?.data.dateTo ? postInfo?.data.dateTo : '');
+        let dateArray = [];
+        if (dateFrom && dateTo) {
+            let currentDate = new Date(dateFrom);
+            while (currentDate <= dateTo) {
+                dateArray.push(new Date(currentDate));
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            const optionDatePicker: any[] = dateArray?.map((date) => ({
+                value: moment(date).format('DD/MM/YYYY'),
+                label: moment(date).format('YYYY-MM-DD'),
+            }));
+            console.log('optionDatePicker', optionDatePicker)
+            handler.setOptionDate(optionDatePicker);
+        }
+
+    }, [])
     const uploadButton = (
         <div>
             <PlusOutlined rev={undefined} />
@@ -148,25 +168,10 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
             </Grid>
             <ProFormList
                 name="postPositions"
-                rules={[
-                    {
-                        required: true,
-                        validator: async (_, value) => {
-                            if (value && value.length > 0) {
-                                return;
-                            }
-                            throw new Error('Need at least one position to create post!');
-                        },
-                    },
-                ]}
-
-                creatorButtonProps={{
-                    position,
-                }}
-                creatorRecord={{
-                    name: 'position',
-                }}
                 initialValue={postInfo?.data?.postPositions}
+                creatorButtonProps={
+                    false
+                }
                 itemRender={({ listDom, action }, { index }) => (
                     <ProCard
                         bordered
@@ -179,7 +184,6 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                 )}
             >
                 <ProFormGroup >
-
                     <ProFormText
                         label="Position Name"
                         width="md"
@@ -328,11 +332,169 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
 
                     >Yes/No</ProFormCheckbox>
                 </ProFormGroup>
-
             </ProFormList>
+            <ProFormList
+                name="newPostPositions"
+                creatorButtonProps={{
+                    position,
+                    creatorButtonText: 'Add new position'
+                }}
+                creatorRecord={{
+                    name: 'position',
+                }}
+                itemRender={({ listDom, action }, { index }) => (
+                    <ProCard
+                        extra={action}
+                        bordered
+                        style={{ marginBlockEnd: 8 }}
+                        title={`New position ${index + 1}`}
+                        bodyStyle={{ paddingBlockEnd: 0, boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px' }}
+                    >
+                        {listDom}
+                    </ProCard>
+                )}
+            >
+                <ProFormGroup >
+                    <ProFormText
+                        label="Position Name"
+                        width="md"
+                        rules={[
+                            {
+                                required: true,
+                            },
+                        ]}
+                        name="positionName"
+                        onMetaChange={onchange = () => handler.handleEdit()}
+                    />
+                    <ProFormText
+                        label="Position Description"
+                        width="md"
+                        rules={[
+                            {
+                                required: true,
+                            },
+                        ]}
+                        name="positionDescription"
+                        onMetaChange={onchange = () => handler.handleEdit()}
+                    />
+                    <ProFormText
+                        label="School Name"
+                        width="md"
+                        rules={[
+                            {
+                                required: true,
+                            },
+                        ]}
+                        name="schoolName"
+                        onMetaChange={onchange = () => handler.handleEdit()}
+                    />
+                    {/* <ProFormText
+                        label="Location"
+                        width="sm"
+                        rules={[
+                            {
+                                required: true,
+                            },
+                        ]}
+                        name="location"
+                    /> */}
+                    <ProFormSelect
+                        name="location"
+                        label="Address"
+                        showSearch
+                        debounceTime={300}
+                        width='md'
+                        request={async ({ keyWords }) => handler.handleSearchAddressGeoapifi(keyWords)}
+                        placeholder="Please select a country"
+                        rules={[{ required: true, message: 'Please select your country!' }]}
+                        fieldProps={{
+                            filterOption: false
+                        }}
+                        onMetaChange={onchange = () => handler.handleEdit()}
+                    />
+                    <ProFormSelect
+                        width="sm"
+                        options={props.optionDate}
+                        name="date"
+                        label="Working date"
+                        tooltip="Choose one options of Date"
+                        rules={[{ required: true, message: 'Choose one options of Date!' }]}
+                    />
+                    <ProFormSelect
+                        label="Document"
+                        width="md"
+                        rules={[
+                            {
+                                required: false,
+                            },
+                        ]}
+                        name="documentId"
+                        options={props.documentOptions}
+                        debounceTime={5}
+                        tooltip="That field optional"
+                        onMetaChange={onchange = () => handler.handleEdit()}
+                    />
+                    <ProFormSelect
+                        label="Certificate"
+                        width="md"
+                        rules={[
+                            {
+                                required: false,
+                            },
+                        ]}
+                        name="trainingCertificateId"
+                        options={props.certificateOptions}
+                        debounceTime={5}
+                        tooltip="That field optional"
+                        onMetaChange={onchange = () => handler.handleEdit()}
+                    />
 
+                    <ProFormTimePicker.RangePicker
+                        label="Time"
+                        width="sm"
+                        name="timeFrom_timeTo"
+                        fieldProps={{
+                            disabledTime: (current, type) => handler.disabledTime(current, type)
+                        }}
+                        rules={[{ required: true, message: 'Choose time from & time to!' }]}
+                    />
+                    <ProFormDigit
+                        label="Amount"
+                        width="xs"
+                        name="amount"
+                        rules={[
+                            {
+                                required: true,
+                            },
+                        ]}
+                        onMetaChange={onchange = () => handler.handleEdit()}
 
+                    />
+                    <ProFormMoney
+                        label="Salary"
+                        name="salary"
+                        width="xs"
+                        customSymbol="đ"
+                        rules={[
+                            {
+                                required: true,
+                            },
+                        ]}
+                        locale="en-VN"
+                        onMetaChange={onchange = () => handler.handleEdit()}
 
+                    />
+                    <ProFormCheckbox
+                        label="Bus option"
+                        width="xs"
+                        tooltip="That field optional"
+                        name="isBusService"
+                        initialValue={false}
+                        onMetaChange={onchange = () => handler.handleEdit()}
+
+                    >Yes/No</ProFormCheckbox>
+                </ProFormGroup>
+            </ProFormList>
         </ModalForm >
     )
 }

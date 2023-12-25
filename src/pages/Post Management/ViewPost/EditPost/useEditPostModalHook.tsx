@@ -7,6 +7,7 @@ import { UploadProps } from "antd/lib/upload";
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import { AxiosResponse } from "axios";
+import { Dayjs } from "dayjs";
 import { getCertificate } from "features/certificateSlice";
 import { getDocument } from "features/documentSlice";
 import { getGeoApiFi } from "features/googleAPISlice";
@@ -16,6 +17,7 @@ import { getPostTitle } from "features/postTitleSlice";
 import geocodingLeafLetI from "models/geocodingLeafLet.model";
 import { paramLeafLetI } from "models/geocodingParam.model";
 import { PositionUpdated, PostUpdated } from "models/postCreated.model";
+import moment, { Moment } from "moment";
 import { useEffect, useState } from "react";
 import { uploadImage } from "../../../../firebase";
 
@@ -33,6 +35,29 @@ interface PostPosition {
     isBusService: boolean,
     documentId: number
 }
+interface PostPositionI {
+    positionName: string;
+    positionDescription: string;
+    documentOption: number;
+    certificateOption: number;
+    timeFrom_timeTo: Moment[];
+    schoolName: string;
+    location: string;
+    amount: number;
+    salary: number;
+    isBusService: boolean;
+    date: string;
+}
+type RangeType = 'start' | 'end';
+
+type RangeDisabledTime = (
+    now: Dayjs | null,
+    type: RangeType,
+) => {
+    disabledHours?: () => number[];
+    disabledMinutes?: (selectedHour: number) => number[];
+    disabledSeconds?: (selectedHour: number, selectedMinute: number) => number[];
+};
 const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchPostList: () => void) => {
     const dispatch = useAppDispatch();
     const { confirm } = Modal;
@@ -52,6 +77,7 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
             url: postInfo?.data.postImg,
         },
     ]);
+    const [optionDate, setOptionDate] = useState<any[]>([])
     const [previewOpen, setPreviewOpen] = useState(false);
     const [previewImage, setPreviewImage] = useState('');
     const [previewTitle, setPreviewTitle] = useState('');
@@ -75,6 +101,19 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
         value: title.id,
         label: title.postCategoryDescription
     }));
+    const disabledTime: RangeDisabledTime = (now, defaultType) => {
+        if (defaultType === 'start') {
+            // Vô hiệu hóa giờ từ 0-3 và từ 21-24 cho lựa chọn bắt đầu
+            return {
+                disabledHours: () => Array.from({ length: 4 }, (_, i) => i).concat(Array.from({ length: 4 }, (_, i) => i + 21)),
+            };
+        }
+        // Vô hiệu hóa giờ từ 0-3 và từ 21-24 cho lựa chọn kết thúc
+        return {
+            disabledHours: () => Array.from({ length: 4 }, (_, i) => i).concat(Array.from({ length: 4 }, (_, i) => i + 21)),
+        };
+    };
+
     const fetchPostTitleOption = async () => {
         const result = await dispatch(getPostTitle());
         unwrapResult(result)
@@ -148,6 +187,66 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
             return false;
         }
     }
+    const handlePostPosition2 = async (postPosition: PositionUpdated, index: number) => {
+        const location = postPosition.location.split('+');
+        const address = location[0];
+        const latitude = location[1];
+        const longitude = location[2];
+        const repsonse = {
+            id: postPosition.id,
+            trainingCertificateId: postPosition.trainingCertificateId,
+            positionDescription: postPosition.positionDescription,
+            documentId: postPosition.documentId,
+            positionName: postPosition.positionName,
+            amount: postPosition.amount,
+            salary: postPosition.salary,
+            isBusService: postPosition.isBusService,
+            schoolName: postPosition.schoolName,
+            date: postPosition.date,
+            timeFrom: postPosition.timeFrom,
+            timeTo: postPosition.timeTo,
+            location: address ? address : postPosition.location,
+            latitude: latitude ? latitude : postPosition.latitude,
+            longitude: longitude ? longitude : postPosition.longitude,
+        }
+        return repsonse;
+
+    }
+    const handlePostPosition3 = async (postPosition: PostPositionI, index: number) => {
+        const location = postPosition.location.split('+')
+        const address = location[0];
+        const latitude = location[1];
+        const longitude = location[2];
+        const parts = postPosition.date.split('/'); // Tách chuỗi thành mảng các phần tử, sử dụng dấu '/' để tách
+        // Lưu ý: Đối với định dạng 'DD/MM/YYYY', parts[0] là ngày, parts[1] là tháng và parts[2] là năm
+        const day = parseInt(parts[0], 10); // Chuyển phần tử đầu tiên thành số nguyên
+        const month = parseInt(parts[1], 10) - 1; // Chuyển phần tử thứ hai thành số nguyên, trừ đi 1 vì index của tháng trong Date bắt đầu từ 0
+        const year = parseInt(parts[2], 10);
+        const dateObject = new Date(year, month, day);
+        console.log("formattedDate", dateObject)
+        const formattedDate = moment(dateObject).format('YYYY-MM-DDTHH:mm:ss');
+        console.log("formattedDate", formattedDate)
+        // const formattedDate = moment(postPosition.date).format('YYYY-MM-DDTHH:mm:ss'); //ToIsoTostring sẽ tự đổi theo UTC nên sẽ chênh lệch múi giờ, thay vào đó sẽ xài moment
+        const repsonse = {
+            id: 0,
+            trainingCertificateId: postPosition.certificateOption,
+            positionDescription: postPosition.positionDescription,
+            documentId: postPosition.documentOption,
+            positionName: postPosition.positionName,
+            amount: postPosition.amount,
+            salary: postPosition.salary,
+            timeFrom: postPosition.timeFrom_timeTo[0],
+            timeTo: postPosition.timeFrom_timeTo[1],
+            isBusService: postPosition.isBusService,
+            schoolName: postPosition.schoolName,
+            location: address,
+            latitude: latitude,
+            longitude: longitude,
+            date: formattedDate
+        }
+        return repsonse;
+
+    }
     const handleUpdatePost = async (value: any) => {
         if (description !== '') {
             setError('');
@@ -159,9 +258,13 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
                 icon: <ExclamationCircleFilled rev={undefined} />,
                 onOk: async () => {
                     setLoading(true)
-                    const postPositionPromises = value?.postPositions?.map(async (postPosition: PositionUpdated) => handlePostPosition(postPosition));
+                    const postPositionPromises = value?.postPositions?.map(async (postPosition: PositionUpdated, index: number) => handlePostPosition2(postPosition, index));
+                    const newPostPositionPromises = value?.newPostPositions ? value?.newPostPositions?.map(async (postPosition: PostPositionI, index: number) => handlePostPosition3(postPosition, index)) : [];
                     try {
                         const postPositionsResults: PositionUpdated[] = await Promise.all(postPositionPromises);
+                        const newPostPositionResults: PositionUpdated[] = await Promise.all(newPostPositionPromises);
+                        const postPosition = [...postPositionsResults, ...newPostPositionResults];
+                        console.log('postPosition: ', postPosition);
                         console.log('fileImage: ', fileImage);
                         const photoUrl = (fileImage !== null) ? await uploadImage(fileImage, setLoading) : postInfo?.data?.postImg; // Gọi hàm upload của bạn
                         setLoading(true);
@@ -171,7 +274,7 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
                             postDescription: description,
                             priority: 1,
                             isPremium: value?.isPremium,
-                            postPositions: postPositionsResults,
+                            postPositions: newPostPositionResults.length !== 0 ? [...postPositionsResults, ...newPostPositionResults] : postPositionsResults,
                             postImg: photoUrl ? photoUrl : 'https://fptcameraiq.vn/storage/festftel25.jpg',
                         }
                         setParamsCreatePost(params);
@@ -201,7 +304,8 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
                 const optionsFromAPI = response.payload.data?.features?.map((feature) => {
                     return {
                         label: feature.properties.formatted,
-                        value: feature.properties.formatted
+                        value: `${feature.properties.formatted}+${String(feature.properties.lat)}+${String(feature.properties.lon)}`,
+                        key: feature.properties.place_id,
                     }
                 });
                 return optionsFromAPI;
@@ -266,7 +370,9 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
         handleEdit,
         handleUpdatePost,
         setDescription,
-        handleSearchAddressGeoapifi
+        handleSearchAddressGeoapifi,
+        disabledTime,
+        setOptionDate
     }
     const props = {
         options,
@@ -280,7 +386,8 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
         isloading,
         error,
         errorUrl,
-        form
+        form,
+        optionDate
     }
     return { handler, props }
 }

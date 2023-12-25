@@ -32,7 +32,28 @@ export type PositionUpdated = {
     salary: number,
     trainingCertificateId: number,
     isBusService: boolean,
-    documentId: number
+    documentId: number,
+    date: string,
+    timeFrom: Date,
+    timeTo: Date,
+}
+export type PositionAddNewUpdated = {
+    id: number;
+    positionDescription: string,
+    positionName: string,
+    schoolName: string,
+    location: string,
+    latitude: number,
+    longitude: number,
+    amount: number,
+    salary: number,
+    trainingCertificateId: number,
+    isBusService: boolean,
+    documentId: number,
+    date: string,
+    timeFrom: Date,
+    timeTo: Date,
+
 }
 export type PositionCreatedI = {
     positionName: string,
