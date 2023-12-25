@@ -33,6 +33,9 @@ const EditRoomModal: FC<AddMoreRoomModalProps> = ({ open, setOpenEditRoomModal, 
                         width="xl"
                         name="date"
                         label="Date"
+                        fieldProps={{
+                            disabledDate: props.disabledDate
+                        }}
                         rules={[{ required: true, message: 'Date is required!' }]}
                         initialValue={classInfo?.date}
                     />

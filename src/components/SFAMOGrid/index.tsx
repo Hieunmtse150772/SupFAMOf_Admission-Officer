@@ -59,6 +59,7 @@ const SFAMOGrid = ({ title, isLoading, rows, columns, rowsExpanded, page, total,
         <>
             <ProTable
                 actionRef={actionRef}
+                bordered={true}
                 headerTitle={title ? title : ''}
                 request={handleTableChange}
                 scroll={{ x: 900 }}

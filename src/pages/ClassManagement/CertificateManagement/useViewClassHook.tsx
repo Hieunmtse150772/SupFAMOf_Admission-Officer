@@ -1,3 +1,4 @@
+import { ExclamationCircleFilled } from "@ant-design/icons";
 import { ProColumns, RequestData } from "@ant-design/pro-components";
 import { FiberManualRecord } from "@mui/icons-material";
 import { Box, Typography } from "@mui/material";
@@ -282,23 +283,31 @@ function UseViewClassHook() {
         }
     };
     const handleAssignClass = async (evenDayId: Key[]) => {
-        console.log('evenDayId: ', evenDayId)
-        const params: AssignTrainingClass[] = selectedRowKeys.map((row) => (
-            {
-                trainingRegistrationId: row,
-                eventDayId: Number(evenDayId[0])
-            }))
-        console.log('params: ', params)
-        await dispatch(assignTrainingClass(params)).then((response: any) => {
-            if (response?.payload?.data?.status?.success) {
-                message.success('Assign success');
-                setSelectedRows([]);
-                fetchCertificatRegistrationAssigned();
-                setOpenAssignClassModal(false);
-            } else message.error(response?.payload?.message)
-        }).catch((error) => {
-            console.log("Error in getting the data", error)
-        })
+        confirm({
+            title: `Do you want to assign to this room?`,
+            icon: <ExclamationCircleFilled rev={undefined} />,
+            onOk: async () => {
+                const params: AssignTrainingClass[] = selectedRowKeys.map((row) => (
+                    {
+                        trainingRegistrationId: row,
+                        eventDayId: Number(evenDayId[0])
+                    }))
+                console.log('params: ', params)
+                await dispatch(assignTrainingClass(params)).then((response: any) => {
+                    if (response?.payload?.data?.status?.success) {
+                        message.success('Assign room success');
+                        setSelectedRows([]);
+                        fetchCertificatRegistrationAssigned();
+                        setOpenAssignClassModal(false);
+                    } else message.error(response?.payload?.message)
+                }).catch((error) => {
+                    console.log("Error in getting the data", error)
+                })
+            },
+            onCancel() {
+            },
+        });
+
     }
     const handleActionChange = async (params: any,
         sorter: Record<string, SortOrder>,
