@@ -22,6 +22,7 @@ import PostOptionI from 'models/postOption.model';
 import moment, { Moment } from 'moment';
 import { useEffect, useState } from 'react';
 import { useForm } from "react-hook-form";
+import { useNavigate } from 'react-router';
 import { uploadImage } from '../../../firebase';
 
 interface AdditionalPosition {
@@ -77,7 +78,7 @@ const useAddNewPostHook = () => {
     const dispatch = useAppDispatch();
     const { confirm } = Modal;
     const [form] = ProForm.useForm();
-
+    const navigate = useNavigate();
     useTitle("Add New Post");
 
     const postTitleOptionsAPI = useAppSelector(state => state.postTitle.postTitleOption)
@@ -392,6 +393,7 @@ const useAddNewPostHook = () => {
             if (response.payload.status === 200) {
                 form.resetFields();
                 message.success('Create post success!');
+                navigate('/dashboard/registration-list');
                 removeImage();
                 setFileList([]);
                 setLoading(false);
