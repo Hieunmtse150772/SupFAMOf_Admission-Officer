@@ -43,7 +43,8 @@ export type ClassTrainingViewI = {
     timeFrom?: Date | string,
     timeTo?: Date | string,
     status?: number,
-    timeFrom_timeTo?: Moment[]
+    timeFrom_timeTo?: Moment[],
+    disable?: boolean
 }
 export type ClassTrainingViewI2 = {
     date: Date | string,
