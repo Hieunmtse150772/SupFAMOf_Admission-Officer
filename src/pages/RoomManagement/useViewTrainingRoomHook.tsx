@@ -1,11 +1,11 @@
-import { CheckOutlined, EditOutlined, MoreOutlined } from '@ant-design/icons'; // Import the icon from the library
+import { CheckOutlined, DeleteOutlined, EditOutlined, MoreOutlined } from '@ant-design/icons'; // Import the icon from the library
 import { ProColumns, RequestData } from "@ant-design/pro-components";
 import { Box } from '@mui/material';
-import { Button, Dropdown, MenuProps, Modal, Space, Tag } from 'antd';
+import { Button, Dropdown, MenuProps, Modal, Space, Tag, message } from 'antd';
 import { SortOrder } from 'antd/es/table/interface';
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
-import { getAllClassTraining, getClassById } from 'features/classSlice';
+import { deleteClassById, getAllClassTraining, getClassById } from 'features/classSlice';
 import { ClassTrainingI, TrainingRegistrationsI } from 'models/classTraining.model';
 import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router';
@@ -77,7 +77,8 @@ function useViewTrainingHook() {
         {
             title: 'Date',
             dataIndex: 'date',
-            key: 'date',
+            key: 'Date',
+            sorter: true,
             valueType: 'date',
             width: 5,
         },
@@ -88,7 +89,6 @@ function useViewTrainingHook() {
             valueType: 'time',
             hideInSearch: true,
             width: 30,
-            sorter: true,
         },
         {
             title: 'End time',
@@ -97,7 +97,6 @@ function useViewTrainingHook() {
             valueType: 'time',
             width: 30,
             hideInSearch: true,
-            sorter: true,
         },
         {
             title: 'Number collaborator',
@@ -123,13 +122,13 @@ function useViewTrainingHook() {
                     case 2:
                         return (
                             <Space size={0}>
-                                <Tag color="blue">Closed</Tag>
+                                <Tag color="red">Deleted</Tag>
                             </Space>
                         )
                     case 3:
                         return (
                             <Space size={0}>
-                                <Tag color="red">Delete</Tag>
+                                <Tag color="blue">Completed</Tag>
                             </Space>
                         )
                     default:
@@ -157,6 +156,14 @@ function useViewTrainingHook() {
                         key: '2',
                         icon: <EditOutlined rev={undefined} />,
                         onClick: () => handleEditRoom(valueEnum),
+                        disabled: Boolean(value !== 1)
+                    },
+                    {
+                        label: 'Delete',
+                        key: '2',
+                        icon: <DeleteOutlined rev={undefined} />,
+                        danger: true,
+                        onClick: () => handleDelete(valueEnum),
                         disabled: Boolean(value !== 1)
                     },
                 ];
@@ -193,9 +200,20 @@ function useViewTrainingHook() {
             console.log("Error in getting the data", error)
         })
     }
+    const handleDelete = async (data: ViewRoomI) => {
+        await dispatch(deleteClassById(String(data?.id))).then((response: any) => {
+            if (response?.payload?.data?.status?.success) {
+                message.success('Delete success!');
+                fetchRooms();
+            } else {
+                message.error(response?.payload?.message)
+            }
+        })
+    }
     const handleOpenAddMoreRoom = () => {
         setOpenAddMoreClassModal(true)
     }
+
     const dispatch = useAppDispatch();
 
     const handleSearch = async (value: SearchParamsI) => {
@@ -212,6 +230,12 @@ function useViewTrainingHook() {
     const handleActionChange = async (params: any,
         sorter: Record<string, SortOrder>,
         filter: Record<string, (string | number)[] | null>): Promise<Partial<RequestData<any>>> => {
+        if (sorter && Object.keys(sorter).length > 0) {
+            const keys = Object.keys(sorter);
+            const fieldName = keys[0];
+            const sortOrder = sorter[fieldName] === 'ascend' ? 'asc' : 'desc';
+            setSortModel({ Sort: fieldName, Order: String(sortOrder) })
+        } else setSortModel({ Sort: 'Date', Order: 'desc' })
         return {
             data: [],
             success: true,
@@ -236,13 +260,14 @@ function useViewTrainingHook() {
         numberOfRegistration: room?.trainingRegistrations.length,
         registrationsList: room?.trainingRegistrations
     }));
-    console.log('room', rows)
     const fetchRooms = async () => {
         await dispatch(getAllClassTraining({
             page: page,
             PageSize: pageSize,
             class: searchParams?.class,
-            date: searchParams?.date
+            date: searchParams?.date,
+            Sort: sortModel.Sort,
+            Order: sortModel.Order
         }))
     }
     const handleAddPost = () => {
@@ -251,7 +276,7 @@ function useViewTrainingHook() {
 
     useEffect(() => {
         fetchRooms()
-    }, [page, pageSize])
+    }, [page, pageSize, sortModel])
 
     const handler = {
         setCurrentRow,

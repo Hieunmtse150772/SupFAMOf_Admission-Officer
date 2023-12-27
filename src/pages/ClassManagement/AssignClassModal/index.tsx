@@ -6,10 +6,10 @@ import { RowSelectionType } from "antd/es/table/interface";
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import dayjs from "dayjs";
-import { createClass, getClassTraining } from "features/classSlice";
+import { createClass, deleteClassById, getClassTraining } from "features/classSlice";
 import ClassCreated from "models/classCreated.model";
 import { ClassTrainingViewI, ClassTrainingViewI2 } from "models/classTraining.model";
-import moment from "moment";
+import moment, { Moment } from "moment";
 import { FC, Key, useEffect, useRef, useState } from "react";
 
 interface ConfirmRegistrationModalProps {
@@ -18,7 +18,16 @@ interface ConfirmRegistrationModalProps {
     hanldeAssignClass: (id: Key[]) => void,
 }
 
-
+type TableType = {
+    id: string | number,
+    date?: Date | string,
+    class?: string,
+    timeFrom?: Date | string,
+    timeTo?: Date | string,
+    status?: number,
+    timeFrom_timeTo?: Moment[],
+    disable?: boolean
+}
 
 const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
     {
@@ -58,6 +67,10 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
         onChange: (keys: Key[]) => {
             setSelectedRowKeys(keys)
         },
+        getCheckboxProps: (record: TableType) => ({
+            disabled: record.disable, // Column configuration not to be checked
+            name: record.class
+        }),
     };
     const onPageChange = (value: any) => {
         setPage(value)
@@ -78,7 +91,6 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
                 if (response?.payload?.data?.status?.success) {
                     message.success('Create class success');
                     fetchClass();
-
                 } else {
                     message.error(response?.payload?.message);
                     fetchClass();
@@ -88,21 +100,28 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
             })
         }
     }
-    const handleDelete = async (data: ClassTrainingViewI2) => {
-
+    const handleDelete = async (data: ClassTrainingViewI) => {
+        await dispatch(deleteClassById(String(data?.id))).then((response: any) => {
+            if (response?.payload?.data?.status?.success) {
+                message.success('Delete success!');
+                fetchClass();
+            } else {
+                message.error(response?.payload?.message)
+            }
+        })
     }
     const disabledDate: RangePickerProps['disabledDate'] = (current) => {
         // Can not select days before today and today
         return current && current < dayjs().endOf('day');
     };
     const fetchClass = async () => {
-        await dispatch(getClassTraining()).catch((error) => {
+        await dispatch(getClassTraining({ status: 1, page: page, PageSize: pageSize })).catch((error) => {
             console.log("Error in getting the data", error)
         })
     }
     useEffect(() => {
         fetchClass()
-    }, [])
+    }, [page, pageSize])
     useEffect(() => {
         setDataSource(classList.data)
     }, [classList])
@@ -183,13 +202,13 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
                     case 2:
                         return (
                             <Space size={0}>
-                                <Tag color="blue">Closed</Tag>
+                                <Tag color="red">Deleted</Tag>
                             </Space>
                         )
                     case 3:
                         return (
                             <Space size={0}>
-                                <Tag color="red">Delete</Tag>
+                                <Tag color="blue">Completed</Tag>
                             </Space>
                         )
                     default:
@@ -201,13 +220,13 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
         {
             title: 'Action',
             valueType: 'option',
-            width: 50,
+            width: 120,
             render: (text, record, _, action) => {
                 return <Popconfirm
                     style={{ justifyContent: 'center', display: 'flex', alignItems: 'center' }}
                     title="Delete the task"
                     description="Are you sure to delete this room?"
-                    onConfirm={() => handleDelete(record as ClassTrainingViewI2)}
+                    onConfirm={() => handleDelete(record as ClassTrainingViewI)}
                     icon={<QuestionCircleOutlined rev={undefined} style={{ color: 'red' }} />}
                 >
                     <Button style={{ alignContent: 'center', }} danger icon={<DeleteOutlined rev={undefined} />} />
@@ -284,9 +303,11 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
                 }}
                 revalidateOnFocus={true}
                 recordCreatorProps={{
+                    position: 'bottom',
                     newRecordType: 'dataSource',
                     record: (index, dataSource) => ({
                         id: (Math.random() * 1000000).toFixed(0),
+                        disable: true
                     }),
                     creatorButtonText: 'Create New Class', // Text for the creation button
 

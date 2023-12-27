@@ -294,6 +294,7 @@ function UseViewClassHook() {
                     }))
                 console.log('params: ', params)
                 await dispatch(assignTrainingClass(params)).then((response: any) => {
+                    console.log('response: ', response)
                     if (response?.payload?.data?.status?.success) {
                         message.success('Assign room success');
                         setSelectedRows([]);
@@ -301,7 +302,8 @@ function UseViewClassHook() {
                         setOpenAssignClassModal(false);
                     } else message.error(response?.payload?.message)
                 }).catch((error) => {
-                    console.log("Error in getting the data", error)
+                    message.error('Please save before assign room!');
+                    console.log("Error in getting the data", error);
                 })
             },
             onCancel() {

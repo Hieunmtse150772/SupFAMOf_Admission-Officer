@@ -32,9 +32,9 @@ const initialState: ClassState = {
 }
 export const getClassTraining = createAsyncThunk(
     'class/get-class',
-    async (_, { rejectWithValue }) => {
+    async (params: SearchRoomParamsDto, { rejectWithValue }) => {
         try {
-            const result = await classTrainingService.getClassTraining()
+            const result = await classTrainingService.getClassTraining(params)
             return result.data;
         } catch (error) {
             const axiosError = error as AxiosError;
@@ -102,6 +102,18 @@ export const updateClass = createAsyncThunk(
         }
     },
 );
+export const deleteClassById = createAsyncThunk(
+    'class/delete-class',
+    async (trainingEventDay: string, { rejectWithValue }) => {
+        try {
+            const result = await classTrainingService.deleteClassById(trainingEventDay)
+            return result;
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data);
+        }
+    },
+);
 export const classSlice = createSlice({
     name: 'class',
     initialState,
@@ -144,14 +156,14 @@ export const classSlice = createSlice({
                 state.error = String(action.payload);
                 state.loading = false;
             })
-            .addMatcher(isAnyOf(createClass.pending, confirmAttendanceByEvenDayId.pending), (state) => {
+            .addMatcher(isAnyOf(createClass.pending, confirmAttendanceByEvenDayId.pending, deleteClassById.pending), (state) => {
                 state.loading = true;
                 state.error = "";
             })
-            .addMatcher(isAnyOf(createClass.fulfilled, confirmAttendanceByEvenDayId.fulfilled), (state, action) => {
+            .addMatcher(isAnyOf(createClass.fulfilled, confirmAttendanceByEvenDayId.fulfilled, deleteClassById.fulfilled), (state, action) => {
                 state.loading = false;
             })
-            .addMatcher(isAnyOf(createClass.rejected, confirmAttendanceByEvenDayId.rejected), (state, action) => {
+            .addMatcher(isAnyOf(createClass.rejected, confirmAttendanceByEvenDayId.rejected, deleteClassById.rejected), (state, action) => {
                 state.error = String(action.payload);
                 state.loading = false;
             })
