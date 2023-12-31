@@ -149,14 +149,14 @@ function useViewTrainingHook() {
                         key: '1',
                         icon: <CheckOutlined color='green' rev={undefined} />,
                         onClick: () => handleViewRegistration(valueEnum),
-                        disabled: Boolean(value !== 1)
+                        disabled: Boolean(value === 2)
                     },
                     {
                         label: 'Edit',
                         key: '2',
                         icon: <EditOutlined rev={undefined} />,
                         onClick: () => handleEditRoom(valueEnum),
-                        disabled: Boolean(value !== 1)
+                        disabled: Boolean(value === 2)
                     },
                     {
                         label: 'Delete',
@@ -164,7 +164,7 @@ function useViewTrainingHook() {
                         icon: <DeleteOutlined rev={undefined} />,
                         danger: true,
                         onClick: () => handleDelete(valueEnum),
-                        disabled: Boolean(value !== 1)
+                        disabled: Boolean(value === 2)
                     },
                 ];
                 const menuProps = {

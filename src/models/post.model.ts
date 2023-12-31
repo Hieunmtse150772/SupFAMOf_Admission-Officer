@@ -77,6 +77,7 @@ export type PositionI = {
     totalPositionRegisterAmount: number,
     amount: number,
     salary: number,
+    status: number,
     schoolName: string,
 }
 export type ListPositionI = {
