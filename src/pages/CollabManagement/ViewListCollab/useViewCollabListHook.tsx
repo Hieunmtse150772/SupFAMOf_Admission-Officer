@@ -134,16 +134,15 @@ const useViewCollablistHook = () => {
             width: 300,
             render: (certificates) => {
                 if (Array.isArray(certificates)) {
-                    const filtercertificate = certificates?.filter((certificate) => certificate?.status === 1)
+                    const filtercertificate = certificates?.filter((certificate) => certificate?.status === 1).splice(0, 3)
                     if (filtercertificate.length !== 0) {
                         return filtercertificate.map((certificate) =>
                         (
-                            <Space size={0} key={certificate?.id}>
+                            <><Space size={0} key={certificate?.id}>
                                 <Tag color="green">{certificate?.certificateName}</Tag>
-                            </Space>
+                            </Space></>
                         )
                         );
-
                     } else return <Space size={0}>
                         <Tag color="red">No certificate</Tag>
                     </Space>
@@ -155,7 +154,7 @@ const useViewCollablistHook = () => {
             }
         },
         {
-            title: 'Status',
+            title: 'Active',
             dataIndex: 'isActive',
             hideInSearch: true,
             hideInTable: true,

@@ -22,9 +22,21 @@ import { useNavigate } from 'react-router';
 interface ExpandedDataType {
   id: number,
   postId: number,
+  trainingCertificateId: number;
   positionName: string,
+  documentId: number;
+  isBusService: boolean;
+  latitude: string;
+  date: Date;
+  longtitude: string;
+  timeFrom: Date;
+  timeTo: Date;
+  positionRegisterAmount: number;
+  totalPositionRegisterAmount: number,
   amount: number,
-  salary: number
+  salary: number,
+  status: number,
+  schoolName: string,
 }
 type RuleListItem = {
   key?: number;
@@ -303,6 +315,7 @@ function useViewPostList() {
             key: '1',
             icon: <DeleteOutlined color='red' rev={undefined} />,
             onClick: () => handleDeletePost(value),
+            disabled: Boolean(valueEnum.status === 5),
             danger: true
           },
           {
@@ -310,6 +323,7 @@ function useViewPostList() {
             key: '2',
             icon: <EditOutlined color='green' rev={undefined} />,
             onClick: () => handleOpenEditPostModal(value),
+            disabled: Boolean(valueEnum.status === 5),
           },
         ];
         const menuProps = {
@@ -390,6 +404,8 @@ function useViewPostList() {
               key: '1',
               icon: <DeleteOutlined rev={undefined} />,
               onClick: () => handleDeletePosition(valueEnum),
+              danger: true,
+              disabled: Boolean(valueEnum.status === 2)
             },
           ];
           const menuProps = {

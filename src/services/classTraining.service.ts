@@ -11,9 +11,9 @@ import ClassUpdated from 'models/classUpdated.model';
 import axiosClient from './axiosClient';
 
 export const classTrainingService = {
-    getClassTraining: (): Promise<AxiosResponse<ClassTrainingDto>> => {
+    getClassTraining: (params: SearchRoomParamsDto): Promise<AxiosResponse<ClassTrainingDto>> => {
         const url = '/admission/admission-training-certificate/view-collaborator-class';
-        return axiosClient.get(url);
+        return axiosClient.get(url, { params });
     },
     getClassById: (params: SearchRoomParamsDto): Promise<AxiosResponse<AllClassTrainingDto>> => {
         const url = '/admission/admission-training-certificate/view-collaborator-class';
@@ -35,5 +35,10 @@ export const classTrainingService = {
     updateClass: (payload: ClassUpdated): Promise<AxiosResponse<ClassTrainingDto>> => {
         const url = `/admission/admission-training-certificate/update-event-day?eventDayId=${payload.id}`;
         return axiosClient.put(url, payload);
+    }
+    ,
+    deleteClassById: (trainingEventDay: string): Promise<AxiosResponse<ClassTrainingDto>> => {
+        const url = `/admission/admission-training-certificate/cancel-event-day?trainingEventDay=${trainingEventDay}`;
+        return axiosClient.delete(url);
     }
 };

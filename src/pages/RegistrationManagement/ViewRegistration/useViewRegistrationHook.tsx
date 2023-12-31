@@ -4,7 +4,7 @@ import { FiberManualRecord } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import { green, grey, red, yellow } from '@mui/material/colors';
 import { unwrapResult } from '@reduxjs/toolkit';
-import { Badge, Button, Dropdown, Image, MenuProps, Modal, Popover, StepsProps, Table, TableColumnsType, message } from 'antd';
+import { Badge, Button, Dropdown, Image, MenuProps, Modal, Popover, Space, StepsProps, Table, TableColumnsType, Tag, message } from 'antd';
 import { SortOrder } from 'antd/es/table/interface';
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
@@ -23,15 +23,21 @@ import ReactHtmlParser from 'react-html-parser';
 interface ExpandedDataType {
     id: number,
     postId: number,
+    trainingCertificateId: number;
     positionName: string,
+    documentId: number;
+    isBusService: boolean;
+    latitude: string;
+    date: Date;
+    longtitude: string;
+    timeFrom: Date;
+    timeTo: Date;
+    positionRegisterAmount: number;
+    totalPositionRegisterAmount: number,
     amount: number,
     salary: number,
-    positionRegisterAmount: number,
-    date: Date,
-    timeFrom: Date,
-    timeTo: Date,
-    percent: number,
-    totalPositionRegisterAmount: number
+    status: number,
+    schoolName: string,
 }
 type SortModalI = {
     Sort: string,
@@ -333,8 +339,8 @@ function useViewRegistrationHook() {
                     items,
                 };
                 return <Badge count={totalUpdateRegisterAmount}><Box>
-                    <Dropdown menu={menuProps} trigger={['click']} placement='bottomLeft'>
-                        <Button icon={<MoreOutlined rev={undefined} />}></Button>
+                    <Dropdown disabled={Boolean(valueEnum.status === 5)} menu={menuProps} trigger={['click']} placement='bottomLeft'>
+                        <Button disabled={Boolean(valueEnum.status === 5)} icon={<MoreOutlined rev={undefined} />}></Button>
                     </Dropdown>
                 </Box>
                 </Badge>
@@ -393,6 +399,20 @@ function useViewRegistrationHook() {
                 , width: 100
             },
             {
+                title: 'Status', dataIndex: 'status', key: 'status', render: (rows) => {
+                    return rows === 1 ? (
+                        <Space size={0}>
+                            <Tag color="blue">Active</Tag>
+                        </Space>
+                    ) : (
+                        <Space size={0}>
+                            <Tag color="red">Deleted</Tag>
+                        </Space>
+                    );
+                },
+                width: 80
+            },
+            {
                 title: 'Action',
                 align: 'center',
                 fixed: 'right',
@@ -425,7 +445,7 @@ function useViewRegistrationHook() {
                     };
                     return <Badge count={totalRegistration}>
                         <Box>
-                            <Dropdown menu={menuProps} trigger={['click']} placement='bottomLeft'>
+                            <Dropdown disabled={Boolean(valueEnum.status === 2)} menu={menuProps} trigger={['click']} placement='bottomLeft'>
                                 <Button icon={<DownOutlined rev={undefined} />}></Button>
                             </Dropdown>
                         </Box>
@@ -464,7 +484,7 @@ function useViewRegistrationHook() {
         })
         return <Table
             columns={columnsExpanded}
-            dataSource={dataCustom}
+            dataSource={data?.position}
             pagination={false}
         />;
     };
