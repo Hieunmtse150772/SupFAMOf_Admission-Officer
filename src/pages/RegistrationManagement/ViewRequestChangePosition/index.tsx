@@ -9,10 +9,11 @@ interface ViewRequestChangePositionModalProps {
     open: boolean,
     setOpenViewRequestModal: React.Dispatch<React.SetStateAction<boolean>>,
     postId: number,
+    postCode: string,
     fetchPost: () => void,
 }
 
-const ViewRequestChangePositionModal: FC<ViewRequestChangePositionModalProps> = ({ open, setOpenViewRequestModal, postId, fetchPost }) => {
+const ViewRequestChangePositionModal: FC<ViewRequestChangePositionModalProps> = ({ open, setOpenViewRequestModal, postCode, postId, fetchPost }) => {
     const { handler, props } = useViewRequest(postId, fetchPost);
     const yourRef = useRef(null);
 
@@ -72,7 +73,7 @@ const ViewRequestChangePositionModal: FC<ViewRequestChangePositionModalProps> = 
                 setOpenViewRequestModal(false)
             }}
             className="request-modal"
-            title={`Request change position post code: ${props.postCode}`}
+            title={`Request change position post code: ${postCode}`}
             submitter={{
                 searchConfig: {
                     submitText: 'Ok',

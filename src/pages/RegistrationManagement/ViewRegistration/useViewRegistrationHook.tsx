@@ -84,6 +84,7 @@ function useViewRegistrationHook() {
     const certificateList = useAppSelector(state => state.certificate.certificateOption);
     const documentList = useAppSelector(state => state.document.documentOption);
     const [postId, setPostId] = useState<number | null>(null);
+    const [postCode, setPostCode] = useState<string>('');
     const [openViewRequestModal, setOpenViewRequestModal] = useState<boolean>(false);
     const [openViewAttendenceModal, setOpenViewAttendenceModal] = useState<boolean>(false);
     const [openViewWorkListModal, setOpenViewWorkList] = useState<boolean>(false);
@@ -557,6 +558,7 @@ function useViewRegistrationHook() {
     }
     const handleOpenViewRequestModal = (value: any) => {
         setPostId(value?.props.record?.key)
+        setPostCode(value?.props.record?.postCode)
         setOpenViewRequestModal(true);
     }
     const handleAction = (value: any, status: number) => {
@@ -781,7 +783,8 @@ function useViewRegistrationHook() {
         currentRow,
         certificateList,
         documentList,
-        openViewWorkListModal
+        openViewWorkListModal,
+        postCode
     }
     return {
         handler,
