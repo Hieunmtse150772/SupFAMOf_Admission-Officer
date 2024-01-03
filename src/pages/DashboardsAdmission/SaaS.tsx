@@ -6,7 +6,7 @@ import Analytics from "components/Dashboards/saas/Analytics";
 import SaaSCard, { StyledCard } from "components/Dashboards/saas/Card";
 import TotalSpent from "components/Dashboards/saas/TotalSpent";
 import { H5 } from "components/Typography";
-import { getCollabOverview, getRegistrationComplete } from "features/manageDashboardSlice";
+import { getAnalytics, getCollabOverview, getMoneyYearReport, getRegistrationComplete } from "features/manageDashboardSlice";
 import useTitle from "hooks/useTitle";
 import ProfileIcon from "icons/ProfileIcon";
 import UploadIcon from "icons/UploadIcon";
@@ -25,6 +25,15 @@ const SaaS: FC = () => {
     await dispatch(getRegistrationComplete()).catch((error) => {
       message.error('Server internal error!');
     });
+    await dispatch(getMoneyYearReport({ year: 2023 })).catch((error) => {
+      console.log("Error in getting the data", error)
+    })
+    await dispatch(getAnalytics({
+      month: 12,
+      year: 2023
+    })).catch((error) => {
+      console.log("Error in getting the data", error)
+    })
   }
 
   useEffect(() => {

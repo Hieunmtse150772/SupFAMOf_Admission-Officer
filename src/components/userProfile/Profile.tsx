@@ -34,7 +34,7 @@ interface UserProfileProps {
 }
 
 const Profile: FC<UserProfileProps> = (userInfo) => {
-  const Formatter = 'DD/MM/YYYY'
+  const Formatter = 'YYYY-MM-DD'
   const [moreEl, setMoreEl] = useState<null | HTMLElement>(null);
   const handleMoreOpen = (event: MouseEvent<HTMLButtonElement>) => {
     setMoreEl(event.currentTarget);

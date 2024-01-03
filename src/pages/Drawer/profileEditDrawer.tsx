@@ -15,7 +15,7 @@ interface ProfileEditDrawerProps {
     setOpenSetting: React.Dispatch<React.SetStateAction<boolean>>
 }
 const ProfileEditDrawer: FC<ProfileEditDrawerProps> = ({ setOpenSetting, onClose, userInfo, open }) => {
-    const Formatter = 'DD/MM/YYYY';
+    const Formatter = 'YYYY-MM-DD';
     const dispatch = useAppDispatch();
     const handleSubmit = (value: any) => {
         console.log("value: ", value)

@@ -24,7 +24,7 @@ interface BanCollaboratorModalProps {
 const BanCollaboratorModal: FC<BanCollaboratorModalProps> = ({ open, setOpenBanCollaborator, accountId, accountName, fetchCollabList }) => {
     console.log('accountId: ', accountId)
     const { confirm } = Modal;
-    const Formatter = 'DD/MM/YYYY';
+    const Formatter = 'YYYY-MM-DD';
     const dispatch = useAppDispatch();
     const loading = useAppSelector(state => state.collab.loading)
     const disabledDate: RangePickerProps['disabledDate'] = (current) => {

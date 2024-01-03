@@ -21,7 +21,7 @@ interface AddCertificateModalProps {
     fetchCertificateRegistration: () => void
 }
 const AddCertificateModal: FC<AddCertificateModalProps> = ({ open, setOpenCertificateModal, fetchCertificateOption, data, fetchCertificateRegistration }) => {
-    const Formatter = 'DD/MM/YYYY';
+    const Formatter = 'YYYY-MM-DD';
     const dispatch = useAppDispatch();
     type DataItem = (typeof data)[number];
     const [dataSource, setDataSource] = useState<DataItem[]>(data);

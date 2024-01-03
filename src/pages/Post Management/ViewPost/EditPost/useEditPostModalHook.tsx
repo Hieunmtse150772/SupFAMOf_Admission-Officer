@@ -218,7 +218,7 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
         const latitude = location[1];
         const longitude = location[2];
         const parts = postPosition.date.split('/'); // Tách chuỗi thành mảng các phần tử, sử dụng dấu '/' để tách
-        // Lưu ý: Đối với định dạng 'DD/MM/YYYY', parts[0] là ngày, parts[1] là tháng và parts[2] là năm
+        // Lưu ý: Đối với định dạng 'YYYY-MM-DD', parts[0] là ngày, parts[1] là tháng và parts[2] là năm
         const day = parseInt(parts[0], 10); // Chuyển phần tử đầu tiên thành số nguyên
         const month = parseInt(parts[1], 10) - 1; // Chuyển phần tử thứ hai thành số nguyên, trừ đi 1 vì index của tháng trong Date bắt đầu từ 0
         const year = parseInt(parts[2], 10);

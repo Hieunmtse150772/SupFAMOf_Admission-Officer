@@ -66,7 +66,7 @@ type SearchParamsI = {
   createAt?: Date
 }
 function useViewPostList() {
-  const Formatter = 'DD/MM/YYYY'
+  const Formatter = 'YYYY-MM-DD'
   const [currentRow, setCurrentRow] = useState<any>();
   const { confirm } = Modal;
 
@@ -471,11 +471,12 @@ function useViewPostList() {
       icon: <ExclamationCircleFilled rev={undefined} />,
       onOk: async () => {
         await dispatch(deletePositionById(value?.id)).then((response: any) => {
-          if (response?.payload?.errorCode === 4006) {
-            message.warning(response?.payload?.message)
-          } else if (response?.payload?.status === 200) {
+          console.log('response: ', response)
+          if (response?.payload?.status === 200) {
             message.success('Delete position success!');
             fetchPostList();
+          } else {
+            message.warning(response?.payload?.message)
           }
         })
       },
@@ -489,7 +490,15 @@ function useViewPostList() {
       title: 'Do you want to delete the post?',
       icon: <ExclamationCircleFilled rev={undefined} />,
       onOk: async () => {
-        await dispatch(deletePostById(value?.key))
+        await dispatch(deletePostById(value?.key)).then((response: any) => {
+          console.log('response: ', response)
+          if (response?.payload?.status === 200) {
+            message.success('Delete post success!');
+            fetchPostList();
+          } else {
+            message.warning(response?.payload?.message)
+          }
+        })
       },
       onCancel() {
       },

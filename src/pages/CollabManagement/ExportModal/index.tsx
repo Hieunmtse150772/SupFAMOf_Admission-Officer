@@ -19,7 +19,7 @@ interface ExportModalProps {
 }
 const ExportModal: FC<ExportModalProps> = ({ open, setOpenExportModal, nameFile }) => {
     const { confirm } = Modal;
-    const Formatter = 'DD/MM/YYYY';
+    const Formatter = 'YYYY-MM-DD';
     const dispatch = useAppDispatch();
     const loading = useAppSelector(state => state.report.loading)
     const disabledDate: RangePickerProps['disabledDate'] = (current) => {

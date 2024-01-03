@@ -19,7 +19,7 @@ interface ReplyApplicationProps {
 }
 const ReplyApplicationModal: FC<ReplyApplicationProps> = ({ open, setOpenReplyModal, applicationId, status, fetchApplicationList }) => {
     const { confirm } = Modal;
-    const Formatter = 'DD/MM/YYYY';
+    const Formatter = 'YYYY-MM-DD';
     const dispatch = useAppDispatch();
     const loading = useAppSelector(state => state.report.loading)
     const handleReplyApplication = async (value: any) => {
