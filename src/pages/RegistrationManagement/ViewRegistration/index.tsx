@@ -253,6 +253,7 @@ const ViewPostList = () => {
             }
             {(props.openViewRequestModal && props.postId !== null) &&
                 <ViewRequestChangePositionModal
+                    postCode={props.postCode}
                     fetchPost={handler.fetchPostList}
                     open={props.openViewRequestModal}
                     setOpenViewRequestModal={handler.setOpenViewRequestModal}

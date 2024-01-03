@@ -62,8 +62,6 @@ function useViewRequest(postId: number, fetchPost: () => void) {
         Order: 'desc'
     });
     const [statusFilter, setStatusFilter] = useState<number | null>(1);
-
-    const postCode = requests?.data[0]?.post?.postCode;
     const [searchParams, setSearchParams] = useState<SearchParamsI>()
     const pageSizeOptions = [5, 10, 15]; // Các tùy chọn cho pageSize
     const total = requests?.metadata?.total
@@ -351,7 +349,6 @@ function useViewRequest(postId: number, fetchPost: () => void) {
         page,
         pageSize,
         pageSizeOptions,
-        postCode
     }
     return {
         handler,
