@@ -33,7 +33,7 @@ function useViewCollabListModalHook(
     setOpenViewCollabListModal: React.Dispatch<React.SetStateAction<boolean>>,
     fetchRooms: () => void
 ) {
-    const Formatter = 'DD/MM/YYYY'
+    const Formatter = 'YYYY-MM-DD'
     const [currentRow, setCurrentRow] = useState<any>();
     const { confirm } = Modal;
     const { attendenceList, loading } = useAppSelector(state => state.attendence)

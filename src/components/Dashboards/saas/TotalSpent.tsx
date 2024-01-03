@@ -5,7 +5,7 @@ import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import { H2, H5 } from "components/Typography";
 import { getMoneyYearReport } from "features/manageDashboardSlice";
-import { FC, useEffect, useState } from "react";
+import { FC, useState } from "react";
 import Chart from "react-apexcharts";
 
 
@@ -43,14 +43,6 @@ const TotalSpent: FC = () => {
       "Dec",
     ],
   };
-  const fetchMoneyReport = async () => {
-    await dispatch(getMoneyYearReport({ year: year })).catch((error) => {
-      console.log("Error in getting the data", error)
-    })
-  }
-  useEffect(() => {
-    fetchMoneyReport()
-  }, [year])
   const chartOptions: ApexOptions = {
     chart: {
       background: "transparent",
@@ -140,8 +132,10 @@ const TotalSpent: FC = () => {
   };
 
   const chartSeries = data.series;
-  const handleChangeYear = (value: string) => {
-    setYear(Number(value));
+  const handleChangeYear = async (value: string) => {
+    await dispatch(getMoneyYearReport({ year: Number(value) })).catch((error) => {
+      console.log("Error in getting the data", error)
+    })
   }
   return (
     <Card

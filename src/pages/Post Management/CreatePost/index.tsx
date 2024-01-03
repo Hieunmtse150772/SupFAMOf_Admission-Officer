@@ -163,7 +163,6 @@ const AddNewPost: FC = () => {
                                 >
                                     {props.fileList.length >= 1 ? null : uploadButton}
                                 </Upload>
-                                <span className="error">{props.errorUrl}</span>
                                 <Modal open={props.previewOpen} title={props.previewTitle} footer={null} onCancel={handler.handleCancel}>
                                     <img alt="example" style={{ width: '100%' }} src={props.previewImage} />
                                 </Modal>
@@ -224,6 +223,7 @@ const AddNewPost: FC = () => {
                                 position,
                                 creatorButtonText: 'Add more position',
                             }}
+
                             creatorRecord={{
                                 name: 'position',
                             }}
@@ -348,9 +348,9 @@ const AddNewPost: FC = () => {
                                             <ProFormSelect
                                                 label="Document"
                                                 width="sm"
-                                                name={`documentOption${index}`}
+                                                name={`documentOption`}
                                                 options={props.documentOptions}
-                                                disabled={selectedCertificate ? false : true}
+                                                // disabled={selectedCertificate ? false : true}
                                                 debounceTime={5}
                                                 tooltip="That field is optional"
                                             />

@@ -31,7 +31,7 @@ type SearchParamsI = {
     class?: string,
 }
 function useViewTrainingHook() {
-    const Formatter = 'DD/MM/YYYY'
+    const Formatter = 'YYYY-MM-DD'
     const [currentRow, setCurrentRow] = useState<any>();
     const { confirm } = Modal;
     const rooms = useAppSelector(state => state.class.allClassList);

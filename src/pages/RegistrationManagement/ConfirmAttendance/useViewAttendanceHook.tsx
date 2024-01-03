@@ -47,7 +47,7 @@ type SearchParamsI = {
     postCategoryId?: number
 }
 function useViewAttendanceHook(positionId: string, fetchPost: () => void, setOpenCheckAttendanceModal: React.Dispatch<React.SetStateAction<boolean>>) {
-    const Formatter = 'DD/MM/YYYY'
+    const Formatter = 'YYYY-MM-DD'
     const [currentRow, setCurrentRow] = useState<any>();
     const { confirm } = Modal;
     const { attendenceList, loading } = useAppSelector(state => state.attendence)

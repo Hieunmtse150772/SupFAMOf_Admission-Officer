@@ -53,7 +53,7 @@ type SearchParamsI = {
     createAt?: Date
 }
 function useViewRegistrationHook() {
-    const Formatter = 'DD/MM/YYYY'
+    const Formatter = 'YYYY-MM-DD'
     const [currentRow, setCurrentRow] = useState<any>();
     // const [selectedRowsState, setSelectedRows] = useState<boolean>([]);
     const [showDetail, setShowDetail] = useState<boolean>(false);
