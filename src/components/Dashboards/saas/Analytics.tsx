@@ -6,7 +6,7 @@ import { useAppDispatch } from "app/store";
 import FlexBox from "components/FlexBox";
 import { H5 } from "components/Typography";
 import { getAnalytics } from "features/manageDashboardSlice";
-import { FC, useEffect, useState } from "react";
+import { FC } from "react";
 import Chart from "react-apexcharts";
 
 
@@ -17,19 +17,7 @@ type AnalyticsParams = {
 const Analytics: FC = () => {
   const theme = useTheme();
   const dispatch = useAppDispatch();
-  const [monthYear, setMonthYear] = useState<AnalyticsParams>({
-    month: 12,
-    year: 2023
-  })
   const analytics = useAppSelector(state => state.dashboard.analytics);
-  useEffect(() => {
-    const fetch = async () => {
-      await dispatch(getAnalytics(monthYear)).catch((error) => {
-        console.log("Error in getting the data", error)
-      })
-    }
-    fetch();
-  }, [monthYear])
   const data = {
     series: [
       {
@@ -83,9 +71,11 @@ const Analytics: FC = () => {
       },
     },
   };
-  const handleChangeMonth = (value: string) => {
-    console.log('value: ', value)
-    setMonthYear({ month: Number(value?.split('-')[1]), year: Number(value?.split('-')[0]) });
+  const handleChangeMonth = async (value: string) => {
+    const monthYear = { month: Number(value?.split('-')[1]), year: Number(value?.split('-')[0]) }
+    await dispatch(getAnalytics(monthYear)).catch((error) => {
+      console.log("Error in getting the data", error)
+    })
   }
   const chartSeries = data.series;
   return (
