@@ -149,8 +149,15 @@ const useAddNewPostHook = () => {
     };
 
     const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) => {
-        setFileList(newFileList);
-        if (fileImage !== '') setErrorUrl('');
+        console.log('fileList: ', newFileList[0])
+        if (newFileList[0]?.size) {
+            if (newFileList[0]?.size < 307200) {
+                setFileList(newFileList);
+            } else {
+                setFileList([]);
+                message.error('The size of image to large, please choice another less than 300MB!')
+            }
+        } else setFileList([]);
     }
 
     const removeImage = () => {
@@ -294,11 +301,11 @@ const useAddNewPostHook = () => {
         const address = location[0];
         const latitude = location[1];
         const longitude = location[2];
-        const parts = postPosition.date.split('/'); // Tách chuỗi thành mảng các phần tử, sử dụng dấu '/' để tách
+        const parts = postPosition.date.split('-'); // Tách chuỗi thành mảng các phần tử, sử dụng dấu '/' để tách
         // Lưu ý: Đối với định dạng 'YYYY-MM-DD', parts[0] là ngày, parts[1] là tháng và parts[2] là năm
-        const day = parseInt(parts[0], 10); // Chuyển phần tử đầu tiên thành số nguyên
+        const day = parseInt(parts[2], 10); // Chuyển phần tử đầu tiên thành số nguyên
         const month = parseInt(parts[1], 10) - 1; // Chuyển phần tử thứ hai thành số nguyên, trừ đi 1 vì index của tháng trong Date bắt đầu từ 0
-        const year = parseInt(parts[2], 10);
+        const year = parseInt(parts[0], 10);
         const dateObject = new Date(year, month, day);
         console.log("formattedDate", dateObject)
         const formattedDate = moment(dateObject).format('YYYY-MM-DDTHH:mm:ss');
