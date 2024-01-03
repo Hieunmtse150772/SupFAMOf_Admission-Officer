@@ -51,7 +51,7 @@ type SortModalI = {
 }
 const useViewContractHook = () => {
     ;
-    const Formatter = 'DD/MM/YYYY'
+    const Formatter = 'YYYY-MM-DD'
     const { confirm } = Modal;
     const [currentRow, setCurrentRow] = useState<ContractInfoRows | null>(null);
     const [showDetail, setShowDetail] = useState<boolean>(false);

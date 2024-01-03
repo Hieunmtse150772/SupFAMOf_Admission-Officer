@@ -46,7 +46,7 @@ type SearchParamsI = {
     postCategoryId?: number
 }
 function useViewWorkListHook(positionId: string, fetchPost: () => void) {
-    const Formatter = 'DD/MM/YYYY'
+    const Formatter = 'YYYY-MM-DD'
     const [currentRow, setCurrentRow] = useState<any>();
     const { confirm } = Modal;
     const { workLists, loading } = useAppSelector(state => state.attendence)

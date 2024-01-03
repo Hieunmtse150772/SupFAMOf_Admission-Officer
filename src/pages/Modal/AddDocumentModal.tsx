@@ -24,7 +24,7 @@ interface AddDocumentModalProps {
 
 const AddDocumentModal: FC<AddDocumentModalProps> = ({ open, setOpenAddDocumentModal, fetchDocumentOption, data }) => {
     type DataItem = (typeof data)[number];
-    const Formatter = 'DD/MM/YYYY'
+    const Formatter = 'YYYY-MM-DD'
     const [dataSource, setDataSource] = useState<DataItem[]>(data);
     const [isLoading, setLoading] = useState<boolean>(false);
     const [url, setUrl] = useState<string>('');

@@ -38,7 +38,7 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                 currentDate.setDate(currentDate.getDate() + 1);
             }
             const optionDatePicker: any[] = dateArray?.map((date) => ({
-                value: moment(date).format('DD/MM/YYYY'),
+                value: moment(date).format('YYYY-MM-DD'),
                 label: moment(date).format('YYYY-MM-DD'),
             }));
             console.log('optionDatePicker', optionDatePicker)

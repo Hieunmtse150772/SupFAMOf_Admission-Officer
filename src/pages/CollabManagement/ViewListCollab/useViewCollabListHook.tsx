@@ -18,7 +18,7 @@ type SearchParamsI = {
 }
 
 const useViewCollablistHook = () => {
-    const Formatter = 'DD/MM/YYYY'
+    const Formatter = 'YYYY-MM-DD'
     const excelFile = useAppSelector(state => state.report.excelFile);
     const loadingExport = useAppSelector(state => state.report.loading);
     const certificateOptionsAPI = useAppSelector(state => state.certificate.certificateOption);

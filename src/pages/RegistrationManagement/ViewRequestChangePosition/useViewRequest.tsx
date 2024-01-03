@@ -44,7 +44,7 @@ type SearchParamsI = {
     postCategoryId?: number
 }
 function useViewRequest(postId: number, fetchPost: () => void) {
-    const Formatter = 'DD/MM/YYYY'
+    const Formatter = 'YYYY-MM-DD'
     const [currentRow, setCurrentRow] = useState<any>();
     const { confirm } = Modal;
 

@@ -21,7 +21,7 @@ type SearchParamsI = {
 function useViewApplicationHook() {
     const { applications, loading } = useAppSelector(state => state.application)
 
-    const Formatter = 'DD/MM/YYYY'
+    const Formatter = 'YYYY-MM-DD'
     const [currentRow, setCurrentRow] = useState<any>();
     // const [selectedRowsState, setSelectedRows] = useState<boolean>([]);
     const [page, setPage] = useState<number>(1);

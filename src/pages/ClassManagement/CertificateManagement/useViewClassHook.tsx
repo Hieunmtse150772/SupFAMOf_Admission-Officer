@@ -38,7 +38,7 @@ type TableType = {
     status: number,
 }
 function UseViewClassHook() {
-    const Formatter = 'DD/MM/YYYY'
+    const Formatter = 'YYYY-MM-DD'
     const { id } = useParams<{ id: string }>();
     const [currentRow, setCurrentRow] = useState<any>();
     const [selectedRowKeys, setSelectedRows] = useState<any[]>([]);

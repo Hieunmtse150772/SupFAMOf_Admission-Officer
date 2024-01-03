@@ -259,7 +259,7 @@ const useAddNewPostHook = () => {
     //     const response = await dispatch(geocodingLeafLetApi(geocodingParams))
     //     const result: AxiosResponse<geocodingLeafLetI[], any> = unwrapResult(response)
     //     const parts = postPosition.date.split('/'); // Tách chuỗi thành mảng các phần tử, sử dụng dấu '/' để tách
-    //     // Lưu ý: Đối với định dạng 'DD/MM/YYYY', parts[0] là ngày, parts[1] là tháng và parts[2] là năm
+    //     // Lưu ý: Đối với định dạng 'YYYY-MM-DD', parts[0] là ngày, parts[1] là tháng và parts[2] là năm
     //     const day = parseInt(parts[0], 10); // Chuyển phần tử đầu tiên thành số nguyên
     //     const month = parseInt(parts[1], 10) - 1; // Chuyển phần tử thứ hai thành số nguyên, trừ đi 1 vì index của tháng trong Date bắt đầu từ 0
     //     const year = parseInt(parts[2], 10);
@@ -295,7 +295,7 @@ const useAddNewPostHook = () => {
         const latitude = location[1];
         const longitude = location[2];
         const parts = postPosition.date.split('/'); // Tách chuỗi thành mảng các phần tử, sử dụng dấu '/' để tách
-        // Lưu ý: Đối với định dạng 'DD/MM/YYYY', parts[0] là ngày, parts[1] là tháng và parts[2] là năm
+        // Lưu ý: Đối với định dạng 'YYYY-MM-DD', parts[0] là ngày, parts[1] là tháng và parts[2] là năm
         const day = parseInt(parts[0], 10); // Chuyển phần tử đầu tiên thành số nguyên
         const month = parseInt(parts[1], 10) - 1; // Chuyển phần tử thứ hai thành số nguyên, trừ đi 1 vì index của tháng trong Date bắt đầu từ 0
         const year = parseInt(parts[2], 10);
@@ -303,7 +303,6 @@ const useAddNewPostHook = () => {
         console.log("formattedDate", dateObject)
         const formattedDate = moment(dateObject).format('YYYY-MM-DDTHH:mm:ss');
         console.log("formattedDate", formattedDate)
-
         // const formattedDate = moment(postPosition.date).format('YYYY-MM-DDTHH:mm:ss'); //ToIsoTostring sẽ tự đổi theo UTC nên sẽ chênh lệch múi giờ, thay vào đó sẽ xài moment
         const repsonse = {
             trainingCertificateId: postPosition.certificateOption,
@@ -342,7 +341,7 @@ const useAddNewPostHook = () => {
         if (description !== '') {
             setError('');
         }
-        if (fileImage !== '' && description !== '') {
+        if (description !== '') {
             setError('');
             const dateFrom = new Date(value?.dateFrom_dateTo[0]);
             const dateTo = new Date(value?.dateFrom_dateTo[1]);
@@ -355,7 +354,7 @@ const useAddNewPostHook = () => {
                     const postPositionPromises = value?.postPositions?.map(async (postPosition: PostPosition, index: number) => handlePostPosition2(postPosition, index));
                     try {
                         const postPositionsResults = await Promise.all(postPositionPromises);
-                        const photoUrl = await uploadImage(fileImage, setLoading); // Gọi hàm upload của bạn
+                        const photoUrl = fileImage !== '' ? await uploadImage(fileImage, setLoading) : 'https://daihoc.fpt.edu.vn/wp-content/uploads/2022/08/dai-hoc-fpt-tp.hcm-1659589303-910x910.jpeg'; // Gọi hàm upload của bạn
                         setLoading(true);
                         const params: PostCreatedV2 = {
                             postCategoryId: value?.postCategory,
@@ -382,10 +381,10 @@ const useAddNewPostHook = () => {
                 setError('Description is required!')
                 message.warning('Add description to create post!');
             }
-            if (fileImage === '') {
-                setErrorUrl('Image is required!')
-                message.warning('Add image to create post!');
-            }
+            // if (fileImage === '') {
+            //     setErrorUrl('Image is required!')
+            //     message.warning('Add image to create post!');
+            // }
         }
     }
     const handleAddPost = async (params: PostCreatedV2) => {
@@ -420,7 +419,7 @@ const useAddNewPostHook = () => {
                 currentDate.setDate(currentDate.getDate() + 1);
             }
             const optionDatePicker: any[] = dateArray?.map((date) => ({
-                value: moment(date).format('DD/MM/YYYY'),
+                value: moment(date).format('YYYY-MM-DD'),
                 label: moment(date).format(Formater)
             }));
             setOptionDate(optionDatePicker);
