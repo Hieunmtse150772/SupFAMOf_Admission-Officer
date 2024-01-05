@@ -22,7 +22,7 @@
     "antd": "^5.8.4",
     "antd-img-crop": "^4.13.0",
     "apexcharts": "3.35.3",
-    "axios": "^1.4.0",
+    "axios": "^1.6.4",
     "axios-auth-refresh": "^3.3.6",
     "axios-mock-adapter": "^1.21.5",
     "clsx": "1.1.1",
