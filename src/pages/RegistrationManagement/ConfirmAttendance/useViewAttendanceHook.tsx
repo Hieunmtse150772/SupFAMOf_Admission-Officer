@@ -8,9 +8,8 @@ import { SortOrder } from 'antd/es/table/interface';
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import Status from "enums/statusAttendanceEnum";
-import { confirmAttendanceByPositionId, getAttendenceByPositionId, paramsConfirmAttendance } from 'features/attendenceSlice';
-import { useEffect, useState } from "react";
-import { useNavigate } from 'react-router';
+import { confirmAttendanceByPositionId, paramsConfirmAttendance } from 'features/attendenceSlice';
+import { useState } from "react";
 
 
 interface ExpandedDataType {
@@ -47,26 +46,21 @@ type SearchParamsI = {
     postCategoryId?: number
 }
 function useViewAttendanceHook(positionId: string, fetchPost: () => void, setOpenCheckAttendanceModal: React.Dispatch<React.SetStateAction<boolean>>) {
-    const Formatter = 'YYYY-MM-DD'
     const [currentRow, setCurrentRow] = useState<any>();
     const { confirm } = Modal;
-    const { attendenceList, loading } = useAppSelector(state => state.attendence)
-    // const [selectedRowsState, setSelectedRows] = useState<boolean>([]);
+    const { attendanceList, loading } = useAppSelector(state => state.attendence)
     const [showDetail, setShowDetail] = useState<boolean>(false);
     const [openEditPostModal, setOpenEditPostModal] = useState<boolean>(false);
-    const postInfoAPI = useAppSelector(state => state.post.postInfo);
-    const isLoading = useAppSelector(state => state.post.loading);
     const [postInfo, setPostInfo] = useState<any>();
     const [page, setPage] = useState<number>(1);
     const [sortModel, setSortModel] = useState<SortModalI>({
         Sort: 'createAt',
         Order: 'desc'
     });
-    const [searchParams, setSearchParams] = useState<SearchParamsI>()
     const pageSizeOptions = [10, 20, 30]; // Các tùy chọn cho pageSize
-    const total = attendenceList?.metadata?.total
+    const total = attendanceList?.metadata?.total
     const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
-    let navigate = useNavigate();
+    const dispatch = useAppDispatch();
 
     const columns: ProColumns[] = [
         {
@@ -153,6 +147,7 @@ function useViewAttendanceHook(positionId: string, fetchPost: () => void, setOpe
                 },
             },
             render: (value, valueEnum) => {
+                console.log('status 2: ', valueEnum.status)
                 let color = grey[400].toString();
                 let statusText = 'Unknown';
                 switch (valueEnum?.status) {
@@ -189,6 +184,8 @@ function useViewAttendanceHook(positionId: string, fetchPost: () => void, setOpe
             fixed: 'right',
             width: 150,
             render: (value, valueEnum) => {
+                const checked = value === 2 ? true : false
+                console.log('valueeee: ', value)
                 return <Switch
                     style={{
                         marginBlockEnd: 16,
@@ -196,16 +193,22 @@ function useViewAttendanceHook(positionId: string, fetchPost: () => void, setOpe
                         display: 'felx',
                         justifySelf: 'center'
                     }}
-                    defaultChecked={Boolean(valueEnum?.status === 2)}
+                    id="switch"
                     checkedChildren="Attend"
                     unCheckedChildren="Absend"
                     onChange={(value) => { handleChangeStatus(valueEnum.id, valueEnum.status, value) }}
+                    defaultChecked={checked}
+                // fieldProps={{
+                //     onChange: (value) => { handleChangeStatus(valueEnum.id, valueEnum.status, value) },
+                //     defaultChecked: checked,
+
+                // }}
                 />
             },
             hideInSearch: true,
+            debounceTime: 5000
         },
     ];
-    const dispatch = useAppDispatch();
 
     const handleSearch = (value: any) => {
 
@@ -214,13 +217,13 @@ function useViewAttendanceHook(positionId: string, fetchPost: () => void, setOpe
     const handleActionChange = async (params: any,
         sorter: Record<string, SortOrder>,
         filter: Record<string, (string | number)[] | null>): Promise<Partial<RequestData<any>>> => {
-        if (sorter && Object.keys(sorter).length > 0) {
-            const keys = Object.keys(sorter);
-            const fieldName = keys[0];
-            const sortOrder = sorter[fieldName] === 'ascend' ? 'asc' : 'desc';
+        // if (sorter && Object.keys(sorter).length > 0) {
+        //     const keys = Object.keys(sorter);
+        //     const fieldName = keys[0];
+        //     const sortOrder = sorter[fieldName] === 'ascend' ? 'asc' : 'desc';
 
-            setSortModel({ Sort: fieldName, Order: String(sortOrder) })
-        } else setSortModel({ Sort: 'createAt', Order: 'desc' })
+        //     setSortModel({ Sort: fieldName, Order: String(sortOrder) })
+        // } else setSortModel({ Sort: 'createAt', Order: 'desc' })
         return {
             data: [],
             success: true,
@@ -233,8 +236,7 @@ function useViewAttendanceHook(positionId: string, fetchPost: () => void, setOpe
     const onChangePageSize = (value: any) => {
         setPageSize(value)
     }
-
-    const checkAttendanceData = attendenceList.data.map((attendence, index) => ({
+    const checkAttendanceData = attendanceList.data.map((attendence, index) => ({
         id: attendence?.id,
         status: attendence?.status
     }))
@@ -270,35 +272,21 @@ function useViewAttendanceHook(positionId: string, fetchPost: () => void, setOpe
         });
 
     }
-
-    const rows = attendenceList.data.map((attendence, index) => ({
-        count: index,
-        key: attendence?.id,
-        id: attendence?.id,
-        name: attendence?.account?.name,
-        email: attendence?.account?.email,
-        phone: attendence?.postRegistration?.post?.account?.phone,
-        imgUrl: attendence?.account?.imgUrl,
-        idStudent: attendence?.postRegistration?.post?.account?.accountInformation?.idStudent,
-        isPremium: attendence?.postRegistration?.post?.account?.isPremium,
-        status: attendence?.status,
-        checkInTime: attendence.checkInTime,
-        checkOutTime: attendence.checkOutTime,
-        positionName: attendence.postRegistration.position.positionName
-    }));
-
-    const fetchAttendence = async () => {
-        await dispatch(getAttendenceByPositionId({
-            positionId: positionId,
-            page: page,
-            PageSize: pageSize,
-            Sort: sortModel.Sort,
-            Order: sortModel.Order
-        }))
-    }
-    useEffect(() => {
-        fetchAttendence()
-    }, [page, pageSize, sortModel])
+    // const fetchAttendence = async () => {
+    //     await dispatch(getAttendenceByPositionId({
+    //         positionId: positionId,
+    //         page: page,
+    //         PageSize: pageSize,
+    //         Sort: sortModel.Sort,
+    //         Order: sortModel.Order
+    //     }))
+    // }
+    // useEffect(() => {
+    //     const fetch = async () => {
+    //         await fetchAttendence();
+    //     }
+    //     fetch();
+    // }, [page, pageSize])
 
     const handler = {
         setCurrentRow,
@@ -315,17 +303,14 @@ function useViewAttendanceHook(positionId: string, fetchPost: () => void, setOpe
         total,
         columns,
         loading,
-        rows,
         showDetail,
         currentRow,
         openEditPostModal,
         postInfo,
-        postInfoAPI,
-        isLoading,
         page,
         pageSize,
         pageSizeOptions,
-        attendenceList
+        attendanceList
     }
     return {
         handler,
