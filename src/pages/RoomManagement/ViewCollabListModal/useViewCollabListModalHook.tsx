@@ -36,7 +36,7 @@ function useViewCollabListModalHook(
     const Formatter = 'YYYY-MM-DD'
     const [currentRow, setCurrentRow] = useState<any>();
     const { confirm } = Modal;
-    const { attendenceList, loading } = useAppSelector(state => state.attendence)
+    const { attendanceList, loading } = useAppSelector(state => state.attendence)
     // const [selectedRowsState, setSelectedRows] = useState<boolean>([]);
     const [showDetail, setShowDetail] = useState<boolean>(false);
     const [openEditPostModal, setOpenEditPostModal] = useState<boolean>(false);

@@ -278,7 +278,7 @@ const useViewContractHook = () => {
                     }
                     return <Box display="flex" alignItems="center">
                         <Space size={0}>
-                            <Tag color={color}>{statusText}</Tag>
+                            <Tag color={color} style={{ color: 'black' }}>{statusText}</Tag>
                         </Space>
                     </Box>
                 },

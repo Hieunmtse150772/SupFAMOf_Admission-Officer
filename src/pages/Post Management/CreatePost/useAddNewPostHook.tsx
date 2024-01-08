@@ -155,7 +155,7 @@ const useAddNewPostHook = () => {
                 setFileList(newFileList);
             } else {
                 setFileList([]);
-                message.error('The size of image to large, please choice another less than 300MB!')
+                message.error('The size of image to large, please choice another less than 300KB!');
             }
         } else setFileList([]);
     }
@@ -164,6 +164,7 @@ const useAddNewPostHook = () => {
         setPhotoUrl('');
         setFileImage('');
     }
+
     const handleSearchAddress = async (keyWords: string) => {
         try {
             // Thực hiện gọi API Google ở đây
