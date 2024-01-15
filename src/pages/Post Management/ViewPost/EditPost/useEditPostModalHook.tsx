@@ -319,16 +319,19 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
     };
     const handleUpdatePostApi = async (params: PostUpdated): Promise<boolean> => {
         let result = false;
-        await dispatch(updatePostById(params)).then((response) => {
-            const result2 = unwrapResult(response);
-            if (result2.status === 200) {
+        await dispatch(updatePostById(params)).then((response: any) => {
+            console.log('response: ', response)
+            if (response?.payload?.status === 200) {
                 setLoading(false);
                 fetchPostList();
                 message.success('Update post success!');
                 result = true;
+            } else {
+                message.error(response?.payload?.message);
+                setLoading(false)
+                result = false;
             }
         }).catch((error) => {
-            message.error('Intenal server error!')
             setLoading(false)
             console.error(error)
             result = false;

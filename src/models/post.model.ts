@@ -4,6 +4,7 @@ type PostInfo = {
     id: number;
     postCategoryId: number,
     postCode: string,
+    anyRegister: boolean,
     postDescription: string,
     dateFrom: Date,
     dateTo: Date,
