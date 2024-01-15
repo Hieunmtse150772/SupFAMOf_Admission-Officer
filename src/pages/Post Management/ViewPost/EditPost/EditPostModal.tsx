@@ -250,20 +250,7 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                         name="date"
                         rules={[{ required: true, message: 'Choose Date!' }]} />
 
-                    <ProFormSelect
-                        label="Document"
-                        width="md"
-                        rules={[
-                            {
-                                required: false,
-                            },
-                        ]}
-                        name="documentId"
-                        options={props.documentOptions}
-                        debounceTime={5}
-                        tooltip="That field optional"
-                        onMetaChange={onchange = () => handler.handleEdit()}
-                    />
+
                     <ProFormSelect
                         label="Certificate"
                         width="md"
@@ -278,7 +265,20 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                         tooltip="That field optional"
                         onMetaChange={onchange = () => handler.handleEdit()}
                     />
-
+                    <ProFormSelect
+                        label="Document"
+                        width="md"
+                        rules={[
+                            {
+                                required: false,
+                            },
+                        ]}
+                        name="documentId"
+                        options={props.documentOptions}
+                        debounceTime={5}
+                        tooltip="That field optional"
+                        onMetaChange={onchange = () => handler.handleEdit()}
+                    />
                     <ProFormTimePicker
                         label="Time From"
                         width="xs"
