@@ -177,14 +177,16 @@ function useViewAttendanceHook(positionId: string, fetchPost: () => void, setOpe
             },
         },
         {
-            title: 'Check attendence',
+            title: 'Check attendance',
             key: 'checkAttendence',
             dataIndex: 'status',
             align: 'center',
             fixed: 'right',
+            tooltip: 'Can just check attendance for collaborator have checkout!',
             width: 150,
             render: (value, valueEnum) => {
-                const checked = value === 2 ? true : false
+                const checked = value === 2 ? true : false;
+                const disabled = valueEnum.checkOutTime === null ? true : false;
                 console.log('valueeee: ', value)
                 return <Switch
                     style={{
@@ -198,6 +200,7 @@ function useViewAttendanceHook(positionId: string, fetchPost: () => void, setOpe
                     unCheckedChildren="Absend"
                     onChange={(value) => { handleChangeStatus(valueEnum.id, valueEnum.status, value) }}
                     defaultChecked={checked}
+                    disabled={disabled}
                 // fieldProps={{
                 //     onChange: (value) => { handleChangeStatus(valueEnum.id, valueEnum.status, value) },
                 //     defaultChecked: checked,

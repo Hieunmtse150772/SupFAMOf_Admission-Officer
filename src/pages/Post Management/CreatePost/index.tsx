@@ -368,6 +368,13 @@ const AddNewPost: FC = () => {
                                                 rules={[
                                                     {
                                                         required: true,
+                                                        min: 1,
+                                                        validator: async (_, value) => {
+                                                            if (value > 0) {
+                                                                return;
+                                                            }
+                                                            throw new Error('Amount must be minimum 1!');
+                                                        },
                                                     },
                                                 ]}
                                             />
@@ -379,6 +386,13 @@ const AddNewPost: FC = () => {
                                                 rules={[
                                                     {
                                                         required: true,
+                                                        min: 100000,
+                                                        validator: async (_, value) => {
+                                                            if (value > 100000) {
+                                                                return;
+                                                            }
+                                                            throw new Error('Salary must be minimum 100,000 đ');
+                                                        },
                                                     },
                                                 ]}
                                                 locale="en-VN"
