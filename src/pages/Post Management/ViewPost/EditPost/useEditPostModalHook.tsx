@@ -38,8 +38,8 @@ interface PostPosition {
 interface PostPositionI {
     positionName: string;
     positionDescription: string;
-    documentOption: number;
-    certificateOption: number;
+    documentId: number;
+    trainingCertificateId: number;
     timeFrom_timeTo: Moment[];
     schoolName: string;
     location: string;
@@ -163,6 +163,7 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
             format: 'json',
             limit: 1
         }
+        console.log('postPosition: ', postPosition)
         const response = await dispatch(geocodingLeafLetApi(geocodingParams))
         const result: AxiosResponse<geocodingLeafLetI[], any> = unwrapResult(response)
         if (result.data.length !== 0) {
@@ -229,9 +230,9 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
         // const formattedDate = moment(postPosition.date).format('YYYY-MM-DDTHH:mm:ss'); //ToIsoTostring sẽ tự đổi theo UTC nên sẽ chênh lệch múi giờ, thay vào đó sẽ xài moment
         const repsonse = {
             id: 0,
-            trainingCertificateId: postPosition.certificateOption,
+            trainingCertificateId: postPosition.trainingCertificateId,
             positionDescription: postPosition.positionDescription,
-            documentId: postPosition.documentOption,
+            documentId: postPosition.documentId,
             positionName: postPosition.positionName,
             amount: postPosition.amount,
             salary: postPosition.salary,
