@@ -105,7 +105,7 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                             onChange={() => handler.handleEdit()}
                         />
                         <ProFormDateRangePicker
-                            name="dateFrom-dateTo"
+                            name="dateFrom_dateTo"
                             label="Date From-To"
                             disabled={postInfo?.data?.anyRegister}
                             width='xl'

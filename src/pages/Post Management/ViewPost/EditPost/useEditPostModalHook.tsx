@@ -269,6 +269,8 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
                         console.log('fileImage: ', fileImage);
                         const photoUrl = (fileImage !== null) ? await uploadImage(fileImage, setLoading) : postInfo?.data?.postImg; // Gọi hàm upload của bạn
                         setLoading(true);
+                        const dateFrom = new Date(value?.dateFrom_dateTo[0]);
+                        const dateTo = new Date(value?.dateFrom_dateTo[1]);
                         const params: PostUpdated = {
                             postId: postInfo?.data.id ? postInfo?.data.id : 0,
                             postCategoryId: value?.postCategory,
@@ -277,6 +279,8 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
                             isPremium: value?.isPremium,
                             postPositions: newPostPositionResults.length !== 0 ? [...postPositionsResults, ...newPostPositionResults] : postPositionsResults,
                             postImg: photoUrl ? photoUrl : 'https://fptcameraiq.vn/storage/festftel25.jpg',
+                            dateFrom: dateFrom,
+                            dateTo: dateTo,
                         }
                         setParamsCreatePost(params);
                     } catch (error) {
