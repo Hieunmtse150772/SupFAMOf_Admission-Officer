@@ -269,8 +269,9 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
                         console.log('fileImage: ', fileImage);
                         const photoUrl = (fileImage !== null) ? await uploadImage(fileImage, setLoading) : postInfo?.data?.postImg; // Gọi hàm upload của bạn
                         setLoading(true);
-                        const dateFrom = new Date(value?.dateFrom_dateTo[0]);
-                        const dateTo = new Date(value?.dateFrom_dateTo[1]);
+                        const dateFrom = String(value?.dateFrom_dateTo[0]);
+                        const dateTo = String(value?.dateFrom_dateTo[1]);
+                        console.log('value?.dateFrom_dateTo: ', value?.dateFrom_dateTo)
                         const params: PostUpdated = {
                             postId: postInfo?.data.id ? postInfo?.data.id : 0,
                             postCategoryId: value?.postCategory,
