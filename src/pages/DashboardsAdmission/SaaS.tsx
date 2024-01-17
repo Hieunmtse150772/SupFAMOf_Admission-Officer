@@ -25,12 +25,12 @@ const SaaS: FC = () => {
     await dispatch(getRegistrationComplete()).catch((error) => {
       message.error('Server internal error!');
     });
-    await dispatch(getMoneyYearReport({ year: 2023 })).catch((error) => {
+    await dispatch(getMoneyYearReport({ year: new Date().getFullYear() })).catch((error) => {
       console.log("Error in getting the data", error)
     })
     await dispatch(getAnalytics({
-      month: 12,
-      year: 2023
+      month: new Date().getMonth(),
+      year: new Date().getFullYear()
     })).catch((error) => {
       console.log("Error in getting the data", error)
     })
