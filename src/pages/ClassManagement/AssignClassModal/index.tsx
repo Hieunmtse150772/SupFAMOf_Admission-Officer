@@ -5,7 +5,7 @@ import { RangePickerProps } from "antd/es/date-picker";
 import { RowSelectionType } from "antd/es/table/interface";
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { createClass, deleteClassById, getClassTraining } from "features/classSlice";
 import ClassCreated from "models/classCreated.model";
 import { ClassTrainingViewI, ClassTrainingViewI2 } from "models/classTraining.model";
@@ -17,7 +17,15 @@ interface ConfirmRegistrationModalProps {
     setOpenAssignClassModal: React.Dispatch<React.SetStateAction<boolean>>,
     hanldeAssignClass: (id: Key[]) => void,
 }
-
+type RangeType = 'start' | 'end';
+type RangeDisabledTime = (
+    now: Dayjs | null,
+    type: RangeType,
+) => {
+    disabledHours?: () => number[];
+    disabledMinutes?: (selectedHour: number) => number[];
+    disabledSeconds?: (selectedHour: number, selectedMinute: number) => number[];
+};
 type TableType = {
     id: string | number,
     date?: Date | string,
@@ -89,7 +97,7 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
             dispatch(createClass(params)).then((response: any) => {
                 console.log('response: ', response)
                 if (response?.payload?.data?.status?.success) {
-                    message.success('Create class success');
+                    message.success('Create room success');
                     fetchClass();
                 } else {
                     message.error(response?.payload?.message);
@@ -100,6 +108,18 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
             })
         }
     }
+    const disabledTime: RangeDisabledTime = (now, defaultType) => {
+        if (defaultType === 'start') {
+            // Vô hiệu hóa giờ từ 0-3 và từ 21-24 cho lựa chọn bắt đầu
+            return {
+                disabledHours: () => Array.from({ length: 4 }, (_, i) => i).concat(Array.from({ length: 4 }, (_, i) => i + 21)),
+            };
+        }
+        // Vô hiệu hóa giờ từ 0-3 và từ 21-24 cho lựa chọn kết thúc
+        return {
+            disabledHours: () => Array.from({ length: 4 }, (_, i) => i).concat(Array.from({ length: 4 }, (_, i) => i + 21)),
+        };
+    };
     const handleDelete = async (data: ClassTrainingViewI) => {
         await dispatch(deleteClassById(String(data?.id))).then((response: any) => {
             if (response?.payload?.data?.status?.success) {
@@ -179,6 +199,7 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
                 return (
                     <TimePicker.RangePicker
                         name="timeFrom_timeTo"
+                        disabledTime={(current, type) => disabledTime(current, type)}
                     // Other TimePicker props...
                     />
                 );
@@ -309,7 +330,7 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
                         id: (Math.random() * 1000000).toFixed(0),
                         disable: true
                     }),
-                    creatorButtonText: 'Create New Class', // Text for the creation button
+                    creatorButtonText: 'Create New Room', // Text for the creation button
 
                 }}
             />

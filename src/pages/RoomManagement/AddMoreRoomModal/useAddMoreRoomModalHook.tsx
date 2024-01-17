@@ -39,7 +39,7 @@ function useAddMoreRoomModalHook(fetchClass: () => void, setOpenAddMoreRoomModal
                     dispatch(createClass(params)).then((response: any) => {
                         console.log('response: ', response)
                         if (response?.payload?.data?.status?.success) {
-                            message.success('Create class success');
+                            message.success('Create room success');
                             setOpenAddMoreRoomModal(false);
                             form.resetFields();
                             fetchClass();
