@@ -399,10 +399,8 @@ const useAddNewPostHook = () => {
         await dispatch(createPost(params)).then((response: any) => {
             if (response.payload.status === 200) {
                 form.resetFields();
-                message.success('Create post success!');
                 navigate('/dashboard/registration-list');
-                removeImage();
-                setFileList([]);
+                message.success('Create post success!');
                 setLoading(false);
             } else {
                 setLoading(false);
