@@ -105,9 +105,9 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                             onChange={() => handler.handleEdit()}
                         />
                         <ProFormDateRangePicker
-                            name="dateFrom-dateTo"
+                            name="dateFrom_dateTo"
                             label="Date From-To"
-                            disabled
+                            disabled={postInfo?.data?.anyRegister}
                             width='xl'
                             rules={[{ required: true, message: 'Choose date from & date to!' }]}
                             initialValue={[postInfo?.data.dateFrom, postInfo?.data.dateTo]}
@@ -123,7 +123,8 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                     onMetaChange={onchange = () => handleEdit()}
                 /> */}
                         <ProFormSwitch name="isPremium" label="Is Premium show" initialValue={postInfo?.data?.isPremium}
-                            onMetaChange={onchange = () => handler.handleEdit()} disabled
+                            onMetaChange={onchange = () => handler.handleEdit()} disabled={postInfo?.data?.anyRegister}
+
                         />
                     </ProForm.Group>
                     <Upload
@@ -245,24 +246,11 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                     <ProFormDatePicker
                         label="Date"
                         width="md"
-                        disabled
+                        disabled={postInfo?.data?.anyRegister}
                         name="date"
                         rules={[{ required: true, message: 'Choose Date!' }]} />
 
-                    <ProFormSelect
-                        label="Document"
-                        width="md"
-                        rules={[
-                            {
-                                required: false,
-                            },
-                        ]}
-                        name="documentId"
-                        options={props.documentOptions}
-                        debounceTime={5}
-                        tooltip="That field optional"
-                        onMetaChange={onchange = () => handler.handleEdit()}
-                    />
+
                     <ProFormSelect
                         label="Certificate"
                         width="md"
@@ -277,12 +265,25 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                         tooltip="That field optional"
                         onMetaChange={onchange = () => handler.handleEdit()}
                     />
-
+                    <ProFormSelect
+                        label="Document"
+                        width="md"
+                        rules={[
+                            {
+                                required: false,
+                            },
+                        ]}
+                        name="documentId"
+                        options={props.documentOptions}
+                        debounceTime={5}
+                        tooltip="That field optional"
+                        onMetaChange={onchange = () => handler.handleEdit()}
+                    />
                     <ProFormTimePicker
                         label="Time From"
                         width="xs"
                         name="timeFrom"
-                        disabled
+                        disabled={postInfo?.data?.anyRegister}
                         // initialValue={['timeFrom', 'timeTo']}
                         rules={[{ required: true, message: 'Choose time from & time to!' }]}
                     />
@@ -290,7 +291,7 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                     <ProFormTimePicker
                         label="Time To"
                         width="xs"
-                        disabled
+                        disabled={postInfo?.data?.anyRegister}
                         name="timeTo"
                         // initialValue={['timeFrom', 'timeTo']}
                         rules={[{ required: true, message: 'Choose time from & time to!' }]}
@@ -302,21 +303,34 @@ const EditPostModal: FC<EditPostModalProps> = ({ open, setOpenEditPostModal, pos
                         rules={[
                             {
                                 required: true,
+                                min: 1,
+                                validator: async (_, value) => {
+                                    if (value > 0) {
+                                        return;
+                                    }
+                                    throw new Error('Amount must be minimum 1!');
+                                },
                             },
                         ]}
                         onMetaChange={onchange = () => handler.handleEdit()}
-
                     />
                     <ProFormMoney
                         label="Salary"
                         name="salary"
                         width="xs"
                         customSymbol="đ"
-                        disabled
+                        disabled={postInfo?.data?.anyRegister}
                         rules={[
                             {
                                 required: true,
-                            },
+                                min: 100000,
+                                validator: async (_, value) => {
+                                    if (value > 100000) {
+                                        return;
+                                    }
+                                    throw new Error('Salary must be minimum 100,000 đ');
+                                },
+                            }
                         ]}
                         locale="en-VN"
                         onMetaChange={onchange = () => handler.handleEdit()}

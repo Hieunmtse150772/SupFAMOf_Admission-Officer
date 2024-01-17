@@ -64,7 +64,7 @@ const DashboardNavbar: FC<DashboardNavBarProps> = ({
     },
     {
       path: '/dashboard/add-post',
-      title: 'Add Post',
+      title: 'Add Recruitment Post ',
     },
     {
       path: '/dashboard/user-profile',

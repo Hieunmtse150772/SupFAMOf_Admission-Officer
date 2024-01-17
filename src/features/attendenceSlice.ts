@@ -24,14 +24,14 @@ export type paramsConfirmAttendance = {
     }[],
 }
 interface AttendenceState {
-    attendenceList: AttendenceDto,
+    attendanceList: AttendenceDto,
     loading: boolean,
     error: ErrorDto | null,
     workLists: WorkListDto
 }
 
 const initialState: AttendenceState = {
-    attendenceList: {
+    attendanceList: {
         data: [] as AttendenceI[]
     },
     loading: false,
@@ -53,7 +53,7 @@ export const getAttendenceByPositionId = createAsyncThunk(
     },
 );
 export const getWorkListsByPositionId = createAsyncThunk(
-    'registration/get-workLists',
+    'attendence/get-workLists',
     async (params: SearchWorkListParamsDto, { rejectWithValue }) => {
         try {
             const result = await attendenceService.getWorkListByPositionId(params)
@@ -87,7 +87,7 @@ export const attendenceSlice = createSlice({
                 state.error = null;
             })
             .addCase(getAttendenceByPositionId.fulfilled, (state, action) => {
-                state.attendenceList = action.payload
+                state.attendanceList = action.payload
                 state.loading = false;
             })
             .addCase(getAttendenceByPositionId.rejected, (state, action) => {

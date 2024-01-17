@@ -46,6 +46,9 @@ const AddMoreRoomModal: FC<AddMoreRoomModalProps> = ({ open, setOpenAddMoreRoomM
                     <ProFormTimePicker.RangePicker
                         width="xl"
                         name="timeFrom_timeTo"
+                        fieldProps={{
+                            disabledTime: (current, type) => handler.disabledTime(current, type)
+                        }}
                         label="Starting time - ending time"
                         rules={[{ required: true, message: 'Time is required!' }]}
 

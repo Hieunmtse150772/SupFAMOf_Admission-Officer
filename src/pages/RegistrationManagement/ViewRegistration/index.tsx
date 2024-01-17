@@ -260,12 +260,13 @@ const ViewPostList = () => {
                     postId={props.postId}
                 />
             }
-            {(props.openViewAttendenceModal && props.positionId !== null) &&
+            {(props.openViewAttendenceModal && props.positionId !== null && props.isLoadingOpenModal !== true) &&
                 <ViewAttendanceModal
                     fetchPost={handler.fetchPostList}
                     open={props.openViewAttendenceModal}
                     setOpenCheckAttendanceModal={handler.setOpenViewAttendenceModal}
                     positionId={props.positionId}
+                    attendanceList={props.attendanceList}
                 />
             }
             {(props.openViewWorkListModal && props.positionId !== null) &&

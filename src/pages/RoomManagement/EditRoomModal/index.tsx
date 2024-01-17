@@ -51,6 +51,9 @@ const EditRoomModal: FC<AddMoreRoomModalProps> = ({ open, setOpenEditRoomModal, 
                         width="xl"
                         name="timeFrom_timeTo"
                         label="Starting time - ending time"
+                        fieldProps={{
+                            disabledTime: (current, type) => handler.disabledTime(current, type)
+                        }}
                         rules={[{ required: true, message: 'Time is required!' }]}
                         initialValue={[classInfo?.timeFrom, classInfo?.timeTo]}
                     />

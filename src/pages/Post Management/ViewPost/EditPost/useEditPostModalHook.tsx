@@ -38,8 +38,8 @@ interface PostPosition {
 interface PostPositionI {
     positionName: string;
     positionDescription: string;
-    documentOption: number;
-    certificateOption: number;
+    documentId: number;
+    trainingCertificateId: number;
     timeFrom_timeTo: Moment[];
     schoolName: string;
     location: string;
@@ -163,6 +163,7 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
             format: 'json',
             limit: 1
         }
+        console.log('postPosition: ', postPosition)
         const response = await dispatch(geocodingLeafLetApi(geocodingParams))
         const result: AxiosResponse<geocodingLeafLetI[], any> = unwrapResult(response)
         if (result.data.length !== 0) {
@@ -217,11 +218,11 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
         const address = location[0];
         const latitude = location[1];
         const longitude = location[2];
-        const parts = postPosition.date.split('/'); // Tách chuỗi thành mảng các phần tử, sử dụng dấu '/' để tách
+        const parts = postPosition.date.split('-'); // Tách chuỗi thành mảng các phần tử, sử dụng dấu '/' để tách
         // Lưu ý: Đối với định dạng 'YYYY-MM-DD', parts[0] là ngày, parts[1] là tháng và parts[2] là năm
-        const day = parseInt(parts[0], 10); // Chuyển phần tử đầu tiên thành số nguyên
+        const day = parseInt(parts[2], 10); // Chuyển phần tử đầu tiên thành số nguyên
         const month = parseInt(parts[1], 10) - 1; // Chuyển phần tử thứ hai thành số nguyên, trừ đi 1 vì index của tháng trong Date bắt đầu từ 0
-        const year = parseInt(parts[2], 10);
+        const year = parseInt(parts[0], 10);
         const dateObject = new Date(year, month, day);
         console.log("formattedDate", dateObject)
         const formattedDate = moment(dateObject).format('YYYY-MM-DDTHH:mm:ss');
@@ -229,9 +230,9 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
         // const formattedDate = moment(postPosition.date).format('YYYY-MM-DDTHH:mm:ss'); //ToIsoTostring sẽ tự đổi theo UTC nên sẽ chênh lệch múi giờ, thay vào đó sẽ xài moment
         const repsonse = {
             id: 0,
-            trainingCertificateId: postPosition.certificateOption,
+            trainingCertificateId: postPosition.trainingCertificateId,
             positionDescription: postPosition.positionDescription,
-            documentId: postPosition.documentOption,
+            documentId: postPosition.documentId,
             positionName: postPosition.positionName,
             amount: postPosition.amount,
             salary: postPosition.salary,
@@ -268,6 +269,9 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
                         console.log('fileImage: ', fileImage);
                         const photoUrl = (fileImage !== null) ? await uploadImage(fileImage, setLoading) : postInfo?.data?.postImg; // Gọi hàm upload của bạn
                         setLoading(true);
+                        const dateFrom = String(value?.dateFrom_dateTo[0]);
+                        const dateTo = String(value?.dateFrom_dateTo[1]);
+                        console.log('value?.dateFrom_dateTo: ', value?.dateFrom_dateTo)
                         const params: PostUpdated = {
                             postId: postInfo?.data.id ? postInfo?.data.id : 0,
                             postCategoryId: value?.postCategory,
@@ -276,6 +280,8 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
                             isPremium: value?.isPremium,
                             postPositions: newPostPositionResults.length !== 0 ? [...postPositionsResults, ...newPostPositionResults] : postPositionsResults,
                             postImg: photoUrl ? photoUrl : 'https://fptcameraiq.vn/storage/festftel25.jpg',
+                            dateFrom: dateFrom,
+                            dateTo: dateTo,
                         }
                         setParamsCreatePost(params);
                     } catch (error) {
@@ -319,16 +325,19 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
     };
     const handleUpdatePostApi = async (params: PostUpdated): Promise<boolean> => {
         let result = false;
-        await dispatch(updatePostById(params)).then((response) => {
-            const result2 = unwrapResult(response);
-            if (result2.status === 200) {
+        await dispatch(updatePostById(params)).then((response: any) => {
+            console.log('response: ', response)
+            if (response?.payload?.status === 200) {
                 setLoading(false);
                 fetchPostList();
                 message.success('Update post success!');
                 result = true;
+            } else {
+                message.error(response?.payload?.message);
+                setLoading(false)
+                result = false;
             }
         }).catch((error) => {
-            message.error('Intenal server error!')
             setLoading(false)
             console.error(error)
             result = false;

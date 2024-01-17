@@ -4,11 +4,21 @@ import { Modal, message } from "antd";
 import { RangePickerProps } from "antd/es/date-picker";
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { updateClass } from "features/classSlice";
 import { ClassTrainingI, ClassTrainingViewI2 } from "models/classTraining.model";
 import ClassUpdated from "models/classUpdated.model";
 
+type RangeType = 'start' | 'end';
+
+type RangeDisabledTime = (
+    now: Dayjs | null,
+    type: RangeType,
+) => {
+    disabledHours?: () => number[];
+    disabledMinutes?: (selectedHour: number) => number[];
+    disabledSeconds?: (selectedHour: number, selectedMinute: number) => number[];
+};
 function useEditRoomModalHook(fetchClass: () => void, setOpenEditPostModal: React.Dispatch<React.SetStateAction<boolean>>, classInfo: ClassTrainingI) {
     const dispatch = useAppDispatch();
     const [form] = ProForm.useForm();
@@ -48,12 +58,25 @@ function useEditRoomModalHook(fetchClass: () => void, setOpenEditPostModal: Reac
         });
 
     }
+    const disabledTime: RangeDisabledTime = (now, defaultType) => {
+        if (defaultType === 'start') {
+            // Vô hiệu hóa giờ từ 0-3 và từ 21-24 cho lựa chọn bắt đầu
+            return {
+                disabledHours: () => Array.from({ length: 4 }, (_, i) => i).concat(Array.from({ length: 4 }, (_, i) => i + 21)),
+            };
+        }
+        // Vô hiệu hóa giờ từ 0-3 và từ 21-24 cho lựa chọn kết thúc
+        return {
+            disabledHours: () => Array.from({ length: 4 }, (_, i) => i).concat(Array.from({ length: 4 }, (_, i) => i + 21)),
+        };
+    };
     const disabledDate: RangePickerProps['disabledDate'] = (current) => {
         // Can not select days before today and today
         return current && current < dayjs().endOf('day');
     };
     const handler = {
-        handleAddRoom
+        handleAddRoom,
+        disabledTime
     }
     const props = {
         form,

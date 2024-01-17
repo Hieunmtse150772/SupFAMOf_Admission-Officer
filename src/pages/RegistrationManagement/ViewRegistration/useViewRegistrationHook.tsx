@@ -9,6 +9,7 @@ import { SortOrder } from 'antd/es/table/interface';
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import Status from 'enums/status.enum';
+import { getAttendenceByPositionId } from 'features/attendenceSlice';
 import { getCertificate } from 'features/certificateSlice';
 import { getDocument } from 'features/documentSlice';
 import { confirmEndPost, confirmReopenPost, confirmRunningPost, getPostByAccountId } from "features/postSlice";
@@ -61,9 +62,11 @@ function useViewRegistrationHook() {
     const { posts, isDeleted } = useAppSelector(state => state.post);
     const postInfoAPI = useAppSelector(state => state.post.postInfo);
     const isLoading = useAppSelector(state => state.post.loading);
+    const attendanceList = useAppSelector(state => state.attendence.attendanceList)
     const { collabs, loading } = useAppSelector(state => state.collab);
     const { registrationList } = useAppSelector(state => state.registration);
     const postTitleOptionsAPI = useAppSelector(state => state.postTitle.postTitleOption);
+    const isLoadingOpenModal = useAppSelector(state => state.attendence.loading)
     const valueEnum: { [key: number]: { text: string } } = {};
     postTitleOptionsAPI.forEach((option) => {
         valueEnum[option.id] = { text: option.postCategoryDescription };
@@ -499,6 +502,12 @@ function useViewRegistrationHook() {
     };
     const handleOpenCheckAttendence = async (value: any) => {
         setPositionId(value.id);
+        const fetchAttendence = async () => {
+            await dispatch(getAttendenceByPositionId({
+                positionId: value.id,
+            }))
+        }
+        fetchAttendence();
         setOpenViewAttendenceModal(true);
     }
     const handleViewWorkList = async (value: any) => {
@@ -784,7 +793,9 @@ function useViewRegistrationHook() {
         certificateList,
         documentList,
         openViewWorkListModal,
-        postCode
+        postCode,
+        attendanceList,
+        isLoadingOpenModal
     }
     return {
         handler,

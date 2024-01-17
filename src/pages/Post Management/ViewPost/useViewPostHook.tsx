@@ -323,7 +323,7 @@ function useViewPostList() {
             key: '2',
             icon: <EditOutlined color='green' rev={undefined} />,
             onClick: () => handleOpenEditPostModal(value),
-            disabled: Boolean(valueEnum.status === 5),
+            disabled: Boolean(valueEnum.status === 5 || valueEnum.status === 3),
           },
         ];
         const menuProps = {

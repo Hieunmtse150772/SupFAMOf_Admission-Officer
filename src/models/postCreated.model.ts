@@ -12,6 +12,8 @@ type PostCreated = {
     postPositions: PositionCreatedI[],
 }
 export type PostUpdated = {
+    dateFrom: string,
+    dateTo: string
     postId: number,
     postCategoryId: number,
     postDescription: string,
