@@ -5,7 +5,9 @@ import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import FlexBox from "components/FlexBox";
 import { H5 } from "components/Typography";
+import dayjs from "dayjs";
 import { getAnalytics } from "features/manageDashboardSlice";
+import moment from "moment";
 import { FC } from "react";
 import Chart from "react-apexcharts";
 
@@ -88,7 +90,7 @@ const Analytics: FC = () => {
     >
       <FlexBox alignItems="center" justifyContent="space-between">
         <H5>Analytics</H5>
-        <DatePicker onChange={(value, dateString) => handleChangeMonth(dateString)} picker="month" size="large" style={{ marginBottom: 10 }} />
+        <DatePicker defaultValue={dayjs(moment(new Date()).format('YYYY-MM-DD'), 'YYYY-MM-DD')} onChange={(value, dateString) => handleChangeMonth(dateString)} picker="month" size="large" style={{ marginBottom: 10 }} />
       </FlexBox>
 
       <Box
