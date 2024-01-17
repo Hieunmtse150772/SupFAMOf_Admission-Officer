@@ -4,7 +4,9 @@ import { ApexOptions } from "apexcharts";
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
 import { H2, H5 } from "components/Typography";
+import dayjs from "dayjs";
 import { getMoneyYearReport } from "features/manageDashboardSlice";
+import moment from "moment";
 import { FC, useState } from "react";
 import Chart from "react-apexcharts";
 
@@ -137,6 +139,7 @@ const TotalSpent: FC = () => {
       console.log("Error in getting the data", error)
     })
   }
+  console.log('current year: ', new Date())
   return (
     <Card
       sx={{
@@ -153,7 +156,7 @@ const TotalSpent: FC = () => {
           <H2 color="primary.main">{total}</H2>
         </div>
         <div>
-          <DatePicker onChange={(value, dateString) => handleChangeYear(dateString)} picker="year" size="large" style={{ marginBottom: 10 }} />
+          <DatePicker defaultValue={dayjs(moment(new Date()).format('YYYY-MM-DD'), 'YYYY-MM-DD')} onChange={(value, dateString) => handleChangeYear(dateString)} picker="year" size="large" style={{ marginBottom: 10 }} />
         </div>
       </div>
 
