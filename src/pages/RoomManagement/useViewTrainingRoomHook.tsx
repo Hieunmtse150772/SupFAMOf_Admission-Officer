@@ -162,7 +162,7 @@ function useViewTrainingHook() {
                     },
                     {
                         label: 'Delete',
-                        key: '2',
+                        key: '3',
                         icon: <DeleteOutlined rev={undefined} />,
                         danger: true,
                         onClick: () => handleDelete(valueEnum),
