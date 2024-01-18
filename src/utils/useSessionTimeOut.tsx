@@ -9,7 +9,6 @@ function useSessionTimeOut() {
     const SessionTimeOut = () => {
         if (!hasShownTimeout) {
             hasShownTimeout = true;
-            alert('Session timeout')
             localStorage.removeItem(AppConstants.ACCESS_TOKEN);
             localStorage.removeItem(AppConstants.USER);
             navigate('/login');
