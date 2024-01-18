@@ -349,7 +349,7 @@ const useViewContractHook = () => {
         await dispatch(getCollabByContractId({ search: '', contractId: value?.id })).then((response: any) => {
             console.log('response:', response)
             if (response?.payload?.status === 200) {
-            } else if (response?.payload?.status === 401) {
+            } else if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             } else {
                 message.error('Server internal error, try again!')
@@ -403,7 +403,7 @@ const useViewContractHook = () => {
         console.log('value: ', value)
         setOpenEditContractModal(true);
         await dispatch(getContractById(value?.id)).then((response: any) => {
-            if (response?.payload?.status === 401) {
+            if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             }
         })
@@ -466,7 +466,7 @@ const useViewContractHook = () => {
                 endDate: value?.endDate,
                 totalSalary: value?.totalSalary,
             })).then((response: any) => {
-                if (response?.payload?.status === 401) {
+                if (response?.payload?.statusCode === 401) {
                     SessionTimeOut();
                 }
             }).catch((error) => {
@@ -509,7 +509,7 @@ const useViewContractHook = () => {
             startDate: searchParams?.startDate,
             totalSalary: searchParams?.totalSalary
         })).then((response: any) => {
-            if (response?.payload?.status === 401) {
+            if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             }
         }).catch((error) => {

@@ -85,7 +85,7 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
                 searchEmail: searchByEmail,
                 Status: status
             })).then((response: any) => {
-                if (response?.payload?.status === 401) {
+                if (response?.payload?.statusCode === 401) {
                     SessionTimeOut();
                 }
             })
@@ -120,7 +120,7 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
                                     setLoading(false)
                                     fetchPostList();
                                     setOpenConfirmModal(false);
-                                } else if (response?.payload?.status === 401) {
+                                } else if (response?.payload?.statusCode === 401) {
                                     SessionTimeOut();
                                 } else message.error(response?.payload?.message)
                             }

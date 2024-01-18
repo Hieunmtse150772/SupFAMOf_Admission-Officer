@@ -507,7 +507,7 @@ function useViewRegistrationHook() {
             await dispatch(getAttendenceByPositionId({
                 positionId: value.id,
             })).then((response: any) => {
-                if (response?.payload?.status === 401) {
+                if (response?.payload?.statusCode === 401) {
                     SessionTimeOut();
                 }
             })
@@ -532,7 +532,7 @@ function useViewRegistrationHook() {
                 if (response?.meta?.requestStatus === 'fulfilled') {
                     setAmountUnConfirmed(response?.payload?.data?.length)
                     setOpenConfirmModal(true)
-                } else if (response?.payload?.status === 401) {
+                } else if (response?.payload?.statusCode === 401) {
                     SessionTimeOut();
                 }
             })
@@ -541,7 +541,7 @@ function useViewRegistrationHook() {
         await dispatch(confirmRunningPost(value)).then((response: any) => {
             if (response?.payload?.errorCode === 4008) {
                 message.error(response?.payload?.message)
-            } else if (response?.payload?.status === 401) {
+            } else if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             } else if (response?.payload?.status === 200) {
                 message.success('Close post success!');
@@ -555,7 +555,7 @@ function useViewRegistrationHook() {
         const result = await dispatch(confirmEndPost(value)).then((response: any) => {
             if (response?.payload?.errorCode === 4043) {
                 message.warning(response?.payload?.message)
-            } else if (response?.payload?.status === 401) {
+            } else if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             } else if (response?.payload?.statusCode === 200) {
                 message.success('Confirm end post success!');
@@ -569,7 +569,7 @@ function useViewRegistrationHook() {
         const result = await dispatch(confirmReopenPost(value)).then((response: any) => {
             if (response?.payload?.errorCode === 4008) {
                 message.error(response?.payload?.message)
-            } else if (response?.payload?.status === 401) {
+            } else if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             } else if (response?.payload?.status === 200) {
                 message.success('Reopen post success!');
@@ -645,7 +645,7 @@ function useViewRegistrationHook() {
             setStatusFilter(null)
             setPage(1)
             await dispatch(getPostByAccountId({ page: 1, PageSize: 10, Sort: 'createAt', Order: 'desc' })).then((response: any) => {
-                if (response?.payload?.status === 401) {
+                if (response?.payload?.statusCode === 401) {
                     SessionTimeOut();
                 }
             })
@@ -653,7 +653,7 @@ function useViewRegistrationHook() {
             setStatusFilter(value?.radio);
             setPage(1)
             await dispatch(getPostByAccountId({ page: 1, PageSize: 10, Status: value?.radio })).then((response: any) => {
-                if (response?.payload?.status === 401) {
+                if (response?.payload?.statusCode === 401) {
                     SessionTimeOut();
                 }
             })
@@ -675,7 +675,7 @@ function useViewRegistrationHook() {
                 postCategoryId: value?.postCategoryId,
                 createAt: value?.createAt
             })).then((response: any) => {
-                if (response?.payload?.status === 401) {
+                if (response?.payload?.statusCode === 401) {
                     SessionTimeOut();
                 }
             }).catch((error) => {
@@ -746,7 +746,7 @@ function useViewRegistrationHook() {
             postCategoryId: searchParams?.postCategoryId,
             createAt: searchParams?.createAt
         })).then((response: any) => {
-            if (response?.payload?.status === 401) {
+            if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             }
         }).catch((error) => {
@@ -756,21 +756,21 @@ function useViewRegistrationHook() {
 
     const fetchPostTitleOption = async () => {
         await dispatch(getPostTitle()).then((response: any) => {
-            if (response?.payload?.status === 401) {
+            if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             }
         });
     }
     const fetchCertificateOption = async () => {
         await dispatch(getCertificate()).then((response: any) => {
-            if (response?.payload?.status === 401) {
+            if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             }
         });
     }
     const fetchDocumentOption = async () => {
         await dispatch(getDocument()).then((response: any) => {
-            if (response?.payload?.status === 401) {
+            if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             }
         });

@@ -475,7 +475,7 @@ function useViewPostList() {
           if (response?.payload?.status === 200) {
             message.success('Delete position success!');
             fetchPostList();
-          } else if (response?.payload?.status === 401) {
+          } else if (response?.payload?.statusCode === 401) {
             SessionTimeOut();
           } else {
             message.warning(response?.payload?.message)
@@ -497,7 +497,7 @@ function useViewPostList() {
           if (response?.payload?.status === 200) {
             message.success('Delete post success!');
             fetchPostList();
-          } else if (response?.payload?.status === 401) {
+          } else if (response?.payload?.statusCode === 401) {
             SessionTimeOut();
           } else {
             message.warning(response?.payload?.message)
@@ -524,7 +524,7 @@ function useViewPostList() {
         postCategoryId: value?.postCategoryId,
         createAt: value?.createAt
       })).then((response: any) => {
-        if (response?.payload?.status === 401) {
+        if (response?.payload?.statusCode === 401) {
           SessionTimeOut();
         }
       })
@@ -593,7 +593,7 @@ function useViewPostList() {
       postCategoryId: searchParams?.postCategoryId,
       createAt: searchParams?.createAt
     })).then((response: any) => {
-      if (response?.payload?.status === 401) {
+      if (response?.payload?.statusCode === 401) {
         SessionTimeOut();
       }
     })
@@ -603,21 +603,21 @@ function useViewPostList() {
   }
   const fetchPostTitleOption = async () => {
     await dispatch(getPostTitle()).then((response: any) => {
-      if (response?.payload?.status === 401) {
+      if (response?.payload?.statusCode === 401) {
         SessionTimeOut();
       }
     });
   }
   const fetchCertificateOption = async () => {
     await dispatch(getCertificate()).then((response: any) => {
-      if (response?.payload?.status === 401) {
+      if (response?.payload?.statusCode === 401) {
         SessionTimeOut();
       }
     });
   }
   const fetchDocumentOption = async () => {
     await dispatch(getDocument()).then((response: any) => {
-      if (response?.payload?.status === 401) {
+      if (response?.payload?.statusCode === 401) {
         SessionTimeOut();
       }
     });
@@ -639,7 +639,7 @@ function useViewPostList() {
   }, [isDeleted])
   const fetchPost = async (postId: string) => {
     await dispatch(getPostByPostId(postId)).then((response: any) => {
-      if (response?.payload?.status === 401) {
+      if (response?.payload?.statusCode === 401) {
         SessionTimeOut();
       }
       return response?.payload;

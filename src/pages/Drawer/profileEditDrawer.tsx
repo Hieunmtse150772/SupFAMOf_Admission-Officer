@@ -35,7 +35,7 @@ const ProfileEditDrawer: FC<ProfileEditDrawerProps> = ({ setOpenSetting, onClose
             if (response?.payload?.status?.success) {
                 message.success('Update profile information success');
                 setOpenSetting(false);
-            } else if (response?.payload?.status === 401) {
+            } else if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             } else {
                 message.error(response?.payload?.message);

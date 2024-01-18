@@ -22,7 +22,7 @@ const SaaS: FC = () => {
   const { collabOverview } = useAppSelector(state => state.dashboard)
   const fetchDashboard = async () => {
     await dispatch(getCollabOverview()).then((response: any) => {
-      if (response?.payload?.status === 401) {
+      if (response?.payload?.statusCode === 401) {
         SessionTimeOut();
       }
     }).catch((error) => {

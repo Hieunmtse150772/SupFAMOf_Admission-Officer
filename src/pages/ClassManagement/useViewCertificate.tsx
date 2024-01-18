@@ -25,7 +25,7 @@ function useViewCertificate() {
             certificateName: keywords
         }
         await dispatch(getCertificateRegistration(params)).then((response: any) => {
-            if (response?.payload?.status === 401) {
+            if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             }
         }).catch((error) => {
@@ -40,7 +40,7 @@ function useViewCertificate() {
                 PageSize: pageSize
             }
             await dispatch(getCertificateRegistration(params)).then((response: any) => {
-                if (response?.payload?.status === 401) {
+                if (response?.payload?.statusCode === 401) {
                     SessionTimeOut();
                 }
             }).catch((error) => {
@@ -54,7 +54,7 @@ function useViewCertificate() {
     const fetchCertificate = async () => {
         try {
             await dispatch(getCertificate()).then((response: any) => {
-                if (response?.payload?.status === 401) {
+                if (response?.payload?.statusCode === 401) {
                     SessionTimeOut();
                 }
             }).catch((error) => {

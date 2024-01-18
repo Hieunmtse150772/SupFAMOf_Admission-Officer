@@ -50,7 +50,7 @@ const UnBanCollaboratorModal: FC<UnBanCollaboratorModalProps> = ({ open, setOpen
                             message.success(`Successfully un banned ${accountName} account`);
                             setOpenUnBanCollaborator(false);
                             fetchCollabList();
-                        } else if (response?.payload?.status === 401) {
+                        } else if (response?.payload?.statusCode === 401) {
                             SessionTimeOut();
                         } else message.error(response?.payload?.message);
                     }).catch((error) => {

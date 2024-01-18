@@ -118,7 +118,7 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
 
     const fetchPostTitleOption = async () => {
         await dispatch(getPostTitle()).then((response: any) => {
-            if (response?.payload?.status === 401) {
+            if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             }
         });
@@ -337,7 +337,7 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
                 fetchPostList();
                 message.success('Update post success!');
                 result = true;
-            } else if (response?.payload?.status === 401) {
+            } else if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             } else {
                 message.error(response?.payload?.message);
@@ -353,14 +353,14 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
     }
     const fetchDocumentOption = async () => {
         await dispatch(getDocument()).then((response: any) => {
-            if (response?.payload?.status === 401) {
+            if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             }
         });
     }
     const fetchCertificateOption = async () => {
         await dispatch(getCertificate()).then((response: any) => {
-            if (response?.payload?.status === 401) {
+            if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             }
         });
@@ -382,7 +382,7 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
 
     const fetchPost = async (postId: string) => {
         await dispatch(getPostByPostId(postId)).then((response: any) => {
-            if (response?.payload?.status === 401) {
+            if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             }
         })

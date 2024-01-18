@@ -22,21 +22,21 @@ const SaaS: FC = () => {
   const { collabOverview, totalRegistration } = useAppSelector(state => state.dashboard)
   const fetchDashboard = async () => {
     await dispatch(getCollabOverview()).then((response: any) => {
-      if (response?.payload?.status === 401) {
+      if (response?.payload?.statusCode === 401) {
         SessionTimeOut();
       }
     }).catch((error) => {
       message.error('Server internal error!');
     });
     await dispatch(getRegistrationComplete()).then((response: any) => {
-      if (response?.payload?.status === 401) {
+      if (response?.payload?.statusCode === 401) {
         SessionTimeOut();
       }
     }).catch((error) => {
       message.error('Server internal error!');
     });
     await dispatch(getMoneyYearReport({ year: new Date().getFullYear() })).then((response: any) => {
-      if (response?.payload?.status === 401) {
+      if (response?.payload?.statusCode === 401) {
         SessionTimeOut();
       }
     }).catch((error) => {
@@ -46,7 +46,7 @@ const SaaS: FC = () => {
       month: new Date().getMonth(),
       year: new Date().getFullYear()
     })).then((response: any) => {
-      if (response?.payload?.status === 401) {
+      if (response?.payload?.statusCode === 401) {
         SessionTimeOut();
       }
     }).catch((error) => {

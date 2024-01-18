@@ -236,7 +236,7 @@ function UseViewClassHook() {
                 Sort: 'createAt',
                 Order: 'desc'
             })).then((response: any) => {
-                if (response?.payload?.status === 401) {
+                if (response?.payload?.statusCode === 401) {
                     SessionTimeOut();
                 }
             }).catch((error) => {
@@ -252,7 +252,7 @@ function UseViewClassHook() {
                 PageSize: 10,
                 Status: value?.radio
             })).then((response: any) => {
-                if (response?.payload?.status === 401) {
+                if (response?.payload?.statusCode === 401) {
                     SessionTimeOut();
                 }
             }).catch((error) => {
@@ -270,7 +270,7 @@ function UseViewClassHook() {
             PageSize: 10,
             Status: 2
         })).then((response: any) => {
-            if (response?.payload?.status === 401) {
+            if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             }
         }).catch((error) => {
@@ -289,7 +289,7 @@ function UseViewClassHook() {
                 Status: statusFilter
             }
             await dispatch(getCertificateRegistration(params)).then((response: any) => {
-                if (response?.payload?.status === 401) {
+                if (response?.payload?.statusCode === 401) {
                     SessionTimeOut();
                 }
             }).catch((error) => {
@@ -318,7 +318,7 @@ function UseViewClassHook() {
                         setSelectedRows([]);
                         fetchCertificatRegistrationAssigned();
                         setOpenAssignClassModal(false);
-                    } else if (response?.payload?.status === 401) {
+                    } else if (response?.payload?.statusCode === 401) {
                         SessionTimeOut();
                     } else message.error(response?.payload?.message)
                 }).catch((error) => {

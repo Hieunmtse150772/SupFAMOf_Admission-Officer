@@ -92,7 +92,7 @@ function useEditContractModalHook(fetchContractList: () => void, setOpenEditCont
                 message.success('Update contract success!');
                 fetchContractList();
                 result = true;
-            } else if (response?.payload?.status === 401) {
+            } else if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             } else if (response?.payload?.status === 400) {
                 message.error('Description too long');

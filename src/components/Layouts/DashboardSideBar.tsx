@@ -64,7 +64,7 @@ const DashboardSideBar: FC<SideNavBarProps> = ({
 
   const handleGetProfile = async () => {
     await dispatch(getUserProfile()).then((response: any) => {
-      if (response?.payload?.statusCode === 403) {
+      if (response?.payload?.statusCode === 401) {
         SessionTimeOut();
       }
     }).catch((error) => {

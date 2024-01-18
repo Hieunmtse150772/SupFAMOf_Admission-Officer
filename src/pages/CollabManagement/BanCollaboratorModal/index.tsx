@@ -49,7 +49,7 @@ const BanCollaboratorModal: FC<BanCollaboratorModalProps> = ({ open, setOpenBanC
                         message.success(`Successfully banned ${accountName} account`);
                         setOpenBanCollaborator(false);
                         fetchCollabList();
-                    } else if (response?.payload?.status === 401) {
+                    } else if (response?.payload?.statusCode === 401) {
                         SessionTimeOut();
                     } else message.error(response?.payload?.message);
                 }).catch((error) => {
