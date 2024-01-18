@@ -7,10 +7,12 @@ import AppConstants from 'enums/app';
 import { updateAvatar } from 'features/authSlice';
 import UserInfo from 'models/userInfor.model';
 import { SyntheticEvent, useEffect, useState } from 'react';
+import useSessionTimeOut from 'utils/useSessionTimeOut';
 import { uploadAvatar } from '../firebase';
 const useUserProfileHook = () => {
     const [openSetting, setOpenSetting] = useState(false);
     const dispatch = useAppDispatch()
+    const { SessionTimeOut } = useSessionTimeOut();
     const userInfo = useAppSelector(state => state.auth.userInfo)
     const [openModal, setOpenModal] = useState<boolean>(false)
     const [previewOpen, setPreviewOpen] = useState(false);
@@ -84,9 +86,12 @@ const useUserProfileHook = () => {
     };
     const handleSaveAvatar = async () => {
         if (photoUrl !== '') {
-            await dispatch(updateAvatar(photoUrl)).then((response) => {
+            await dispatch(updateAvatar(photoUrl)).then((response: any) => {
                 if (response.meta.requestStatus === 'fulfilled') {
                     message.success('Save avatar successful')
+                }
+                if (response?.payload?.status === 401) {
+                    SessionTimeOut();
                 }
             }).catch((error) => {
                 message.error('Save avatar fail!')

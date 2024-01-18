@@ -5,6 +5,7 @@ import updateAccountDto from 'dtos/Auth/update.account.dto';
 import { updateUserProfile } from 'features/authSlice';
 import UserInfo from 'models/userInfor.model';
 import { FC } from 'react';
+import useSessionTimeOut from 'utils/useSessionTimeOut';
 
 const { Option } = Select;
 
@@ -17,6 +18,7 @@ interface ProfileEditDrawerProps {
 const ProfileEditDrawer: FC<ProfileEditDrawerProps> = ({ setOpenSetting, onClose, userInfo, open }) => {
     const Formatter = 'YYYY-MM-DD';
     const dispatch = useAppDispatch();
+    const { SessionTimeOut } = useSessionTimeOut();
     const handleSubmit = (value: any) => {
         console.log("value: ", value)
     }
@@ -33,6 +35,8 @@ const ProfileEditDrawer: FC<ProfileEditDrawerProps> = ({ setOpenSetting, onClose
             if (response?.payload?.status?.success) {
                 message.success('Update profile information success');
                 setOpenSetting(false);
+            } else if (response?.payload?.status === 401) {
+                SessionTimeOut();
             } else {
                 message.error(response?.payload?.message);
             }

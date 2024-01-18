@@ -8,6 +8,7 @@ import { useAppDispatch } from "app/store";
 import { getRequestByAccountId, updateRequest } from 'features/requestSlice';
 import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router';
+import useSessionTimeOut from 'utils/useSessionTimeOut';
 
 
 interface ExpandedDataType {
@@ -47,7 +48,7 @@ function useViewRequest(postId: number, fetchPost: () => void) {
     const Formatter = 'YYYY-MM-DD'
     const [currentRow, setCurrentRow] = useState<any>();
     const { confirm } = Modal;
-
+    const { SessionTimeOut } = useSessionTimeOut();
     // const [selectedRowsState, setSelectedRows] = useState<boolean>([]);
     const [showDetail, setShowDetail] = useState<boolean>(false);
     const [openEditPostModal, setOpenEditPostModal] = useState<boolean>(false);
@@ -250,6 +251,8 @@ function useViewRequest(postId: number, fetchPost: () => void) {
                         message.success('Update request success');
                         fetchRequest();
                         fetchPost();
+                    } else if (result?.payload?.status === 401) {
+                        SessionTimeOut();
                     } else {
                         message.error(result?.payload?.message)
                     }
@@ -268,11 +271,19 @@ function useViewRequest(postId: number, fetchPost: () => void) {
         if (value.radio === 0) {
             setStatusFilter(null)
             setPage(1)
-            await dispatch(getRequestByAccountId({ page: 1, PageSize: 10, Sort: 'createAt', Order: 'desc', postId: postId }))
+            await dispatch(getRequestByAccountId({ page: 1, PageSize: 10, Sort: 'createAt', Order: 'desc', postId: postId })).then((response: any) => {
+                if (response?.payload?.status === 401) {
+                    SessionTimeOut();
+                }
+            })
         } else {
             setStatusFilter(value?.radio);
             setPage(1)
-            await dispatch(getRequestByAccountId({ page: 1, PageSize: 10, Sort: 'createAt', Order: 'desc', Status: value?.radio, postId: postId }))
+            await dispatch(getRequestByAccountId({ page: 1, PageSize: 10, Sort: 'createAt', Order: 'desc', Status: value?.radio, postId: postId })).then((response: any) => {
+                if (response?.payload?.status === 401) {
+                    SessionTimeOut();
+                }
+            })
         }
     }
     const handleActionChange = async (params: any,
@@ -315,7 +326,11 @@ function useViewRequest(postId: number, fetchPost: () => void) {
             PageSize: pageSize,
             postId: postId,
             Status: statusFilter
-        })).catch((error) => {
+        })).then((response: any) => {
+            if (response?.payload?.status === 401) {
+                SessionTimeOut();
+            }
+        }).catch((error) => {
             console.log("Error in getting the data", error)
         })
     }

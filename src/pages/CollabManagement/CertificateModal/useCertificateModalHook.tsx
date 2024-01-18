@@ -4,6 +4,7 @@ import { useAppDispatch } from "app/store";
 import { giveCertificateByAccountId, removeCertificateByAccountId } from "features/collabSlice";
 import { Certificate } from "models/collabListInfo.model";
 import { Key, useEffect, useState } from "react";
+import useSessionTimeOut from "utils/useSessionTimeOut";
 
 const useEditPostModal = (
     certificateList: Certificate[],
@@ -13,6 +14,7 @@ const useEditPostModal = (
 ) => {
     const { confirm } = Modal
     const dispatch = useAppDispatch();
+    const { SessionTimeOut } = useSessionTimeOut();
     type DataItem = (typeof certificateList)[number];
     const [dataSource, setDataSource] = useState<DataItem[]>(certificateList);
     const [selectedRowKeys, setSelectedRowKeys] = useState<Key[]>([]);
@@ -67,6 +69,8 @@ const useEditPostModal = (
                 message.success(response?.payload?.data?.status?.message);
                 fetchCollabList();
                 setOpenCertificateModal(false);
+            } else if (response?.payload?.status === 401) {
+                SessionTimeOut();
             } else message.error('Give certificate fail');
         }).catch((error) => {
             console.log("Error in getting the data", error)

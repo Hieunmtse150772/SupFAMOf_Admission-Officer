@@ -12,6 +12,7 @@ import CertificateCreated from 'models/certificate.model';
 import CertificateOptionI from 'models/certificateOption.model';
 import moment from 'moment';
 import { FC, useEffect, useState } from 'react';
+import useSessionTimeOut from 'utils/useSessionTimeOut';
 
 interface AddCertificateModalProps {
     open: boolean,
@@ -23,6 +24,7 @@ interface AddCertificateModalProps {
 const AddCertificateModal: FC<AddCertificateModalProps> = ({ open, setOpenCertificateModal, fetchCertificateOption, data, fetchCertificateRegistration }) => {
     const Formatter = 'YYYY-MM-DD';
     const dispatch = useAppDispatch();
+    const { SessionTimeOut } = useSessionTimeOut();
     type DataItem = (typeof data)[number];
     const [dataSource, setDataSource] = useState<DataItem[]>(data);
     const [editingDocumentId, setEditingDocumentId] = useState<number | null>(null);
@@ -34,13 +36,15 @@ const AddCertificateModal: FC<AddCertificateModalProps> = ({ open, setOpenCertif
         }
         let result = false;
         try {
-            await dispatch(createCertificate(payload)).then((response) => {
+            await dispatch(createCertificate(payload)).then((response: any) => {
                 const result2 = unwrapResult(response);
                 if (result2.status === 200) {
                     fetchCertificateOption();
                     fetchCertificateRegistration();
                     message.success('Add certificate success!');
                     result = true;
+                } else if (response?.payload?.status === 401) {
+                    SessionTimeOut();
                 }
             }
             ).catch((error) => {
@@ -61,6 +65,8 @@ const AddCertificateModal: FC<AddCertificateModalProps> = ({ open, setOpenCertif
             message.success(response.data.status?.message);
             fetchCertificateOption();
             fetchCertificateRegistration();
+        } else if (response?.data?.status?.errorCode === 401) {
+            SessionTimeOut();
         } else {
             message.error(response.data.status?.message);
         }
@@ -75,6 +81,8 @@ const AddCertificateModal: FC<AddCertificateModalProps> = ({ open, setOpenCertif
             if (response?.payload?.data?.status?.success) {
                 message.success('Update certificate success!');
                 fetchCertificateOption();
+            } else if (response?.payload?.status === 401) {
+                SessionTimeOut();
             } else {
                 message.error(response?.payload?.message)
             }

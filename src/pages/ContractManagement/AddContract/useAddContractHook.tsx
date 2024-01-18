@@ -12,11 +12,12 @@ import { createContract, getCollabByContractId, sendContractEmail } from 'featur
 import ContractCreated from 'models/contractCreated.model';
 import moment from 'moment';
 import { Key, useEffect, useState } from "react";
+import useSessionTimeOut from 'utils/useSessionTimeOut';
 import { uploadDocs } from '../../../firebase';
 const useAddContractHook = () => {
     const [form] = ProForm.useForm();
     const { confirm } = Modal;
-
+    const { SessionTimeOut } = useSessionTimeOut();
     const dispatch = useAppDispatch();
     const collabLists: CollabListDto = useAppSelector(state => state.contract.collabList);
     const loading = useAppSelector(state => state.contract.loading)
@@ -85,10 +86,18 @@ const useAddContractHook = () => {
     };
     const handleSearchCollabByEmail = async (email: string) => {
         if (email !== '') {
-            await dispatch(searchCollabListByEmail({ email: email })).catch((error) => {
+            await dispatch(searchCollabListByEmail({ email: email })).then((response: any) => {
+                if (response?.payload?.status === 401) {
+                    SessionTimeOut();
+                }
+            }).catch((error) => {
                 console.log("Error in getting the data", error)
             });
-        } else await dispatch(getCollabByContractId({ search: email, contractId: contractId })).catch((error) => {
+        } else await dispatch(getCollabByContractId({ search: email, contractId: contractId })).then((response: any) => {
+            if (response?.payload?.status === 401) {
+                SessionTimeOut();
+            }
+        }).catch((error) => {
             console.log("Error in getting the data", error)
         });
     }
@@ -161,6 +170,8 @@ const useAddContractHook = () => {
                                 message.error('Description too long')
                                 setLoading(false);
                                 result = false;
+                            } else if (response?.payload?.status === 401) {
+                                SessionTimeOut();
                             } else {
                                 message.error(response?.payload?.message)
                                 setLoading(false);
@@ -197,6 +208,8 @@ const useAddContractHook = () => {
                     setLoading(false);
                     message.success('Send contract email success!');
                     form.submit();
+                } else if (response?.payload?.status === 401) {
+                    SessionTimeOut();
                 } else {
                     message.error(response?.payload?.message);
                 }
@@ -223,7 +236,11 @@ const useAddContractHook = () => {
                 contractId: contractId,
                 page: page,
                 PageSize: pageSize
-            })).catch((error) => {
+            })).then((response: any) => {
+                if (response?.payload?.status === 401) {
+                    SessionTimeOut();
+                }
+            }).catch((error) => {
                 console.log("Error in getting the data", error)
             })
         }

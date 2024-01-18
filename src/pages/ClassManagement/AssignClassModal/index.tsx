@@ -11,6 +11,7 @@ import ClassCreated from "models/classCreated.model";
 import { ClassTrainingViewI, ClassTrainingViewI2 } from "models/classTraining.model";
 import moment, { Moment } from "moment";
 import { FC, Key, useEffect, useRef, useState } from "react";
+import useSessionTimeOut from "utils/useSessionTimeOut";
 
 interface ConfirmRegistrationModalProps {
     open: boolean,
@@ -45,6 +46,7 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
     }
 ) => {
     const dispatch = useAppDispatch();
+    const { SessionTimeOut } = useSessionTimeOut();
     const { classList, loading } = useAppSelector(state => state.class)
     const [editableKeys, setEditableRowKeys] = useState<React.Key[]>([]);
     const [dataSource, setDataSource] = useState<readonly ClassTrainingViewI[]>([]);
@@ -125,6 +127,8 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
             if (response?.payload?.data?.status?.success) {
                 message.success('Delete success!');
                 fetchClass();
+            } else if (response?.payload?.status === 401) {
+                SessionTimeOut();
             } else {
                 message.error(response?.payload?.message)
             }
@@ -135,7 +139,11 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
         return current && current < dayjs().endOf('day');
     };
     const fetchClass = async () => {
-        await dispatch(getClassTraining({ status: 1, page: page, PageSize: pageSize })).catch((error) => {
+        await dispatch(getClassTraining({ status: 1, page: page, PageSize: pageSize })).then((response: any) => {
+            if (response?.payload?.status === 401) {
+                SessionTimeOut();
+            }
+        }).catch((error) => {
             console.log("Error in getting the data", error)
         })
     }

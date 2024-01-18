@@ -13,8 +13,6 @@ const AuthGuard = ({ children, ...routeProps }: AuthGuardProps) => {
   const isAuthenticated = useAppSelector(state => state.auth.isAuthenticated);
   const isLogin = localStorage.getItem(AppConstants.ACCESS_TOKEN) ? true : false;
   const storedValue = localStorage.getItem(AppConstants.USER);
-
-
   const { pathname } = useLocation();
   const [requestedLocation, setRequestedLocation] = useState<string | null>(
     null

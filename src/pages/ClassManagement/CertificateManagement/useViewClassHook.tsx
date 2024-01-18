@@ -13,6 +13,7 @@ import { assignTrainingClass, getCertificateRegistration } from 'features/certif
 import AssignTrainingClass from "models/assignTraining.model";
 import { Key, useEffect, useState } from "react";
 import { useParams } from 'react-router';
+import useSessionTimeOut from "utils/useSessionTimeOut";
 
 
 type SortModalI = {
@@ -40,6 +41,7 @@ type TableType = {
 function UseViewClassHook() {
     const Formatter = 'YYYY-MM-DD'
     const { id } = useParams<{ id: string }>();
+    const { SessionTimeOut } = useSessionTimeOut();
     const [currentRow, setCurrentRow] = useState<any>();
     const [selectedRowKeys, setSelectedRows] = useState<any[]>([]);
     const [openConFirmModal, setOpenConfirmModal] = useState<boolean>(false);
@@ -233,7 +235,11 @@ function UseViewClassHook() {
                 PageSize: 10,
                 Sort: 'createAt',
                 Order: 'desc'
-            })).catch((error) => {
+            })).then((response: any) => {
+                if (response?.payload?.status === 401) {
+                    SessionTimeOut();
+                }
+            }).catch((error) => {
                 console.log("Error in getting the data", error)
             })
         } else {
@@ -245,7 +251,11 @@ function UseViewClassHook() {
                 page: 1,
                 PageSize: 10,
                 Status: value?.radio
-            })).catch((error) => {
+            })).then((response: any) => {
+                if (response?.payload?.status === 401) {
+                    SessionTimeOut();
+                }
+            }).catch((error) => {
                 console.log("Error in getting the data", error)
             })
         }
@@ -259,7 +269,11 @@ function UseViewClassHook() {
             page: 1,
             PageSize: 10,
             Status: 2
-        })).catch((error) => {
+        })).then((response: any) => {
+            if (response?.payload?.status === 401) {
+                SessionTimeOut();
+            }
+        }).catch((error) => {
             console.log("Error in getting the data", error)
         })
     }
@@ -274,7 +288,11 @@ function UseViewClassHook() {
                 Order: sortModel.Order,
                 Status: statusFilter
             }
-            await dispatch(getCertificateRegistration(params)).catch((error) => {
+            await dispatch(getCertificateRegistration(params)).then((response: any) => {
+                if (response?.payload?.status === 401) {
+                    SessionTimeOut();
+                }
+            }).catch((error) => {
                 console.log("Error in getting the data", error)
             })
 
@@ -300,6 +318,8 @@ function UseViewClassHook() {
                         setSelectedRows([]);
                         fetchCertificatRegistrationAssigned();
                         setOpenAssignClassModal(false);
+                    } else if (response?.payload?.status === 401) {
+                        SessionTimeOut();
                     } else message.error(response?.payload?.message)
                 }).catch((error) => {
                     message.error('Please save before assign room!');

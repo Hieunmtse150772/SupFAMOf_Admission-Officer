@@ -10,6 +10,7 @@ import { useAppDispatch } from "app/store";
 import { getApplicationList } from "features/applicationSlice";
 import moment from "moment";
 import { useEffect, useState } from "react";
+import useSessionTimeOut from "utils/useSessionTimeOut";
 type SortModalI = {
     Sort: string,
     Order: string
@@ -20,7 +21,7 @@ type SearchParamsI = {
 }
 function useViewApplicationHook() {
     const { applications, loading } = useAppSelector(state => state.application)
-
+    const { SessionTimeOut } = useSessionTimeOut();
     const Formatter = 'YYYY-MM-DD'
     const [currentRow, setCurrentRow] = useState<any>();
     // const [selectedRowsState, setSelectedRows] = useState<boolean>([]);
@@ -216,7 +217,11 @@ function useViewApplicationHook() {
                 Order: sortModel?.Order,
                 ReportDate: value?.reportDate,
                 ReplyDate: value?.replyDate
-            })).catch((error) => {
+            })).then((response: any) => {
+                if (response?.payload?.status === 401) {
+                    SessionTimeOut();
+                }
+            }).catch((error) => {
                 console.log("Error in getting the data", error)
             })
         }
@@ -267,7 +272,11 @@ function useViewApplicationHook() {
             Order: sortModel.Order,
             ReportDate: searchParams?.reportDate,
             ReplyDate: searchParams?.replyDate
-        })).catch((error) => {
+        })).then((response: any) => {
+            if (response?.payload?.status === 401) {
+                SessionTimeOut();
+            }
+        }).catch((error) => {
             console.log("Error in getting the data", error)
         })
     }

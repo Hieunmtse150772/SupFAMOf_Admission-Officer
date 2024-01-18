@@ -10,6 +10,8 @@ import { getAnalytics } from "features/manageDashboardSlice";
 import moment from "moment";
 import { FC } from "react";
 import Chart from "react-apexcharts";
+import { useNavigate } from "react-router";
+import useSessionTimeOut from "utils/useSessionTimeOut";
 
 
 type AnalyticsParams = {
@@ -17,6 +19,8 @@ type AnalyticsParams = {
   year: number
 }
 const Analytics: FC = () => {
+  const navigate = useNavigate();
+  const { SessionTimeOut } = useSessionTimeOut();
   const theme = useTheme();
   const dispatch = useAppDispatch();
   const analytics = useAppSelector(state => state.dashboard.analytics);
@@ -75,7 +79,11 @@ const Analytics: FC = () => {
   };
   const handleChangeMonth = async (value: string) => {
     const monthYear = { month: Number(value?.split('-')[1]), year: Number(value?.split('-')[0]) }
-    await dispatch(getAnalytics(monthYear)).catch((error) => {
+    await dispatch(getAnalytics(monthYear)).then((response: any) => {
+      if (response?.payload?.status === 401) {
+        SessionTimeOut();
+      }
+    }).catch((error) => {
       console.log("Error in getting the data", error)
     })
   }

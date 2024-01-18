@@ -3,9 +3,11 @@ import { useAppDispatch } from "app/store";
 import SearchTrainingRegistrationParamsDto from "dtos/searchTrainingRegistration.dto";
 import { getCertificate, getCertificateRegistration } from "features/certificateSlice";
 import { useEffect, useState } from "react";
+import useSessionTimeOut from "utils/useSessionTimeOut";
 
 function useViewCertificate() {
     const dispatch = useAppDispatch();
+    const { SessionTimeOut } = useSessionTimeOut();
     const certificateRegistrationList = useAppSelector(state => state.certificate.trainingRegistration);
     const loading = useAppSelector(state => state.certificate.loading);
     const certificateList = useAppSelector(state => state.certificate.certificateOption);
@@ -22,7 +24,11 @@ function useViewCertificate() {
             PageSize: pageSize,
             certificateName: keywords
         }
-        await dispatch(getCertificateRegistration(params)).catch((error) => {
+        await dispatch(getCertificateRegistration(params)).then((response: any) => {
+            if (response?.payload?.status === 401) {
+                SessionTimeOut();
+            }
+        }).catch((error) => {
             console.log("Error in getting the data", error)
         });
     }
@@ -33,7 +39,11 @@ function useViewCertificate() {
                 page: page,
                 PageSize: pageSize
             }
-            await dispatch(getCertificateRegistration(params)).catch((error) => {
+            await dispatch(getCertificateRegistration(params)).then((response: any) => {
+                if (response?.payload?.status === 401) {
+                    SessionTimeOut();
+                }
+            }).catch((error) => {
                 console.log("Error in getting the data", error)
             })
 
@@ -43,7 +53,11 @@ function useViewCertificate() {
     }
     const fetchCertificate = async () => {
         try {
-            await dispatch(getCertificate()).catch((error) => {
+            await dispatch(getCertificate()).then((response: any) => {
+                if (response?.payload?.status === 401) {
+                    SessionTimeOut();
+                }
+            }).catch((error) => {
                 console.log("Error in getting the data", error)
             })
         } catch (error) {

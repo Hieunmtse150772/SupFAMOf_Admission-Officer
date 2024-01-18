@@ -9,11 +9,13 @@ import { getMoneyYearReport } from "features/manageDashboardSlice";
 import moment from "moment";
 import { FC, useState } from "react";
 import Chart from "react-apexcharts";
+import useSessionTimeOut from "utils/useSessionTimeOut";
 
 
 
 const TotalSpent: FC = () => {
   const theme = useTheme();
+  const { SessionTimeOut } = useSessionTimeOut();
   const dispatch = useAppDispatch();
   const dataReport = useAppSelector(state => state.dashboard.moneyReport);
   const [year, setYear] = useState<number>(2023);
@@ -135,7 +137,11 @@ const TotalSpent: FC = () => {
 
   const chartSeries = data.series;
   const handleChangeYear = async (value: string) => {
-    await dispatch(getMoneyYearReport({ year: Number(value) })).catch((error) => {
+    await dispatch(getMoneyYearReport({ year: Number(value) })).then((response: any) => {
+      if (response?.payload?.status === 401) {
+        SessionTimeOut();
+      }
+    }).catch((error) => {
       console.log("Error in getting the data", error)
     })
   }

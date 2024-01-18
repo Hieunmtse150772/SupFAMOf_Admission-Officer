@@ -3,7 +3,6 @@ import { ProColumns, RequestData } from "@ant-design/pro-components";
 import { FiberManualRecord } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import { green, grey, red, yellow } from '@mui/material/colors';
-import { unwrapResult } from '@reduxjs/toolkit';
 import { Badge, Button, Dropdown, Image, MenuProps, Modal, Popover, Space, StepsProps, Table, TableColumnsType, Tag, message } from 'antd';
 import { SortOrder } from 'antd/es/table/interface';
 import { useAppSelector } from "app/hooks";
@@ -19,6 +18,7 @@ import { ListPositionI } from 'models/post.model';
 import moment from "moment";
 import { useEffect, useState } from "react";
 import ReactHtmlParser from 'react-html-parser';
+import useSessionTimeOut from 'utils/useSessionTimeOut';
 
 
 interface ExpandedDataType {
@@ -56,6 +56,7 @@ type SearchParamsI = {
 function useViewRegistrationHook() {
     const Formatter = 'YYYY-MM-DD'
     const [currentRow, setCurrentRow] = useState<any>();
+    const { SessionTimeOut } = useSessionTimeOut();
     // const [selectedRowsState, setSelectedRows] = useState<boolean>([]);
     const [showDetail, setShowDetail] = useState<boolean>(false);
     const [openConFirmModal, setOpenConfirmModal] = useState<boolean>(false);
@@ -505,7 +506,11 @@ function useViewRegistrationHook() {
         const fetchAttendence = async () => {
             await dispatch(getAttendenceByPositionId({
                 positionId: value.id,
-            }))
+            })).then((response: any) => {
+                if (response?.payload?.status === 401) {
+                    SessionTimeOut();
+                }
+            })
         }
         fetchAttendence();
         setOpenViewAttendenceModal(true);
@@ -522,17 +527,22 @@ function useViewRegistrationHook() {
             {
                 positionId: value.id,
                 Status: 1
-            }))
-        unwrapResult(result)
-        if (getRegistrationByPositionId.fulfilled.match(result)) {
-            setAmountUnConfirmed(result.payload.data.length)
-            setOpenConfirmModal(true)
-        }
+            })).then((response: any) => {
+                console.log('response: ', response)
+                if (response?.meta?.requestStatus === 'fulfilled') {
+                    setAmountUnConfirmed(response?.payload?.data?.length)
+                    setOpenConfirmModal(true)
+                } else if (response?.payload?.status === 401) {
+                    SessionTimeOut();
+                }
+            })
     }
     const handleConfirmRunningPost = async (value: number) => {
-        const result = await dispatch(confirmRunningPost(value)).then((response: any) => {
+        await dispatch(confirmRunningPost(value)).then((response: any) => {
             if (response?.payload?.errorCode === 4008) {
                 message.error(response?.payload?.message)
+            } else if (response?.payload?.status === 401) {
+                SessionTimeOut();
             } else if (response?.payload?.status === 200) {
                 message.success('Close post success!');
                 fetchPostList();
@@ -545,6 +555,8 @@ function useViewRegistrationHook() {
         const result = await dispatch(confirmEndPost(value)).then((response: any) => {
             if (response?.payload?.errorCode === 4043) {
                 message.warning(response?.payload?.message)
+            } else if (response?.payload?.status === 401) {
+                SessionTimeOut();
             } else if (response?.payload?.statusCode === 200) {
                 message.success('Confirm end post success!');
                 fetchPostList();
@@ -557,6 +569,8 @@ function useViewRegistrationHook() {
         const result = await dispatch(confirmReopenPost(value)).then((response: any) => {
             if (response?.payload?.errorCode === 4008) {
                 message.error(response?.payload?.message)
+            } else if (response?.payload?.status === 401) {
+                SessionTimeOut();
             } else if (response?.payload?.status === 200) {
                 message.success('Reopen post success!');
                 fetchPostList();
@@ -630,11 +644,19 @@ function useViewRegistrationHook() {
         if (value.radio === 0) {
             setStatusFilter(null)
             setPage(1)
-            await dispatch(getPostByAccountId({ page: 1, PageSize: 10, Sort: 'createAt', Order: 'desc' }))
+            await dispatch(getPostByAccountId({ page: 1, PageSize: 10, Sort: 'createAt', Order: 'desc' })).then((response: any) => {
+                if (response?.payload?.status === 401) {
+                    SessionTimeOut();
+                }
+            })
         } else {
             setStatusFilter(value?.radio);
             setPage(1)
-            await dispatch(getPostByAccountId({ page: 1, PageSize: 10, Status: value?.radio }))
+            await dispatch(getPostByAccountId({ page: 1, PageSize: 10, Status: value?.radio })).then((response: any) => {
+                if (response?.payload?.status === 401) {
+                    SessionTimeOut();
+                }
+            })
         }
     }
     const handleSearch = async (value: SearchParamsI) => {
@@ -652,7 +674,11 @@ function useViewRegistrationHook() {
                 postName: value?.postName,
                 postCategoryId: value?.postCategoryId,
                 createAt: value?.createAt
-            })).catch((error) => {
+            })).then((response: any) => {
+                if (response?.payload?.status === 401) {
+                    SessionTimeOut();
+                }
+            }).catch((error) => {
                 console.log("Error in getting the data", error)
             })
         }
@@ -719,19 +745,35 @@ function useViewRegistrationHook() {
             postName: searchParams?.postName,
             postCategoryId: searchParams?.postCategoryId,
             createAt: searchParams?.createAt
-        })).catch((error) => {
+        })).then((response: any) => {
+            if (response?.payload?.status === 401) {
+                SessionTimeOut();
+            }
+        }).catch((error) => {
             console.log("Error in getting the data", error)
         })
     }
 
     const fetchPostTitleOption = async () => {
-        await dispatch(getPostTitle());
+        await dispatch(getPostTitle()).then((response: any) => {
+            if (response?.payload?.status === 401) {
+                SessionTimeOut();
+            }
+        });
     }
     const fetchCertificateOption = async () => {
-        await dispatch(getCertificate());
+        await dispatch(getCertificate()).then((response: any) => {
+            if (response?.payload?.status === 401) {
+                SessionTimeOut();
+            }
+        });
     }
     const fetchDocumentOption = async () => {
-        await dispatch(getDocument());
+        await dispatch(getDocument()).then((response: any) => {
+            if (response?.payload?.status === 401) {
+                SessionTimeOut();
+            }
+        });
     }
     useEffect(() => {
         const fetch = async () => {

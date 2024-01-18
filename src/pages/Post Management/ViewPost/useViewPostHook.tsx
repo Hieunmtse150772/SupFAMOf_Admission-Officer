@@ -3,7 +3,6 @@ import { ProColumns, RequestData } from "@ant-design/pro-components";
 import { FiberManualRecord } from '@mui/icons-material';
 import { Box, Typography } from '@mui/material';
 import { green, grey, red, yellow } from '@mui/material/colors';
-import { unwrapResult } from '@reduxjs/toolkit';
 import { Button, Drawer, Dropdown, Image, MenuProps, Modal, Space, Table, TableColumnsType, Tag, message } from 'antd';
 import { SortOrder } from 'antd/es/table/interface';
 import { useAppSelector } from "app/hooks";
@@ -18,6 +17,7 @@ import moment from "moment";
 import { useEffect, useState } from "react";
 import ReactHtmlParser from 'react-html-parser';
 import { useNavigate } from 'react-router';
+import useSessionTimeOut from 'utils/useSessionTimeOut';
 
 interface ExpandedDataType {
   id: number,
@@ -69,7 +69,7 @@ function useViewPostList() {
   const Formatter = 'YYYY-MM-DD'
   const [currentRow, setCurrentRow] = useState<any>();
   const { confirm } = Modal;
-
+  const { SessionTimeOut } = useSessionTimeOut();
   // const [selectedRowsState, setSelectedRows] = useState<boolean>([]);
   const [showDetail, setShowDetail] = useState<boolean>(false);
   const [openEditPostModal, setOpenEditPostModal] = useState<boolean>(false);
@@ -475,6 +475,8 @@ function useViewPostList() {
           if (response?.payload?.status === 200) {
             message.success('Delete position success!');
             fetchPostList();
+          } else if (response?.payload?.status === 401) {
+            SessionTimeOut();
           } else {
             message.warning(response?.payload?.message)
           }
@@ -495,6 +497,8 @@ function useViewPostList() {
           if (response?.payload?.status === 200) {
             message.success('Delete post success!');
             fetchPostList();
+          } else if (response?.payload?.status === 401) {
+            SessionTimeOut();
           } else {
             message.warning(response?.payload?.message)
           }
@@ -519,8 +523,11 @@ function useViewPostList() {
         postName: value?.postName,
         postCategoryId: value?.postCategoryId,
         createAt: value?.createAt
-
-      }))
+      })).then((response: any) => {
+        if (response?.payload?.status === 401) {
+          SessionTimeOut();
+        }
+      })
     }
   }
   const handleActionChange = async (params: any,
@@ -585,19 +592,35 @@ function useViewPostList() {
       postName: searchParams?.postName,
       postCategoryId: searchParams?.postCategoryId,
       createAt: searchParams?.createAt
-    }))
+    })).then((response: any) => {
+      if (response?.payload?.status === 401) {
+        SessionTimeOut();
+      }
+    })
   }
   const handleAddPost = () => {
     navigate('/dashboard/add-post')
   }
   const fetchPostTitleOption = async () => {
-    await dispatch(getPostTitle());
+    await dispatch(getPostTitle()).then((response: any) => {
+      if (response?.payload?.status === 401) {
+        SessionTimeOut();
+      }
+    });
   }
   const fetchCertificateOption = async () => {
-    await dispatch(getCertificate());
+    await dispatch(getCertificate()).then((response: any) => {
+      if (response?.payload?.status === 401) {
+        SessionTimeOut();
+      }
+    });
   }
   const fetchDocumentOption = async () => {
-    await dispatch(getDocument());
+    await dispatch(getDocument()).then((response: any) => {
+      if (response?.payload?.status === 401) {
+        SessionTimeOut();
+      }
+    });
   }
   useEffect(() => {
     const fetch = async () => {
@@ -615,8 +638,14 @@ function useViewPostList() {
     fetchPostList()
   }, [isDeleted])
   const fetchPost = async (postId: string) => {
-    const reusult = await dispatch(getPostByPostId(postId))
-    return unwrapResult(reusult);
+    await dispatch(getPostByPostId(postId)).then((response: any) => {
+      if (response?.payload?.status === 401) {
+        SessionTimeOut();
+      }
+      return response?.payload;
+    }).catch((error) => {
+      console.log('Error :', error);
+    })
   }
   const handler = {
     setCurrentRow,

@@ -1,15 +1,14 @@
 import { CheckOutlined, CloseCircleOutlined, MoreOutlined } from '@ant-design/icons'; // Import the icon from the library
 import { ProColumns, RequestData } from "@ant-design/pro-components";
 import { Box } from '@mui/material';
-import { unwrapResult } from '@reduxjs/toolkit';
 import { Button, Drawer, Dropdown, MenuProps, Modal, Space, Tag, message } from 'antd';
 import { SortOrder } from 'antd/es/table/interface';
 import { useAppSelector } from "app/hooks";
 import { useAppDispatch } from "app/store";
-import { getPostByPostId } from "features/postSlice";
 import { getRequestByAccountId, updateRequest } from 'features/requestSlice';
 import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router';
+import useSessionTimeOut from 'utils/useSessionTimeOut';
 
 
 interface ExpandedDataType {
@@ -70,6 +69,7 @@ function useViewRequest() {
     const total = requests?.metadata?.total
     const [pageSize, setPageSize] = useState<number>(pageSizeOptions[0]);
     let navigate = useNavigate();
+    const { SessionTimeOut } = useSessionTimeOut();
 
     const columns: ProColumns[] = [
         {
@@ -260,8 +260,9 @@ function useViewRequest() {
                         message.warning('Update request has already been approved!');
                     } else if (result.payload.errorCode === 4006) {
                         message.warning('Update request has already been rejected!');
-                    }
-                    else if (result.meta.requestStatus === "fulfilled") {
+                    } else if (result?.payload?.status === 401) {
+                        SessionTimeOut();
+                    } else if (result.meta.requestStatus === "fulfilled") {
                         message.success('Update request success');
                         fetchRequest();
                     }
@@ -326,7 +327,11 @@ function useViewRequest() {
         await dispatch(getRequestByAccountId({
             page: page,
             PageSize: pageSize
-        })).catch((error) => {
+        })).then((response: any) => {
+            if (response?.payload?.status === 401) {
+                SessionTimeOut();
+            }
+        }).catch((error) => {
             console.log("Error in getting the data", error)
         })
     }
@@ -337,10 +342,6 @@ function useViewRequest() {
         fetchRequest()
     }, [page, pageSize, searchParams, sortModel])
 
-    const fetchPost = async (postId: string) => {
-        const reusult = await dispatch(getPostByPostId(postId))
-        return unwrapResult(reusult);
-    }
     const handler = {
         setCurrentRow,
         setShowDetail,

@@ -12,14 +12,20 @@ import ProfileIcon from "icons/ProfileIcon";
 import UploadIcon from "icons/UploadIcon";
 import UserPlusIcon from "icons/UserPlusIcon";
 import { FC, useEffect } from "react";
+import useSessionTimeOut from "utils/useSessionTimeOut";
 
 const SaaS: FC = () => {
   // change navbar title
   useTitle("Saas");
+  const { SessionTimeOut } = useSessionTimeOut();
   const dispatch = useAppDispatch();
   const { collabOverview } = useAppSelector(state => state.dashboard)
   const fetchDashboard = async () => {
-    await dispatch(getCollabOverview()).catch((error) => {
+    await dispatch(getCollabOverview()).then((response: any) => {
+      if (response?.payload?.status === 401) {
+        SessionTimeOut();
+      }
+    }).catch((error) => {
       message.error('Server internal error!');
     });
   }
