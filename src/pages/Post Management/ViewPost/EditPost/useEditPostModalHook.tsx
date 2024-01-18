@@ -19,6 +19,8 @@ import { paramLeafLetI } from "models/geocodingParam.model";
 import { PositionUpdated, PostUpdated } from "models/postCreated.model";
 import moment, { Moment } from "moment";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
+import useSessionTimeOut from "utils/useSessionTimeOut";
 import { uploadImage } from "../../../../firebase";
 
 interface PostPosition {
@@ -62,7 +64,7 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
     const dispatch = useAppDispatch();
     const { confirm } = Modal;
     const [form] = ProForm.useForm();
-
+    const { SessionTimeOut } = useSessionTimeOut();
     const optionsAPI = useAppSelector(state => state.postTitle.postTitleOption);
     const postInfo = useAppSelector(state => state.post.postInfo)
     const documentOptionsAPI = useAppSelector(state => state.document.documentOption)
@@ -87,7 +89,7 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
     const [error, setError] = useState<string>('');
     const [fileImage, setFileImage] = useState<any | null>(null);
     const [paramsCreatePost, setParamsCreatePost] = useState<PostUpdated>()
-
+    const navigate = useNavigate();
     const documentOptions = documentOptionsAPI?.map((title) => ({
         value: title.id,
         label: title.docName
@@ -115,8 +117,11 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
     };
 
     const fetchPostTitleOption = async () => {
-        const result = await dispatch(getPostTitle());
-        unwrapResult(result)
+        await dispatch(getPostTitle()).then((response: any) => {
+            if (response?.payload?.status === 401) {
+                SessionTimeOut();
+            }
+        });
     }
 
     const customRequest = async ({ file, onSuccess, onError }: any) => {
@@ -332,6 +337,8 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
                 fetchPostList();
                 message.success('Update post success!');
                 result = true;
+            } else if (response?.payload?.status === 401) {
+                SessionTimeOut();
             } else {
                 message.error(response?.payload?.message);
                 setLoading(false)
@@ -345,10 +352,18 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
         return result;
     }
     const fetchDocumentOption = async () => {
-        const result = await dispatch(getDocument());
+        await dispatch(getDocument()).then((response: any) => {
+            if (response?.payload?.status === 401) {
+                SessionTimeOut();
+            }
+        });
     }
     const fetchCertificateOption = async () => {
-        const result = await dispatch(getCertificate());
+        await dispatch(getCertificate()).then((response: any) => {
+            if (response?.payload?.status === 401) {
+                SessionTimeOut();
+            }
+        });
     }
     useEffect(() => {
         fetchPostTitleOption()
@@ -366,7 +381,11 @@ const useEditPostModal = (setOpenEditPostModal: (value: boolean) => void, fetchP
     }, [paramsCreatePost])
 
     const fetchPost = async (postId: string) => {
-        await dispatch(getPostByPostId(postId))
+        await dispatch(getPostByPostId(postId)).then((response: any) => {
+            if (response?.payload?.status === 401) {
+                SessionTimeOut();
+            }
+        })
     }
 
     const handler = {

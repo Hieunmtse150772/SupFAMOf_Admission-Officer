@@ -7,6 +7,7 @@ import { Span } from "components/Typography";
 import { getCollabByContractId, sendContractEmail } from "features/contractSlice";
 import CollabListInfo from "models/collabListInfo.model";
 import { FC, Key, useEffect, useState } from "react";
+import useSessionTimeOut from "utils/useSessionTimeOut";
 
 interface AddContractModalProps {
     open: boolean,
@@ -27,6 +28,7 @@ const AddContractModal: FC<AddContractModalProps> = (
     }
 ) => {
     const dispatch = useAppDispatch();
+    const { SessionTimeOut } = useSessionTimeOut();
     type DataItem = (typeof collabList)[number];
     const [dataSource, setDataSource] = useState<DataItem[]>(collabList);
     const loading = useAppSelector(state => state.registration.loading);
@@ -69,6 +71,8 @@ const AddContractModal: FC<AddContractModalProps> = (
                     if (result.payload.status === 400) {
                         message.warning(result.payload.message);
                         setLoading(false);
+                    } else if (result?.payload?.status === 401) {
+                        SessionTimeOut();
                     } else if (result.payload.status === 200) {
                         message.success('Send contract to collaborators successfull');
                         setLoading(false);
@@ -97,7 +101,11 @@ const AddContractModal: FC<AddContractModalProps> = (
                 search: email,
                 page: 1,
                 PageSize: 10
-            })).catch((error) => {
+            })).then((response: any) => {
+                if (response?.payload?.status === 401) {
+                    SessionTimeOut();
+                }
+            }).catch((error) => {
                 console.log("Error in getting the data", error)
             })
     }
@@ -109,7 +117,11 @@ const AddContractModal: FC<AddContractModalProps> = (
                 search: searchByEmail,
                 page: page,
                 PageSize: pageSize
-            })).catch((error) => {
+            })).then((response: any) => {
+                if (response?.payload?.status === 401) {
+                    SessionTimeOut();
+                }
+            }).catch((error) => {
                 console.log("Error in getting the data", error)
             })
     }

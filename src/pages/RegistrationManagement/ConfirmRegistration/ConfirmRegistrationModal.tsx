@@ -9,6 +9,7 @@ import { Span } from "components/Typography";
 import { cancelRegistration, confirmPositionByCollabList, getRegistrationByPositionId } from "features/registrationSlice";
 import Registrations from "models/registration.model";
 import { FC, Key, useEffect, useState } from "react";
+import useSessionTimeOut from "utils/useSessionTimeOut";
 import './style.scss';
 interface ConfirmRegistrationModalProps {
     open: boolean,
@@ -33,6 +34,7 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
     }
 ) => {
     const dispatch = useAppDispatch();
+    const { SessionTimeOut } = useSessionTimeOut();
     const { confirm } = Modal;
     type DataItem = (typeof collabList)[number];
     const [dataSource, setDataSource] = useState<DataItem[]>(collabList);
@@ -82,7 +84,11 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
                 positionId: positionId,
                 searchEmail: searchByEmail,
                 Status: status
-            }))
+            })).then((response: any) => {
+                if (response?.payload?.status === 401) {
+                    SessionTimeOut();
+                }
+            })
     }
     const getTitle = (): React.ReactNode => {
         return activeKey === 'tab1' ? <Span>List collab confirmed</Span> : <Span>List collab rejected</Span>;
@@ -114,6 +120,8 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
                                     setLoading(false)
                                     fetchPostList();
                                     setOpenConfirmModal(false);
+                                } else if (response?.payload?.status === 401) {
+                                    SessionTimeOut();
                                 } else message.error(response?.payload?.message)
                             }
                             )
@@ -134,7 +142,7 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
                     }
                     try {
                         await dispatch(cancelRegistration(params))
-                            .then((result) => {
+                            .then((result: any) => {
                                 unwrapResult(result)
                                 if (result.meta.requestStatus === "rejected") {
                                     message.warning('Can not cancel!');
@@ -144,6 +152,8 @@ const ConfirmRegistrationModal: FC<ConfirmRegistrationModalProps> = (
                                     setLoading(false)
                                     fetchPostList();
                                     setOpenConfirmModal(false);
+                                } else if (result?.payload?.status === 401) {
+                                    SessionTimeOut();
                                 }
                             }
                             )

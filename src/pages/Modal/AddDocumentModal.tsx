@@ -13,6 +13,7 @@ import DocumentCreated from 'models/document.model';
 import DocumentOptionI from 'models/documentOption.model';
 import moment from 'moment';
 import { FC, useEffect, useState } from 'react';
+import useSessionTimeOut from 'utils/useSessionTimeOut';
 import { uploadDocs } from '../../firebase';
 
 interface AddDocumentModalProps {
@@ -32,6 +33,7 @@ const AddDocumentModal: FC<AddDocumentModalProps> = ({ open, setOpenAddDocumentM
     const [fileDocs, setfileDocs] = useState<any>('');
     const [fileDocsUpdate, setfileDocsUpdate] = useState<any>('');
     const [form] = ProForm.useForm();
+    const { SessionTimeOut } = useSessionTimeOut();
 
     const dispatch = useAppDispatch();
     const handleDeleteDocument = async (id: any) => {
@@ -40,6 +42,8 @@ const AddDocumentModal: FC<AddDocumentModalProps> = ({ open, setOpenAddDocumentM
             if (result2.status === 200) {
                 fetchDocumentOption();
                 message.success('Delete success!');
+            } else if (result2.status === 401) {
+                SessionTimeOut();
             }
         }
         ).catch((error) => {
@@ -58,6 +62,8 @@ const AddDocumentModal: FC<AddDocumentModalProps> = ({ open, setOpenAddDocumentM
                 if (response?.payload?.data?.status?.success) {
                     message.success('Update certificate success!');
                     fetchDocumentOption();
+                } else if (response?.payload?.status === 401) {
+                    SessionTimeOut();
                 } else {
                     message.error(response?.payload?.message);
                 }
@@ -84,7 +90,9 @@ const AddDocumentModal: FC<AddDocumentModalProps> = ({ open, setOpenAddDocumentM
                     message.success('Add Document success!');
                     result = true;
                     setLoading(false);
-                }
+                } else if (result2.status === 401) {
+                    SessionTimeOut()
+                };
             }
             ).catch((error) => {
                 message.error(error);

@@ -12,6 +12,7 @@ import dayjs from 'dayjs';
 import { updateBanCollaboratorById } from 'features/collabSlice';
 import { UnBanParamsI } from 'models/banParamsI.model';
 import { FC } from 'react';
+import useSessionTimeOut from 'utils/useSessionTimeOut';
 
 interface UnBanCollaboratorModalProps {
     open: boolean,
@@ -23,6 +24,7 @@ interface UnBanCollaboratorModalProps {
 const UnBanCollaboratorModal: FC<UnBanCollaboratorModalProps> = ({ open, setOpenUnBanCollaborator, accountId, accountName, fetchCollabList }) => {
     console.log('accountId: ', accountId)
     const { confirm } = Modal;
+    const { SessionTimeOut } = useSessionTimeOut();
     const Formatter = 'YYYY-MM-DD';
     const dispatch = useAppDispatch();
     const loading = useAppSelector(state => state.collab.loading)
@@ -48,6 +50,8 @@ const UnBanCollaboratorModal: FC<UnBanCollaboratorModalProps> = ({ open, setOpen
                             message.success(`Successfully un banned ${accountName} account`);
                             setOpenUnBanCollaborator(false);
                             fetchCollabList();
+                        } else if (response?.payload?.status === 401) {
+                            SessionTimeOut();
                         } else message.error(response?.payload?.message);
                     }).catch((error) => {
                         console.log("Error in getting the data", error)

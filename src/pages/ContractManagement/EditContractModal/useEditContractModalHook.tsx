@@ -11,6 +11,7 @@ import ContractInfo from "models/contract.model";
 import ContractUpdated from "models/contractUpdated.model";
 import moment from "moment";
 import { useEffect, useState } from "react";
+import useSessionTimeOut from "utils/useSessionTimeOut";
 import { uploadContracts } from "../../../firebase";
 
 export type ContractFormValue = {
@@ -21,6 +22,7 @@ export type ContractFormValue = {
 }
 function useEditContractModalHook(fetchContractList: () => void, setOpenEditContractModal: React.Dispatch<React.SetStateAction<boolean>>, contractInfo: ContractInfo) {
     const dispatch = useAppDispatch();
+    const { SessionTimeOut } = useSessionTimeOut();
     const [form] = ProForm.useForm();
     const { confirm } = Modal;
     const { loading } = useAppSelector(state => state.class)
@@ -90,6 +92,8 @@ function useEditContractModalHook(fetchContractList: () => void, setOpenEditCont
                 message.success('Update contract success!');
                 fetchContractList();
                 result = true;
+            } else if (response?.payload?.status === 401) {
+                SessionTimeOut();
             } else if (response?.payload?.status === 400) {
                 message.error('Description too long');
                 result = false;

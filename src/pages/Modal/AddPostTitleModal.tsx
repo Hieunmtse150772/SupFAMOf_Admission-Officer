@@ -12,6 +12,7 @@ import PostOptionI from 'models/postOption.model';
 import PostTitleCreated from 'models/postTitle.model';
 import moment from 'moment';
 import { FC, useEffect, useState } from 'react';
+import useSessionTimeOut from 'utils/useSessionTimeOut';
 
 interface AddPostTitleModalProps {
     open: boolean,
@@ -25,7 +26,7 @@ const AddPostTitleModal: FC<AddPostTitleModalProps> = ({ open, setOpenAddTitleMo
     type DataItem = (typeof data)[number];
     const [dataSource, setDataSource] = useState<DataItem[]>(data);
     const [editingDocumentId, setEditingDocumentId] = useState<number | null>(null);
-
+    const { SessionTimeOut } = useSessionTimeOut();
     const handleCreatePostTitle = async (value: any) => {
         const payload: PostTitleCreated = {
             postCategoryDescription: value?.postTitleDescription,
@@ -39,6 +40,8 @@ const AddPostTitleModal: FC<AddPostTitleModalProps> = ({ open, setOpenAddTitleMo
                     fetchPostTitleOption();
                     message.success('Add position title success!');
                     result = true;
+                } else if (result2.status === 401) {
+                    SessionTimeOut();
                 }
             }
             ).catch((error) => {
@@ -57,6 +60,8 @@ const AddPostTitleModal: FC<AddPostTitleModalProps> = ({ open, setOpenAddTitleMo
             if (response?.payload?.data?.status?.success) {
                 message.success('Update certificate success!');
                 fetchPostTitleOption();
+            } else if (response?.payload?.status === 401) {
+                SessionTimeOut();
             } else {
                 message.error(response?.payload?.message);
             }
@@ -72,6 +77,8 @@ const AddPostTitleModal: FC<AddPostTitleModalProps> = ({ open, setOpenAddTitleMo
             if (response?.payload?.data?.status?.success) {
                 message.success('Update certificate success!');
                 fetchPostTitleOption();
+            } else if (response?.payload?.status === 401) {
+                SessionTimeOut();
             } else {
                 message.error(response?.payload?.message);
             }

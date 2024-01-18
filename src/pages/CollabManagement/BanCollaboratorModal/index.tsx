@@ -13,6 +13,7 @@ import dayjs from 'dayjs';
 import { banCollaboratorById } from 'features/collabSlice';
 import { BanParamsI } from 'models/banParamsI.model';
 import { FC } from 'react';
+import useSessionTimeOut from 'utils/useSessionTimeOut';
 
 interface BanCollaboratorModalProps {
     open: boolean,
@@ -24,6 +25,7 @@ interface BanCollaboratorModalProps {
 const BanCollaboratorModal: FC<BanCollaboratorModalProps> = ({ open, setOpenBanCollaborator, accountId, accountName, fetchCollabList }) => {
     console.log('accountId: ', accountId)
     const { confirm } = Modal;
+    const { SessionTimeOut } = useSessionTimeOut();
     const Formatter = 'YYYY-MM-DD';
     const dispatch = useAppDispatch();
     const loading = useAppSelector(state => state.collab.loading)
@@ -47,6 +49,8 @@ const BanCollaboratorModal: FC<BanCollaboratorModalProps> = ({ open, setOpenBanC
                         message.success(`Successfully banned ${accountName} account`);
                         setOpenBanCollaborator(false);
                         fetchCollabList();
+                    } else if (response?.payload?.status === 401) {
+                        SessionTimeOut();
                     } else message.error(response?.payload?.message);
                 }).catch((error) => {
                     console.log("Error in getting the data", error)

@@ -8,12 +8,14 @@ import {
   Tooltip,
   useMediaQuery,
 } from "@mui/material";
+import { message } from "antd";
 import { useAppDispatch } from "app/store";
 import AppConstants from "enums/app";
 import { getUserProfile } from "features/authSlice";
 import { FC, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ScrollBar from "simplebar-react";
+import useSessionTimeOut from "utils/useSessionTimeOut";
 import { admissionTopMenu } from "./topMenuList";
 
 // root component interface
@@ -53,6 +55,7 @@ const DashboardSideBar: FC<SideNavBarProps> = ({
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useAppDispatch();
+  const { SessionTimeOut } = useSessionTimeOut();
   const [isExpanded, setIsExpanded] = useState(false);
   const [active, setActive] = useState("Dashboard");
   const downMd = useMediaQuery((theme: Theme) => theme.breakpoints.down("md"));
@@ -60,8 +63,12 @@ const DashboardSideBar: FC<SideNavBarProps> = ({
   const userInfo = localStorage.getItem(AppConstants.USER)
 
   const handleGetProfile = async () => {
-    await dispatch(getUserProfile()).catch((error) => {
-
+    await dispatch(getUserProfile()).then((response: any) => {
+      if (response?.payload?.statusCode === 403) {
+        SessionTimeOut();
+      }
+    }).catch((error) => {
+      message.error('Server internal error!');
     });
   };
   useEffect(() => {

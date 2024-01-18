@@ -9,6 +9,7 @@ import { deleteClassById, getAllClassTraining, getClassById } from 'features/cla
 import { ClassTrainingI, TrainingRegistrationsI } from 'models/classTraining.model';
 import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router';
+import useSessionTimeOut from 'utils/useSessionTimeOut';
 
 
 type ViewRoomI = {
@@ -34,6 +35,7 @@ function useViewTrainingHook() {
     const Formatter = 'YYYY-MM-DD'
     const [currentRow, setCurrentRow] = useState<any>();
     const { confirm } = Modal;
+    const { SessionTimeOut } = useSessionTimeOut();
     const rooms = useAppSelector(state => state.class.allClassList);
     const total = rooms.metadata?.total;
     const isLoading = useAppSelector(state => state.class.loading);
@@ -196,7 +198,11 @@ function useViewTrainingHook() {
     const handleEditRoom = async (value: any) => {
         setOpenEditRoom(true);
         setRoomId(value?.id);
-        await dispatch(getClassById({ id: value?.id })).catch((error) => {
+        await dispatch(getClassById({ id: value?.id })).then((response: any) => {
+            if (response?.payload?.status === 401) {
+                SessionTimeOut();
+            }
+        }).catch((error) => {
             console.log("Error in getting the data", error)
         })
     }
@@ -205,6 +211,8 @@ function useViewTrainingHook() {
             if (response?.payload?.data?.status?.success) {
                 message.success('Delete success!');
                 fetchRooms();
+            } else if (response?.payload?.status === 401) {
+                SessionTimeOut();
             } else {
                 message.error(response?.payload?.message)
             }
@@ -223,7 +231,11 @@ function useViewTrainingHook() {
             date: value?.date
         }
         setSearchParams(params);
-        await dispatch(getAllClassTraining(params)).catch((error) => {
+        await dispatch(getAllClassTraining(params)).then((response: any) => {
+            if (response?.payload?.status === 401) {
+                SessionTimeOut();
+            }
+        }).catch((error) => {
             console.log("Error in getting the data", error)
         })
     }
@@ -268,7 +280,11 @@ function useViewTrainingHook() {
             date: searchParams?.date,
             Sort: sortModel.Sort,
             Order: sortModel.Order
-        }))
+        })).then((response: any) => {
+            if (response?.payload?.status === 401) {
+                SessionTimeOut();
+            }
+        })
     }
     const handleAddPost = () => {
         navigate('/dashboard/add-post')

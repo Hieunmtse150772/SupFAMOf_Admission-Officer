@@ -12,26 +12,44 @@ import ProfileIcon from "icons/ProfileIcon";
 import UploadIcon from "icons/UploadIcon";
 import UserPlusIcon from "icons/UserPlusIcon";
 import { FC, useEffect } from "react";
+import useSessionTimeOut from "utils/useSessionTimeOut";
 
 const SaaS: FC = () => {
   // change navbar title
   useTitle("Saas");
+  const { SessionTimeOut } = useSessionTimeOut();
   const dispatch = useAppDispatch();
   const { collabOverview, totalRegistration } = useAppSelector(state => state.dashboard)
   const fetchDashboard = async () => {
-    await dispatch(getCollabOverview()).catch((error) => {
+    await dispatch(getCollabOverview()).then((response: any) => {
+      if (response?.payload?.status === 401) {
+        SessionTimeOut();
+      }
+    }).catch((error) => {
       message.error('Server internal error!');
     });
-    await dispatch(getRegistrationComplete()).catch((error) => {
+    await dispatch(getRegistrationComplete()).then((response: any) => {
+      if (response?.payload?.status === 401) {
+        SessionTimeOut();
+      }
+    }).catch((error) => {
       message.error('Server internal error!');
     });
-    await dispatch(getMoneyYearReport({ year: new Date().getFullYear() })).catch((error) => {
+    await dispatch(getMoneyYearReport({ year: new Date().getFullYear() })).then((response: any) => {
+      if (response?.payload?.status === 401) {
+        SessionTimeOut();
+      }
+    }).catch((error) => {
       console.log("Error in getting the data", error)
     })
     await dispatch(getAnalytics({
       month: new Date().getMonth(),
       year: new Date().getFullYear()
-    })).catch((error) => {
+    })).then((response: any) => {
+      if (response?.payload?.status === 401) {
+        SessionTimeOut();
+      }
+    }).catch((error) => {
       console.log("Error in getting the data", error)
     })
   }

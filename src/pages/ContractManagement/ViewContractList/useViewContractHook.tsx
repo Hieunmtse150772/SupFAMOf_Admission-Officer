@@ -12,6 +12,7 @@ import { ContractInfoRows, ListContractI } from "models/contract.model";
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
 import ReactHtmlParser from 'react-html-parser';
+import useSessionTimeOut from "utils/useSessionTimeOut";
 type CollumsField = {
     key: number,
     contractName: string,
@@ -50,7 +51,7 @@ type SortModalI = {
     Order: string
 }
 const useViewContractHook = () => {
-    ;
+    const { SessionTimeOut } = useSessionTimeOut();
     const Formatter = 'YYYY-MM-DD'
     const { confirm } = Modal;
     const [currentRow, setCurrentRow] = useState<ContractInfoRows | null>(null);
@@ -348,6 +349,8 @@ const useViewContractHook = () => {
         await dispatch(getCollabByContractId({ search: '', contractId: value?.id })).then((response: any) => {
             console.log('response:', response)
             if (response?.payload?.status === 200) {
+            } else if (response?.payload?.status === 401) {
+                SessionTimeOut();
             } else {
                 message.error('Server internal error, try again!')
             }
@@ -399,7 +402,11 @@ const useViewContractHook = () => {
     const handleOpenEditContractModal = async (value: ContractInfoRows) => {
         console.log('value: ', value)
         setOpenEditContractModal(true);
-        await dispatch(getContractById(value?.id))
+        await dispatch(getContractById(value?.id)).then((response: any) => {
+            if (response?.payload?.status === 401) {
+                SessionTimeOut();
+            }
+        })
     }
     const handleCompleteContract = (value: ExpandedDataType) => {
         const params = {
@@ -458,7 +465,11 @@ const useViewContractHook = () => {
                 startDate: value?.startDate,
                 endDate: value?.endDate,
                 totalSalary: value?.totalSalary,
-            })).catch((error) => {
+            })).then((response: any) => {
+                if (response?.payload?.status === 401) {
+                    SessionTimeOut();
+                }
+            }).catch((error) => {
                 console.log("Error in getting the data", error)
             })
         }
@@ -497,7 +508,11 @@ const useViewContractHook = () => {
             endDate: searchParams?.endDate,
             startDate: searchParams?.startDate,
             totalSalary: searchParams?.totalSalary
-        })).catch((error) => {
+        })).then((response: any) => {
+            if (response?.payload?.status === 401) {
+                SessionTimeOut();
+            }
+        }).catch((error) => {
             console.log("Error in getting the data", error)
         })
     }

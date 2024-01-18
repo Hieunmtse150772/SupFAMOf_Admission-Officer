@@ -23,6 +23,7 @@ import moment, { Moment } from 'moment';
 import { useEffect, useState } from 'react';
 import { useForm } from "react-hook-form";
 import { useNavigate } from 'react-router';
+import useSessionTimeOut from 'utils/useSessionTimeOut';
 import { uploadImage } from '../../../firebase';
 
 interface AdditionalPosition {
@@ -68,6 +69,7 @@ type RangeDisabledTime = (
     disabledSeconds?: (selectedHour: number, selectedMinute: number) => number[];
 };
 const useAddNewPostHook = () => {
+    const { SessionTimeOut } = useSessionTimeOut();
     const {
         handleSubmit,
         control,
@@ -402,6 +404,8 @@ const useAddNewPostHook = () => {
                 navigate('/dashboard/registration-list');
                 message.success('Create post success!');
                 setLoading(false);
+            } else if (response?.payload?.status === 401) {
+                SessionTimeOut();
             } else {
                 setLoading(false);
                 message.error(response.payload.message);
@@ -447,15 +451,27 @@ const useAddNewPostHook = () => {
         };
     };
     const fetchPostTitleOption = async () => {
-        await dispatch(getPostTitle());
+        await dispatch(getPostTitle()).then((response: any) => {
+            if (response?.payload?.status === 401) {
+                SessionTimeOut();
+            }
+        });
     }
 
     const fetchDocumentOption = async () => {
-        await dispatch(getDocument());
+        await dispatch(getDocument()).then((response: any) => {
+            if (response?.payload?.status === 401) {
+                SessionTimeOut();
+            }
+        });
     }
 
     const fetchCertificateOption = async () => {
-        await dispatch(getCertificate());
+        await dispatch(getCertificate()).then((response: any) => {
+            if (response?.payload?.status === 401) {
+                SessionTimeOut();
+            }
+        });
     }
     const fetchCertificateRegistration = async () => {
 

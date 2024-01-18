@@ -8,6 +8,7 @@ import { useAppDispatch } from "app/store";
 import { disablePermission, getAdmission, updatePermission } from "features/admissionSlice";
 import AdmissionInfo from "models/admission.model";
 import { useEffect, useState } from "react";
+import useSessionTimeOut from "utils/useSessionTimeOut";
 
 type SearchParamsI = {
     email: string,
@@ -17,7 +18,7 @@ function useViewAdmissionListHook() {
     const dispatch = useAppDispatch();
     const admissionList = useAppSelector(state => state.admission.admissionList);
     const loading = useAppSelector(state => state.admission.loading);
-
+    const { SessionTimeOut } = useSessionTimeOut();
     const [searchParams, setSearchParams] = useState<SearchParamsI>();
     const [currentRow, setCurrentRow] = useState<any>();
     // const [selectedRowsState, setSelectedRows] = useState<boolean>([]);
@@ -214,6 +215,8 @@ function useViewAdmissionListHook() {
         await dispatch(getAdmission({ email: searchParams?.email, name: searchParams?.name })).then((response: any) => {
             if (response?.payload?.status === 200) {
 
+            } else if (response?.payload?.status === 401) {
+                SessionTimeOut();
             } else {
                 message.error('Server internal error, please try again!');
             }

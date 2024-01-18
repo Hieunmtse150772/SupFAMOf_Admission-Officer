@@ -10,6 +10,7 @@ import StatusPostRegistration from "enums/statusPostRegistration.enum";
 import { confirmAttendanceByPositionId, getWorkListsByPositionId, paramsConfirmAttendance } from 'features/attendenceSlice';
 import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router';
+import useSessionTimeOut from "utils/useSessionTimeOut";
 
 
 interface ExpandedDataType {
@@ -49,6 +50,7 @@ function useViewWorkListHook(positionId: string, fetchPost: () => void) {
     const Formatter = 'YYYY-MM-DD'
     const [currentRow, setCurrentRow] = useState<any>();
     const { confirm } = Modal;
+    const { SessionTimeOut } = useSessionTimeOut();
     const { workLists, loading } = useAppSelector(state => state.attendence)
     // const [selectedRowsState, setSelectedRows] = useState<boolean>([]);
     const [showDetail, setShowDetail] = useState<boolean>(false);
@@ -308,7 +310,11 @@ function useViewWorkListHook(positionId: string, fetchPost: () => void) {
             PageSize: pageSize,
             Sort: sortModel.Sort,
             Order: sortModel.Order
-        }))
+        })).then((response: any) => {
+            if (response?.payload?.status === 401) {
+                SessionTimeOut();
+            }
+        })
     }
     useEffect(() => {
         fetchAttendence()

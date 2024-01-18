@@ -12,13 +12,16 @@ import { getCollabList, removeCollaboratorPremium, updateCollaboratorToPremium }
 import { handleDownloadReport } from "features/reportSlice";
 import { Certificate } from "models/collabListInfo.model";
 import { useEffect, useState } from "react";
+import useSessionTimeOut from "utils/useSessionTimeOut";
 type SearchParamsI = {
     name?: string,
     email?: string,
 }
 
 const useViewCollablistHook = () => {
-    const Formatter = 'YYYY-MM-DD'
+    const Formatter = 'YYYY-MM-DD';
+    const { SessionTimeOut } = useSessionTimeOut();
+
     const excelFile = useAppSelector(state => state.report.excelFile);
     const loadingExport = useAppSelector(state => state.report.loading);
     const certificateOptionsAPI = useAppSelector(state => state.certificate.certificateOption);
@@ -248,7 +251,11 @@ const useViewCollablistHook = () => {
                 PageSize: pageSize,
                 name: value?.name,
                 email: value?.email
-            })).catch((error) => {
+            })).then((response: any) => {
+                if (response?.payload?.status === 401) {
+                    SessionTimeOut();
+                }
+            }).catch((error) => {
                 console.log("Error in getting the data", error)
             })
         }
@@ -264,6 +271,8 @@ const useViewCollablistHook = () => {
             if (response.payload.status === 200) {
                 hideLoading();
                 message.success('Download file export account successful');
+            } else if (response?.payload?.status === 401) {
+                SessionTimeOut();
             }
         }).catch((error) => {
             console.log("Error in getting the data", error)
@@ -321,7 +330,11 @@ const useViewCollablistHook = () => {
     const handleActionChange = async (params: any,
         sorter: Record<string, SortOrder>,
         filter: Record<string, (string | number)[] | null>): Promise<Partial<RequestData<any>>> => {
-        await dispatch(getCollabList({})).catch((error) => {
+        await dispatch(getCollabList({})).then((response: any) => {
+            if (response?.payload?.status === 401) {
+                SessionTimeOut();
+            }
+        }).catch((error) => {
             console.log("Error in getting the data", error)
         })
         return {
@@ -351,7 +364,11 @@ const useViewCollablistHook = () => {
         // ...
     }));
     const fetchCollabList = async () => {
-        await dispatch(getCollabList({ page: page, PageSize: pageSize, name: searchParams?.name, email: searchParams?.email })).catch((error) => {
+        await dispatch(getCollabList({ page: page, PageSize: pageSize, name: searchParams?.name, email: searchParams?.email })).then((response: any) => {
+            if (response?.payload?.status === 401) {
+                SessionTimeOut();
+            }
+        }).catch((error) => {
             console.log("Error in getting the data", error)
         })
     }
@@ -370,7 +387,11 @@ const useViewCollablistHook = () => {
         }
     };
     const fetchCertificateOption = async () => {
-        const result = await dispatch(getCertificate());
+        const result = await dispatch(getCertificate()).then((response: any) => {
+            if (response?.payload?.status === 401) {
+                SessionTimeOut();
+            }
+        });
     }
     useEffect(() => {
         fetchCertificateOption();
