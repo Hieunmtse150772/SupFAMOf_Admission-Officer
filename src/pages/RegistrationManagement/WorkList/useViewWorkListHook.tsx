@@ -311,7 +311,7 @@ function useViewWorkListHook(positionId: string, fetchPost: () => void) {
             Sort: sortModel.Sort,
             Order: sortModel.Order
         })).then((response: any) => {
-            if (response?.payload?.status === 401) {
+            if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             }
         })

@@ -34,7 +34,7 @@ const ExportModal: FC<ExportModalProps> = ({ open, setOpenExportModal, nameFile 
             if (response?.payload?.status === 200) {
                 message.success('Export successful');
                 setOpenExportModal(false);
-            } else if (response?.payload?.status === 401) {
+            } else if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             } else {
                 message.error('Does not have post or account to generate in that month of the year');
@@ -48,7 +48,7 @@ const ExportModal: FC<ExportModalProps> = ({ open, setOpenExportModal, nameFile 
             if (response?.payload?.status === 200) {
                 message.success('Export successful');
                 setOpenExportModal(false);
-            } else if (response?.payload?.status === 401) {
+            } else if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             } else {
                 message.error('Does not have post or account to generate in that month of the year');

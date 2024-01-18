@@ -272,7 +272,7 @@ function useViewRequest(postId: number, fetchPost: () => void) {
             setStatusFilter(null)
             setPage(1)
             await dispatch(getRequestByAccountId({ page: 1, PageSize: 10, Sort: 'createAt', Order: 'desc', postId: postId })).then((response: any) => {
-                if (response?.payload?.status === 401) {
+                if (response?.payload?.statusCode === 401) {
                     SessionTimeOut();
                 }
             })
@@ -280,7 +280,7 @@ function useViewRequest(postId: number, fetchPost: () => void) {
             setStatusFilter(value?.radio);
             setPage(1)
             await dispatch(getRequestByAccountId({ page: 1, PageSize: 10, Sort: 'createAt', Order: 'desc', Status: value?.radio, postId: postId })).then((response: any) => {
-                if (response?.payload?.status === 401) {
+                if (response?.payload?.statusCode === 401) {
                     SessionTimeOut();
                 }
             })
@@ -327,7 +327,7 @@ function useViewRequest(postId: number, fetchPost: () => void) {
             postId: postId,
             Status: statusFilter
         })).then((response: any) => {
-            if (response?.payload?.status === 401) {
+            if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             }
         }).catch((error) => {

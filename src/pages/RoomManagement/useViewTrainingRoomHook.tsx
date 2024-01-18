@@ -199,7 +199,7 @@ function useViewTrainingHook() {
         setOpenEditRoom(true);
         setRoomId(value?.id);
         await dispatch(getClassById({ id: value?.id })).then((response: any) => {
-            if (response?.payload?.status === 401) {
+            if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             }
         }).catch((error) => {
@@ -211,7 +211,7 @@ function useViewTrainingHook() {
             if (response?.payload?.data?.status?.success) {
                 message.success('Delete success!');
                 fetchRooms();
-            } else if (response?.payload?.status === 401) {
+            } else if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             } else {
                 message.error(response?.payload?.message)
@@ -232,7 +232,7 @@ function useViewTrainingHook() {
         }
         setSearchParams(params);
         await dispatch(getAllClassTraining(params)).then((response: any) => {
-            if (response?.payload?.status === 401) {
+            if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             }
         }).catch((error) => {
@@ -281,7 +281,7 @@ function useViewTrainingHook() {
             Sort: sortModel.Sort,
             Order: sortModel.Order
         })).then((response: any) => {
-            if (response?.payload?.status === 401) {
+            if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             }
         })

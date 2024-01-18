@@ -138,7 +138,7 @@ const TotalSpent: FC = () => {
   const chartSeries = data.series;
   const handleChangeYear = async (value: string) => {
     await dispatch(getMoneyYearReport({ year: Number(value) })).then((response: any) => {
-      if (response?.payload?.status === 401) {
+      if (response?.payload?.statusCode === 401) {
         SessionTimeOut();
       }
     }).catch((error) => {

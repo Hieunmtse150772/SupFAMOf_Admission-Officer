@@ -127,7 +127,7 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
             if (response?.payload?.data?.status?.success) {
                 message.success('Delete success!');
                 fetchClass();
-            } else if (response?.payload?.status === 401) {
+            } else if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             } else {
                 message.error(response?.payload?.message)
@@ -140,7 +140,7 @@ const AssignClassModal: FC<ConfirmRegistrationModalProps> = (
     };
     const fetchClass = async () => {
         await dispatch(getClassTraining({ status: 1, page: page, PageSize: pageSize })).then((response: any) => {
-            if (response?.payload?.status === 401) {
+            if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             }
         }).catch((error) => {

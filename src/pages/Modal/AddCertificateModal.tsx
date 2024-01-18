@@ -43,7 +43,7 @@ const AddCertificateModal: FC<AddCertificateModalProps> = ({ open, setOpenCertif
                     fetchCertificateRegistration();
                     message.success('Add certificate success!');
                     result = true;
-                } else if (response?.payload?.status === 401) {
+                } else if (response?.payload?.statusCode === 401) {
                     SessionTimeOut();
                 }
             }
@@ -81,7 +81,7 @@ const AddCertificateModal: FC<AddCertificateModalProps> = ({ open, setOpenCertif
             if (response?.payload?.data?.status?.success) {
                 message.success('Update certificate success!');
                 fetchCertificateOption();
-            } else if (response?.payload?.status === 401) {
+            } else if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             } else {
                 message.error(response?.payload?.message)

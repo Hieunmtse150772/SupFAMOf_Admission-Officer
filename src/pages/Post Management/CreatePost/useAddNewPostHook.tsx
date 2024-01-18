@@ -404,7 +404,7 @@ const useAddNewPostHook = () => {
                 navigate('/dashboard/registration-list');
                 message.success('Create post success!');
                 setLoading(false);
-            } else if (response?.payload?.status === 401) {
+            } else if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             } else {
                 setLoading(false);
@@ -452,7 +452,7 @@ const useAddNewPostHook = () => {
     };
     const fetchPostTitleOption = async () => {
         await dispatch(getPostTitle()).then((response: any) => {
-            if (response?.payload?.status === 401) {
+            if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             }
         });
@@ -460,7 +460,7 @@ const useAddNewPostHook = () => {
 
     const fetchDocumentOption = async () => {
         await dispatch(getDocument()).then((response: any) => {
-            if (response?.payload?.status === 401) {
+            if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             }
         });
@@ -468,7 +468,7 @@ const useAddNewPostHook = () => {
 
     const fetchCertificateOption = async () => {
         await dispatch(getCertificate()).then((response: any) => {
-            if (response?.payload?.status === 401) {
+            if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             }
         });

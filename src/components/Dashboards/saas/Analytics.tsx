@@ -80,7 +80,7 @@ const Analytics: FC = () => {
   const handleChangeMonth = async (value: string) => {
     const monthYear = { month: Number(value?.split('-')[1]), year: Number(value?.split('-')[0]) }
     await dispatch(getAnalytics(monthYear)).then((response: any) => {
-      if (response?.payload?.status === 401) {
+      if (response?.payload?.statusCode === 401) {
         SessionTimeOut();
       }
     }).catch((error) => {

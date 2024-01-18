@@ -102,7 +102,7 @@ const AddContractModal: FC<AddContractModalProps> = (
                 page: 1,
                 PageSize: 10
             })).then((response: any) => {
-                if (response?.payload?.status === 401) {
+                if (response?.payload?.statusCode === 401) {
                     SessionTimeOut();
                 }
             }).catch((error) => {
@@ -118,7 +118,7 @@ const AddContractModal: FC<AddContractModalProps> = (
                 page: page,
                 PageSize: pageSize
             })).then((response: any) => {
-                if (response?.payload?.status === 401) {
+                if (response?.payload?.statusCode === 401) {
                     SessionTimeOut();
                 }
             }).catch((error) => {

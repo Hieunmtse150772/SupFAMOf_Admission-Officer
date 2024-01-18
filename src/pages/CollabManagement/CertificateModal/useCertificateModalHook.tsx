@@ -69,7 +69,7 @@ const useEditPostModal = (
                 message.success(response?.payload?.data?.status?.message);
                 fetchCollabList();
                 setOpenCertificateModal(false);
-            } else if (response?.payload?.status === 401) {
+            } else if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             } else message.error('Give certificate fail');
         }).catch((error) => {

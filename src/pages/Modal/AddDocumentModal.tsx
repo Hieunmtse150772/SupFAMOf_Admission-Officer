@@ -62,7 +62,7 @@ const AddDocumentModal: FC<AddDocumentModalProps> = ({ open, setOpenAddDocumentM
                 if (response?.payload?.data?.status?.success) {
                     message.success('Update certificate success!');
                     fetchDocumentOption();
-                } else if (response?.payload?.status === 401) {
+                } else if (response?.payload?.statusCode === 401) {
                     SessionTimeOut();
                 } else {
                     message.error(response?.payload?.message);

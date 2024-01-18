@@ -90,7 +90,7 @@ const useUserProfileHook = () => {
                 if (response.meta.requestStatus === 'fulfilled') {
                     message.success('Save avatar successful')
                 }
-                if (response?.payload?.status === 401) {
+                if (response?.payload?.statusCode === 401) {
                     SessionTimeOut();
                 }
             }).catch((error) => {

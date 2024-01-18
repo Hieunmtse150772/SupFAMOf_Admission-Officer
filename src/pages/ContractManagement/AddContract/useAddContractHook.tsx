@@ -87,14 +87,14 @@ const useAddContractHook = () => {
     const handleSearchCollabByEmail = async (email: string) => {
         if (email !== '') {
             await dispatch(searchCollabListByEmail({ email: email })).then((response: any) => {
-                if (response?.payload?.status === 401) {
+                if (response?.payload?.statusCode === 401) {
                     SessionTimeOut();
                 }
             }).catch((error) => {
                 console.log("Error in getting the data", error)
             });
         } else await dispatch(getCollabByContractId({ search: email, contractId: contractId })).then((response: any) => {
-            if (response?.payload?.status === 401) {
+            if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             }
         }).catch((error) => {
@@ -170,7 +170,7 @@ const useAddContractHook = () => {
                                 message.error('Description too long')
                                 setLoading(false);
                                 result = false;
-                            } else if (response?.payload?.status === 401) {
+                            } else if (response?.payload?.statusCode === 401) {
                                 SessionTimeOut();
                             } else {
                                 message.error(response?.payload?.message)
@@ -208,7 +208,7 @@ const useAddContractHook = () => {
                     setLoading(false);
                     message.success('Send contract email success!');
                     form.submit();
-                } else if (response?.payload?.status === 401) {
+                } else if (response?.payload?.statusCode === 401) {
                     SessionTimeOut();
                 } else {
                     message.error(response?.payload?.message);
@@ -237,7 +237,7 @@ const useAddContractHook = () => {
                 page: page,
                 PageSize: pageSize
             })).then((response: any) => {
-                if (response?.payload?.status === 401) {
+                if (response?.payload?.statusCode === 401) {
                     SessionTimeOut();
                 }
             }).catch((error) => {

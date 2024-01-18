@@ -252,7 +252,7 @@ const useViewCollablistHook = () => {
                 name: value?.name,
                 email: value?.email
             })).then((response: any) => {
-                if (response?.payload?.status === 401) {
+                if (response?.payload?.statusCode === 401) {
                     SessionTimeOut();
                 }
             }).catch((error) => {
@@ -271,7 +271,7 @@ const useViewCollablistHook = () => {
             if (response.payload.status === 200) {
                 hideLoading();
                 message.success('Download file export account successful');
-            } else if (response?.payload?.status === 401) {
+            } else if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             }
         }).catch((error) => {
@@ -331,7 +331,7 @@ const useViewCollablistHook = () => {
         sorter: Record<string, SortOrder>,
         filter: Record<string, (string | number)[] | null>): Promise<Partial<RequestData<any>>> => {
         await dispatch(getCollabList({})).then((response: any) => {
-            if (response?.payload?.status === 401) {
+            if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             }
         }).catch((error) => {
@@ -365,7 +365,7 @@ const useViewCollablistHook = () => {
     }));
     const fetchCollabList = async () => {
         await dispatch(getCollabList({ page: page, PageSize: pageSize, name: searchParams?.name, email: searchParams?.email })).then((response: any) => {
-            if (response?.payload?.status === 401) {
+            if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             }
         }).catch((error) => {
@@ -388,7 +388,7 @@ const useViewCollablistHook = () => {
     };
     const fetchCertificateOption = async () => {
         const result = await dispatch(getCertificate()).then((response: any) => {
-            if (response?.payload?.status === 401) {
+            if (response?.payload?.statusCode === 401) {
                 SessionTimeOut();
             }
         });
