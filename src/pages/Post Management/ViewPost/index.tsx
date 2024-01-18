@@ -40,17 +40,17 @@ const ViewPostList = () => {
     switch (props.currentRow?.status) {
         case Status.opening:
             color = '#1890ff';
-            statusText = 'Pending';
+            statusText = 'Opening';
             break;
 
         case Status.closed:
             color = green[500];
-            statusText = 'Running';
+            statusText = 'Closed';
             break;
 
         case Status.ended:
             color = red[500];
-            statusText = 'Ending';
+            statusText = 'Ended';
             break;
         case Status.canceled:
             color = yellow[500];

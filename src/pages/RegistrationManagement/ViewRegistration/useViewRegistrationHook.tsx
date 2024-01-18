@@ -713,6 +713,7 @@ function useViewRegistrationHook() {
         id: post?.postCode,
         postCode: post?.postCode,
         titleType: post?.postCategory?.postCategoryType,
+        title: post?.postCategory?.postCategoryDescription,
         isPremium: post?.isPremium,
         description: post?.postDescription,
         location: post?.location,
