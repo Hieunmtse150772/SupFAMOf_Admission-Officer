@@ -42,8 +42,8 @@ const EditRoomModal: FC<AddMoreRoomModalProps> = ({ open, setOpenEditRoomModal, 
                     <ProFormText
                         width="xl"
                         name="class"
-                        label="Class name"
-                        rules={[{ required: true, message: 'Class name is required!' }]}
+                        label="Room name"
+                        rules={[{ required: true, message: 'Room name is required!' }]}
                         initialValue={classInfo?.class}
 
                     />
