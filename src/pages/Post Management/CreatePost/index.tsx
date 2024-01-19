@@ -282,6 +282,7 @@ const AddNewPost: FC = () => {
                                                     const result = await handler.handleSearchAddressGeoapifi(keyWords);
                                                     return result
                                                 }}
+
                                                 getValueFromEvent={(value) => value}
                                                 placeholder="Please select a address"
                                                 rules={[{ required: true, message: 'Please select your address!' }]}
