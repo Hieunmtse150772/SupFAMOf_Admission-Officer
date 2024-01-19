@@ -188,9 +188,10 @@ const useAddNewPostHook = () => {
             return [];
         }
     };
-    const handleSearchAddressGeoapifi = async (keyWords: string) => {
+    const handleSearchAddressGeoapifi = async (value: string) => {
         try {
             // Thực hiện gọi API Google ở đây
+            const keyWords = value ? value : '';
             const response = await dispatch(getGeoApiFi({ address: keyWords, key: '6f44e55eb27841738cbd3be2852d936c' }));
             unwrapResult(response);
             if (getGeoApiFi.fulfilled.match(response)) {
