@@ -2,11 +2,10 @@ import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import LoginDto from 'dtos/Auth/loginPayload.dto';
 import updateAccountDto from 'dtos/Auth/update.account.dto';
-import { signInWithPopup } from 'firebase/auth';
+import LoginAdminDto from 'dtos/login.admin.dto';
 import UserInfo from 'models/userInfor.model';
 import UserInfoLogin from 'models/userInforLogin.model';
 import AppConstants from '../enums/app';
-import { auth, provider } from '../firebase';
 import { authService } from '../services/auth.service';
 
 interface AuthState {
@@ -15,6 +14,7 @@ interface AuthState {
   userInfo: UserInfo;
   loading: boolean,
   error: string | null,
+  adminInfo: LoginAdminDto | null
   // Thêm các trường khác liên quan đến người dùng nếu cần thiết
 }
 
@@ -42,14 +42,13 @@ const initialState: AuthState = {
     },
     accountInformations: [],
     dateOfBirth: new Date()
-  }
+  },
+  adminInfo: null
 }
 export const loginGoogle = createAsyncThunk(
   'auth/login-google',
-  async (_, { rejectWithValue }) => {
+  async (accessToken: string, { rejectWithValue }) => {
     try {
-      const response = await signInWithPopup(auth, provider);
-      const accessToken = await response.user.getIdToken(true);
       const result = await authService.loginGoogle({ idToken: accessToken, fcmToken: "" })
       localStorage.setItem(AppConstants.ACCESS_TOKEN, result.data.data.access_token);
       localStorage.setItem(AppConstants.USER, JSON.stringify(result.data.data.account));
@@ -129,17 +128,22 @@ export const authSlice = createSlice({
         state.isAuthenticated = true;
         state.loading = false;
       })
+      .addCase(loginAdministrator.fulfilled, (state, action) => {
+        state.isAuthenticated = true;
+        state.loading = false;
+        state.adminInfo = action.payload.data
+      })
       .addMatcher(
         isAnyOf(getUserProfile.fulfilled, updateUserProfile.fulfilled, updateAvatar.fulfilled),
         (state, action) => {
           state.userInfo = action.payload.data;
-          console.log("action.payload.data: ", action.payload.data)
           state.error = '';
           state.loading = false;
         },
       )
       .addMatcher(
         isAnyOf(
+          loginAdministrator.pending,
           loginGoogle.pending,
           getUserProfile.pending,
           updateUserProfile.pending,
@@ -152,6 +156,7 @@ export const authSlice = createSlice({
       )
       .addMatcher(
         isAnyOf(
+          loginAdministrator.rejected,
           loginGoogle.rejected,
           getUserProfile.rejected,
           updateUserProfile.rejected,
@@ -161,7 +166,8 @@ export const authSlice = createSlice({
           state.loading = false;
           state.error = String(action.payload);
         },
-      );
+      )
+
   },
 });
 

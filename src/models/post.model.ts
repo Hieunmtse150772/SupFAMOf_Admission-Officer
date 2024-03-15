@@ -4,6 +4,7 @@ type PostInfo = {
     id: number;
     postCategoryId: number,
     postCode: string,
+    anyRegister: boolean,
     postDescription: string,
     dateFrom: Date,
     dateTo: Date,
@@ -17,8 +18,9 @@ type PostInfo = {
     isActive: true,
     status: number,
     isEnd: false,
-    createAt: string,
-    updateAt: string,
+    createAt: Date,
+    updateAt: Date,
+    totalUpdateRegisterAmount: number,
     account: {
         id: number,
         roleId: number,
@@ -53,6 +55,7 @@ export type TrainingPositionsI = {
     isBusService: boolean;
     latitude: string;
     longtitude: string;
+    date: Date;
     timeFrom: Date;
     timeTo: Date;
     registerAmount: number;
@@ -67,12 +70,16 @@ export type PositionI = {
     documentId: number;
     isBusService: boolean;
     latitude: string;
+    date: Date;
     longtitude: string;
     timeFrom: Date;
     timeTo: Date;
-    registerAmount: number;
+    positionRegisterAmount: number;
+    totalPositionRegisterAmount: number,
     amount: number,
-    salary: number
+    salary: number,
+    status: number,
+    schoolName: string,
 }
 export type ListPositionI = {
     key: string,

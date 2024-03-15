@@ -1,6 +1,6 @@
 
 type ContractInfo = {
-    id: number,
+    id: string,
     contractName: string,
     createPersonId: number,
     contractDescription: string,
@@ -11,9 +11,25 @@ type ContractInfo = {
     isActive: boolean,
     createAt: Date,
     updateAt: Date,
+    endDate: Date,
     accountContracts: AccountContract[]
 }
-type AccountContract = {
+
+export type ContractInfoRows = {
+    key: string,
+    id: string,
+    contractName: string,
+    contractDescription: string,
+    sampleFile: string,
+    totalSalary: number,
+    isActive: boolean,
+    createAt: Date,
+    signingDate: Date,
+    startDate: Date,
+    endDate: Date,
+    accountContracts: AccountContract[]
+}
+export type AccountContract = {
     id: number,
     contractId: number,
     accountId: number,
@@ -29,6 +45,7 @@ type AccountContract = {
         contractDescription: string,
         signingDate: Date,
         startDate: Date,
+        endDate: Date,
         totalSalary: number,
         isActive: boolean,
         createAt: Date,
@@ -63,6 +80,22 @@ type AccountContract = {
             }
         }
     }
+}
+export type AccountContractRows = {
+    id?: string | number,
+    name?: string,
+    email?: string,
+    accountId?: string | number,
+    contractId?: string | number,
+    status?: number,
+    phone?: string,
+    imgUrl?: string,
+    signingDate?: Date,
+    submittedFile?: Date
+}
+export type ListContractI = {
+    key: string,
+    contract: AccountContract[];
 }
 type Account = {
     id: number,

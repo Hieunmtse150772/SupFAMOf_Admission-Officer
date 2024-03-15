@@ -1,7 +1,4 @@
 import axios from 'axios';
-import createAuthRefreshInterceptor, {
-    AxiosAuthRefreshRequestConfig,
-} from 'axios-auth-refresh';
 import AppConstants from '../enums/app';
 const axiosClient = axios.create({
     baseURL: process.env.REACT_APP_API_URL,
@@ -32,33 +29,33 @@ axiosClient.interceptors.request.use(async (config: any) => {
     };
 });
 
-const refreshAuthLogic = async (failedRequest: {
-    response: { config: { headers: { [x: string]: string } } };
-}) => {
-    const refreshToken = localStorage.getItem(AppConstants.REFRESH_TOKEN);
-    const accessToken = localStorage.getItem(AppConstants.ACCESS_TOKEN);
-    try {
-        const response = await axiosClient.get('/auth/refresh-token', {
-            headers: {
-                refreshToken,
-                Authorization: `Bearer ${String(accessToken)}`,
-            },
-            skipAuthRefresh: true,
-        } as AxiosAuthRefreshRequestConfig);
-        const { token } = response.data as ResponseData;
-        localStorage.setItem(AppConstants.ACCESS_TOKEN, token);
-        failedRequest.response.config.headers.Authorization = `Bearer ${String(
-            token,
-        )}`;
-        return await Promise.resolve();
-    } catch (error) {
-        localStorage.removeItem(AppConstants.REFRESH_TOKEN);
-        localStorage.removeItem(AppConstants.ACCESS_TOKEN);
-        return await Promise.reject(error);
-    }
-};
+// const refreshAuthLogic = async (failedRequest: {
+//     response: { config: { headers: { [x: string]: string } } };
+// }) => {
+//     const refreshToken = localStorage.getItem(AppConstants.REFRESH_TOKEN);
+//     const accessToken = localStorage.getItem(AppConstants.ACCESS_TOKEN);
+//     try {
+//         const response = await axiosClient.get('/auth/refresh-token', {
+//             headers: {
+//                 refreshToken,
+//                 Authorization: `Bearer ${String(accessToken)}`,
+//             },
+//             skipAuthRefresh: true,
+//         } as AxiosAuthRefreshRequestConfig);
+//         const { token } = response.data as ResponseData;
+//         localStorage.setItem(AppConstants.ACCESS_TOKEN, token);
+//         failedRequest.response.config.headers.Authorization = `Bearer ${String(
+//             token,
+//         )}`;
+//         return await Promise.resolve();
+//     } catch (error) {
+//         localStorage.removeItem(AppConstants.REFRESH_TOKEN);
+//         localStorage.removeItem(AppConstants.ACCESS_TOKEN);
+//         return await Promise.reject(error);
+//     }
+// };
 
-createAuthRefreshInterceptor(axiosClient, refreshAuthLogic);
+// createAuthRefreshInterceptor(axiosClient, refreshAuthLogic);
 
 // HOW TO CALL EXTERNAL API
 

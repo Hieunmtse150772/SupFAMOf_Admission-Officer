@@ -7,12 +7,16 @@ import axiosClient from './axiosClient';
 
 export const documentService = {
     getDocument: (): Promise<AxiosResponse<DocumentOptionDto>> => {
-        const url = '/admission/admission-document?pagesize=100';
+        const url = '/admission/admission-document/getAll?pagesize=100';
         return axiosClient.get(url);
     },
     createDocument: (payload: DocumentCreated): Promise<AxiosResponse<DocumentOptionDto>> => {
-        const url = '/admission/admission-document';
+        const url = '/admission/admission-document/create';
         return axiosClient.post(url, payload);
+    },
+    updateDocument: (payload: DocumentCreated): Promise<AxiosResponse<DocumentOptionDto>> => {
+        const url = `/admission/admission-document/update?documentId=${payload.documentId}`;
+        return axiosClient.put(url, payload);
     },
     deleteDocument: (id: string): Promise<AxiosResponse<DocumentOptionDto>> => {
         const url = '/admission/admission-document';

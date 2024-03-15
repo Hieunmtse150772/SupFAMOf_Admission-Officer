@@ -1,10 +1,11 @@
 import { DrawerForm, ProForm, ProFormDatePicker, ProFormText } from '@ant-design/pro-components';
-import { Select } from 'antd';
+import { Select, message } from 'antd';
 import { useAppDispatch } from 'app/store';
 import updateAccountDto from 'dtos/Auth/update.account.dto';
 import { updateUserProfile } from 'features/authSlice';
 import UserInfo from 'models/userInfor.model';
 import { FC } from 'react';
+import useSessionTimeOut from 'utils/useSessionTimeOut';
 
 const { Option } = Select;
 
@@ -15,8 +16,9 @@ interface ProfileEditDrawerProps {
     setOpenSetting: React.Dispatch<React.SetStateAction<boolean>>
 }
 const ProfileEditDrawer: FC<ProfileEditDrawerProps> = ({ setOpenSetting, onClose, userInfo, open }) => {
-    const Formatter = 'DD/MM/YYYY';
+    const Formatter = 'YYYY-MM-DD';
     const dispatch = useAppDispatch();
+    const { SessionTimeOut } = useSessionTimeOut();
     const handleSubmit = (value: any) => {
         console.log("value: ", value)
     }
@@ -28,7 +30,17 @@ const ProfileEditDrawer: FC<ProfileEditDrawerProps> = ({ setOpenSetting, onClose
             name: value?.name,
             phone: value?.phoneNumber
         }
-        await dispatch(updateUserProfile(payload))
+        await dispatch(updateUserProfile(payload)).then((response: any) => {
+            console.log('response: ', response);
+            if (response?.payload?.status?.success) {
+                message.success('Update profile information success');
+                setOpenSetting(false);
+            } else if (response?.payload?.statusCode === 401) {
+                SessionTimeOut();
+            } else {
+                message.error(response?.payload?.message);
+            }
+        })
         console.log('User Infor: ', userInfo?.id)
         console.log("value: ", value)
     }

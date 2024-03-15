@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import PostIDto from 'dtos/Post/Post View/post.dto';
 import PostInfoDto from 'dtos/Post/Post View/postInfo.dto';
@@ -13,6 +13,7 @@ interface PostState {
     posts: PostIDto;
     postInfo: PostInfoDto | null,
     isDeleted: boolean,
+
 }
 
 const initialState: PostState = {
@@ -76,10 +77,50 @@ export const deletePostById = createAsyncThunk('post/delete-post-by-PostId',
             return rejectWithValue(axiosError.response?.data)
         }
     })
+export const deletePositionById = createAsyncThunk('post/delete-position-by-positionId',
+    async (id: string, { rejectWithValue }) => {
+        try {
+            const result = await postService.deletePositionById(id);
+            return result
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data)
+        }
+    })
 export const confirmColabborator = createAsyncThunk('post/confirm-post-collabList',
     async (id: number[], { rejectWithValue }) => {
         try {
             const result = await postService.confirmPostByCollabList(id);
+            return result
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data)
+        }
+    })
+export const confirmRunningPost = createAsyncThunk('post/confirm-running-post',
+    async (id: number, { rejectWithValue }) => {
+        try {
+            const result = await postService.confirmRunningPost(id);
+            return result
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data)
+        }
+    })
+export const confirmEndPost = createAsyncThunk('post/confirm-end-post',
+    async (id: number, { rejectWithValue }) => {
+        try {
+            const result = await postService.confirmEndPost(id);
+            return result
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data)
+        }
+    })
+export const confirmReopenPost = createAsyncThunk('post/confirm-reopen-post',
+    async (id: number, { rejectWithValue }) => {
+        try {
+            const result = await postService.confirmReopen(id);
             return result
         } catch (error) {
             const axiosError = error as AxiosError;
@@ -127,19 +168,30 @@ export const postSlice = createSlice({
                 state.error = String(action.payload);
                 state.loading = false;
             })
-            .addCase(deletePostById.pending, (state) => {
+            .addMatcher(isAnyOf(deletePostById.pending, deletePositionById.pending), (state) => {
                 state.loading = true;
                 state.error = "";
                 state.isDeleted = false;
             })
-            .addCase(deletePostById.fulfilled, (state, action) => {
+            .addMatcher(isAnyOf(deletePostById.fulfilled, deletePositionById.fulfilled), (state, action) => {
                 state.loading = false;
                 state.isDeleted = true;
             })
-            .addCase(deletePostById.rejected, (state, action) => {
+            .addMatcher(isAnyOf(deletePostById.rejected, deletePositionById.rejected), (state, action) => {
                 state.error = String(action.payload);
                 state.loading = false;
-                state.isDeleted = false;
+            })
+            .addMatcher(isAnyOf(confirmRunningPost.pending, confirmEndPost.pending), (state) => {
+                state.loading = true;
+                state.error = "";
+            })
+            .addMatcher(isAnyOf(confirmRunningPost.fulfilled, confirmEndPost.fulfilled), (state, action) => {
+                state.loading = false;
+                state.postInfo = action.payload.data
+            })
+            .addMatcher(isAnyOf(confirmRunningPost.rejected, confirmEndPost.rejected), (state, action) => {
+                state.error = String(action.payload);
+                state.loading = false;
             })
     },
 });

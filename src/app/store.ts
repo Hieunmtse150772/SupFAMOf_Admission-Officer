@@ -3,16 +3,23 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
 import addressReducer from '../features/addressSlice';
+import admissionReducer from '../features/admissionSlice';
+import applicationReducer from '../features/applicationSlice';
+import attendenceReducer from '../features/attendenceSlice';
 import authReducer from '../features/authSlice';
 import certificateReducer from '../features/certificateSlice';
+import classReducer from '../features/classSlice';
 import collabReducer from '../features/collabSlice';
 import contractReducer from '../features/contractSlice';
 import documentReducer from '../features/documentSlice';
 import rgoogleApiReducer from '../features/googleAPISlice';
+import leafLetReducer from '../features/leafLetAPISlice';
 import dashboardReducer from '../features/manageDashboardSlice';
 import postReducer from '../features/postSlice';
 import postTitleReducer from '../features/postTitleSlice';
 import registrationReducer from '../features/registrationSlice';
+import reportReducer from '../features/reportSlice';
+import requestReducer from '../features/requestSlice';
 
 
 export const store = configureStore({
@@ -27,7 +34,14 @@ export const store = configureStore({
     registration: registrationReducer,
     dashboard: dashboardReducer,
     contract: contractReducer,
-    location: rgoogleApiReducer
+    location: rgoogleApiReducer,
+    locationLeafLet: leafLetReducer,
+    request: requestReducer,
+    report: reportReducer,
+    class: classReducer,
+    attendence: attendenceReducer,
+    application: applicationReducer,
+    admission: admissionReducer
   },
 });
 

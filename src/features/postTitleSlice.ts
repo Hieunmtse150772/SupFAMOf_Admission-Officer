@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
 import PostOptionI from 'models/postOption.model';
 import PostTitleCreated from 'models/postTitle.model';
@@ -16,7 +16,7 @@ const initialState: PostTitleState = {
     error: ''
 }
 export const getPostTitle = createAsyncThunk(
-    'auth/get-post-title',
+    'postTitle/get-post-title',
     async (_, { rejectWithValue }) => {
         try {
             const result = await postTitleService.getPostTitle()
@@ -28,7 +28,7 @@ export const getPostTitle = createAsyncThunk(
     },
 );
 export const createPostTitle = createAsyncThunk(
-    'auth/create-post-title',
+    'postTitle/create-post-title',
     async (payload: PostTitleCreated, { rejectWithValue }) => {
         try {
             const result = await postTitleService.createPostTitle(payload)
@@ -39,8 +39,32 @@ export const createPostTitle = createAsyncThunk(
         }
     },
 );
+export const updatePostTitle = createAsyncThunk(
+    'postTitle/update-post-title',
+    async (payload: PostTitleCreated, { rejectWithValue }) => {
+        try {
+            const result = await postTitleService.updatePostTitle(payload)
+            return result;
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data);
+        }
+    },
+);
+export const deletePostTitle = createAsyncThunk(
+    'postTitle/delete-post-title',
+    async (id: number, { rejectWithValue }) => {
+        try {
+            const result = await postTitleService.deletePostTitle(id)
+            return result;
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data);
+        }
+    },
+);
 export const postTitleSlice = createSlice({
-    name: 'post',
+    name: 'postTitle',
     initialState,
     reducers: {},
     extraReducers: (builder) => {
@@ -57,14 +81,14 @@ export const postTitleSlice = createSlice({
                 state.error = String(action.payload);
                 state.loading = false;
             })
-            .addCase(createPostTitle.pending, (state) => {
+            .addMatcher(isAnyOf(createPostTitle.pending, updatePostTitle.pending, deletePostTitle.pending), (state) => {
                 state.loading = true;
                 state.error = "";
             })
-            .addCase(createPostTitle.fulfilled, (state) => {
+            .addMatcher(isAnyOf(createPostTitle.fulfilled, updatePostTitle.fulfilled, deletePostTitle.fulfilled), (state) => {
                 state.loading = false;
             })
-            .addCase(createPostTitle.rejected, (state, action) => {
+            .addMatcher(isAnyOf(createPostTitle.rejected, updatePostTitle.rejected, deletePostTitle.rejected), (state, action) => {
                 state.error = String(action.payload);
                 state.loading = false;
             })

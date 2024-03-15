@@ -1,5 +1,5 @@
 type DocumentOptionI = {
-    id: 1,
+    id: number,
     docName: string,
     docUrl: string,
     isActive: boolean,

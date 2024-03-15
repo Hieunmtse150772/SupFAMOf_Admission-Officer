@@ -1,6 +1,6 @@
 
 import { PlusOutlined } from '@ant-design/icons';
-import { FooterToolbar, ProCard, ProForm, ProFormCheckbox, ProFormDatePicker, ProFormDateRangePicker, ProFormDigit, ProFormGroup, ProFormList, ProFormMoney, ProFormSelect, ProFormSlider, ProFormSwitch, ProFormText, ProFormTimePicker } from '@ant-design/pro-components';
+import { FooterToolbar, ProCard, ProForm, ProFormCheckbox, ProFormDateRangePicker, ProFormDigit, ProFormGroup, ProFormList, ProFormMoney, ProFormSelect, ProFormSwitch, ProFormText, ProFormTimePicker } from '@ant-design/pro-components';
 import { Box, Grid, alpha, styled } from '@mui/material';
 import { Button, DatePicker, Divider, Modal, Spin, Upload } from 'antd';
 import { RangePickerProps } from 'antd/es/date-picker';
@@ -70,7 +70,7 @@ const AddNewPost: FC = () => {
             disabledSeconds: () => [55, 56],
         };
     };
-    const { options, provinceOptions, districtOptions, wardOptions } = props
+    const { options, optionDate } = props
 
     const modules = {
         toolbar: [
@@ -96,7 +96,7 @@ const AddNewPost: FC = () => {
     );
     return (
         <Spin spinning={props.isloading} tip="Loading...">
-            <Button color='primary' style={{ float: 'right', margin: '10px 10px 0px 0px' }} onClick={handler.onOpenAddTitleModal}><PlusOutlined rev={undefined} />Add Title</Button>
+            <Button color='primary' style={{ float: 'right', margin: '10px 10px 0px 0px' }} onClick={handler.onOpenAddTitleModal}><PlusOutlined rev={undefined} />Add Category</Button>
             <Button color='primary' style={{ float: 'right', margin: '10px 10px 0px 0px' }} onClick={handler.onOpenAddDocumentModal}><PlusOutlined rev={undefined} />Add Document</Button>
             <Button color='primary' style={{ float: 'right', margin: '10px 10px 0px 0px' }} onClick={handler.onOpenAddCertificateModal}><PlusOutlined rev={undefined} />Add Certificate</Button>
             <Box className='container'>
@@ -120,7 +120,8 @@ const AddNewPost: FC = () => {
                                 }}
                                 >Submit</Button>
                             </FooterToolbar>)
-                        }}>
+                        }}
+                    >
                         <Divider orientation="center" style={{ color: '#f09101' }}>
                             POST INFORMATION
                         </Divider>
@@ -134,63 +135,24 @@ const AddNewPost: FC = () => {
                                         label="Post category"
                                         initialValue={options[0]?.value}
                                         debounceTime={5}
-                                        tooltip="Chose one options of post title"
-                                        rules={[{ required: true, message: 'Chose one options of post title!' }]}
+                                        tooltip="Choose one options of post title"
+                                        rules={[{ required: true, message: 'Choose one options of post title!' }]}
                                     />
                                     <ProFormDateRangePicker
                                         name="dateFrom_dateTo"
                                         width='xl'
                                         label="Date From - Date to"
                                         style={{ width: '100%' }}
-                                        rules={[{ required: true, message: 'Chose date from & date to!' }]}
+                                        rules={[{ required: true, message: 'Choose date from & date to!' }]}
                                         fieldProps={{
                                             disabledDate: disabledDate,
-                                            disabledTime: disabledRangeTime
+                                            disabledTime: disabledRangeTime,
+                                            onChange: (event) => { handler.handleChangeDateRangePicker(event) },
                                         }}
+                                    ></ProFormDateRangePicker>
+                                    <ProFormSwitch name="isPremium" label="Is Premium show" initialValue={false}
                                     />
-                                    {/* <ProFormSelect
-                                    width="xl"
-                                    options={provinceOptions}
-                                    name="province"
-                                    label="Province"
-                                    debounceTime={5}
-                                    onChange={(value) => handler.handleChangeProvince(value)}
-                                    placeholder={'Select province'}
-                                    rules={[{ required: true, message: 'Chose one options of province!' }]}
-                                />
-                                <ProFormSelect
-                                    width="sm"
-                                    options={districtOptions}
-                                    name="district"
-                                    label="District"
-                                    debounceTime={5}
-                                    placeholder={'Select district'}
-                                    onChange={(value) => handler.handleChangeDistrict(value)}
-                                    style={{ marginRight: 60 }}
-                                    rules={[{ required: true, message: 'Chose one options of district!' }]}
-                                />
-                                <ProFormSelect
-                                    width="sm"
-                                    options={wardOptions}
-                                    name="ward"
-                                    label="Ward"
-                                    debounceTime={5}
-                                    placeholder={'Select ward'}
-                                    rules={[{ required: true, message: 'Chose one options of ward!' }]}
-                                /> */}
-                                    <ProFormSlider
-                                        name="piority"
-                                        label="Piority 1-5"
-                                        width="xl"
-                                        placeholder="Piority"
-                                        rules={[{ required: true, message: 'Piority is required!' }]}
-                                        max={5}
-                                    />
-                                    <ProFormSwitch name="isPremium" label="Is Premium show" initialValue={false} style={{ marginLeft: '100px' }}
-                                    />
-
                                 </ProForm.Group>
-
                                 <Upload
                                     customRequest={handler.customRequest}
                                     listType="picture-card"
@@ -201,11 +163,9 @@ const AddNewPost: FC = () => {
                                 >
                                     {props.fileList.length >= 1 ? null : uploadButton}
                                 </Upload>
-                                <span className="error">{props.errorUrl}</span>
                                 <Modal open={props.previewOpen} title={props.previewTitle} footer={null} onCancel={handler.handleCancel}>
                                     <img alt="example" style={{ width: '100%' }} src={props.previewImage} />
                                 </Modal>
-
                             </Grid>
                             <Grid item sm={0.2}>
                                 <Divider type='vertical' style={{ color: '#f09101', height: 320 }} >
@@ -234,14 +194,11 @@ const AddNewPost: FC = () => {
                                     )}
                                 </ProForm.Item>
                                 <span className="error">{props.error}</span>
-
-
-
                             </Grid>
 
                         </Grid>
                         <Divider style={{ color: '#f09101' }} orientation="center">
-                            POST POSITION
+                            POSITIONS INFORMATION
                         </Divider>
                         <ProFormList
                             name="postPositions"
@@ -249,7 +206,6 @@ const AddNewPost: FC = () => {
                                 {
                                     required: true,
                                     validator: async (_, value) => {
-                                        console.log(value);
                                         if (value && value.length > 0) {
                                             return;
                                         }
@@ -257,146 +213,198 @@ const AddNewPost: FC = () => {
                                     },
                                 },
                             ]}
+                            deleteIconProps={{
+                                tooltipText: 'Delete this position'
+                            }}
+                            copyIconProps={{
+                                tooltipText: 'Copy this position'
+                            }}
                             creatorButtonProps={{
                                 position,
+                                creatorButtonText: 'Add more position',
                             }}
+
                             creatorRecord={{
                                 name: 'position',
                             }}
-                            itemRender={({ listDom, action }, { index }) => (
-                                <ProCard
-                                    bordered
-                                    style={{ marginBlockEnd: 8 }}
-                                    title={`Position${index + 1}`}
-                                    extra={action}
-                                    bodyStyle={{ paddingBlockEnd: 0, boxShadow: 'rgba(149, 157, 165, 0.2) 0px 8px 24px' }}
-                                >
-                                    {listDom}
-                                </ProCard>
-                            )}
+
+                            itemRender={({ listDom, action }, { index }) => {
+                                const selectedCertificate = props.selectedCertificates[index];
+                                return (
+                                    <ProCard
+                                        bordered
+                                        style={{ marginBlockEnd: 8 }}
+                                        title={`Position: ${index + 1}`}
+                                        extra={action}
+                                        bodyStyle={{ paddingBlockEnd: 0, boxShadow: "rgba(0, 0, 0, 0.45) 0px 20px 15px -25px" }}
+                                    >
+                                        <ProFormGroup >
+                                            <ProFormText
+                                                label="Position Name"
+                                                width="sm"
+                                                rules={[
+                                                    {
+                                                        required: true,
+                                                    },
+                                                ]}
+                                                name="positionName"
+                                            />
+                                            <ProFormText
+                                                label="Position Description"
+                                                width="sm"
+                                                rules={[
+                                                    {
+                                                        required: true,
+                                                    },
+                                                ]}
+                                                name="positionDescription"
+                                            />
+                                            <ProFormText
+                                                label="School Name"
+                                                width="sm"
+                                                rules={[
+                                                    {
+                                                        required: true,
+                                                    },
+                                                ]}
+                                                name="schoolName"
+                                            />
+                                            <ProFormSelect
+                                                name="location"
+                                                label="Address"
+                                                showSearch
+                                                key='key'
+                                                valuePropName=''
+                                                debounceTime={300}
+                                                onChange={(value, option) => { props.form.setFieldValue(`location${index}`, option) }}
+                                                width='lg'
+                                                request={async ({ keyWords }) => {
+                                                    const result = await handler.handleSearchAddressGeoapifi(keyWords);
+                                                    return result
+                                                }}
+
+                                                getValueFromEvent={(value) => value}
+                                                placeholder="Please select a address"
+                                                rules={[{ required: true, message: 'Please select your address!' }]}
+                                            />
+                                            {/* <ProFormText
+                                        label="Location"
+                                        width="sm"
+                                        rules={[
+                                            {
+                                                required: true,
+                                                message: 'Please enter the address!',
+                                                // validator: handler.validateAddress
+                                            },
+                                        ]}
+                                        validateFirst
+                                        name="location"
+                                    /> */}
+                                            <ProFormSelect
+                                                width="sm"
+                                                options={optionDate}
+                                                name="date"
+                                                label="Working date"
+                                                tooltip="Choose one options of Date"
+                                                rules={[{ required: true, message: 'Choose one options of Date!' }]}
+                                            />
+                                            <ProFormTimePicker.RangePicker
+                                                label="Time"
+                                                width="sm"
+                                                name="timeFrom_timeTo"
+                                                fieldProps={{
+                                                    disabledTime: (current, type) => handler.disabledTime(current, type)
+                                                }}
+                                                rules={[{ required: true, message: 'Choose time from & time to!' }]}
+                                            />
+                                            <ProFormSelect
+                                                label="Certificate"
+                                                width="sm"
+                                                rules={[
+                                                    {
+                                                        required: false,
+                                                    },
+                                                ]}
+                                                name="certificateOption"
+                                                fieldProps={{
+                                                    onChange: (value: never) => { handler.handleCertificateChange(index, value) }
+                                                }}
+                                                options={props.certificateOptions}
+                                                debounceTime={5}
+                                                tooltip="That field optional"
+                                            />
+                                            {/* <ProFormSelect
+                                                label="Document"
+                                                width="sm"
+                                                rules={[
+                                                    {
+                                                        required: false,
+                                                    },
+                                                ]}
+                                                name="documentOption"
+                                                options={props.documentOptions}
+                                                disabled={Boolean(selectedCertificate)}
+                                                debounceTime={5}
+                                                tooltip="That field optional" /> */}
+                                            <ProFormSelect
+                                                label="Document"
+                                                width="sm"
+                                                name={`documentOption`}
+                                                options={props.documentOptions}
+                                                // disabled={selectedCertificate ? false : true}
+                                                debounceTime={5}
+                                                tooltip="That field is optional"
+                                            />
+                                            <ProFormCheckbox
+                                                label="Bus option"
+                                                width="xs"
+                                                tooltip="That field optional"
+                                                name="isBusService"
+                                                initialValue={false}
+                                            >Yes/No</ProFormCheckbox>
+                                            <ProFormDigit
+                                                label="Amount"
+                                                width="sm"
+                                                name="amount"
+                                                rules={[
+                                                    {
+                                                        required: true,
+                                                        min: 1,
+                                                        validator: async (_, value) => {
+                                                            if (value > 0) {
+                                                                return;
+                                                            }
+                                                            throw new Error('Amount must be minimum 1!');
+                                                        },
+                                                    },
+                                                ]}
+                                            />
+                                            <ProFormMoney
+                                                label="Salary"
+                                                name="salary"
+                                                width="sm"
+                                                customSymbol="đ"
+                                                rules={[
+                                                    {
+                                                        required: true,
+                                                        min: 100000,
+                                                        validator: async (_, value) => {
+                                                            if (value > 100000) {
+                                                                return;
+                                                            }
+                                                            throw new Error('Salary must be minimum 100,000 đ');
+                                                        },
+                                                    },
+                                                ]}
+                                                locale="en-VN"
+                                            />
+
+                                        </ProFormGroup>
+                                    </ProCard>
+                                )
+                            }
+                            }
                         >
-                            <ProFormGroup >
-
-                                <ProFormText
-                                    label="Position Name"
-                                    width="sm"
-                                    rules={[
-                                        {
-                                            required: true,
-                                        },
-                                    ]}
-                                    name="positionName"
-                                />
-                                <ProFormText
-                                    label="Position Description"
-                                    width="sm"
-                                    rules={[
-                                        {
-                                            required: true,
-                                        },
-                                    ]}
-                                    name="positionDescription"
-                                />
-
-                                <ProFormText
-                                    label="School Name"
-                                    width="sm"
-                                    rules={[
-                                        {
-                                            required: true,
-                                        },
-                                    ]}
-                                    name="schoolName"
-                                />
-                                <ProFormText
-                                    label="Location"
-                                    width="sm"
-                                    rules={[
-                                        {
-                                            required: true,
-                                        },
-                                    ]}
-                                    name="location"
-                                />
-
-
-                                <ProFormSelect
-                                    label="Document"
-                                    width="sm"
-                                    rules={[
-                                        {
-                                            required: false,
-                                        },
-                                    ]}
-                                    name="documentOption"
-                                    options={props.documentOptions}
-                                    debounceTime={5}
-                                    tooltip="That field optional" />
-                                <ProFormSelect
-                                    label="Certificate"
-                                    width="sm"
-                                    rules={[
-                                        {
-                                            required: false,
-                                        },
-                                    ]}
-                                    name="certificateOption"
-                                    options={props.certificateOptions}
-                                    debounceTime={5}
-                                    tooltip="That field optional"
-                                />
-
-                                <ProFormDatePicker
-                                    label="Date"
-                                    width="sm"
-                                    name="date"
-                                    rules={[{ required: true, message: 'Chose Date!' }]}
-                                />
-                                <ProFormTimePicker.RangePicker
-                                    label="Time"
-                                    width="sm"
-                                    name="timeFrom_timeTo"
-                                    fieldProps={{
-                                        disabledTime: (current, type) => handler.disabledTime(current, type)
-                                    }}
-
-                                    rules={[{ required: true, message: 'Chose time from & time to!' }]}
-                                />
-
-
-                                <ProFormDigit
-                                    label="Amount"
-                                    width="sm"
-                                    name="amount"
-                                    rules={[
-                                        {
-                                            required: true,
-                                        },
-                                    ]}
-                                />
-
-
-                                <ProFormMoney
-                                    label="Salary"
-                                    name="salary"
-                                    width="sm"
-                                    customSymbol="đ"
-                                    rules={[
-                                        {
-                                            required: true,
-                                        },
-                                    ]}
-                                    locale="en-VN"
-                                />
-                                <ProFormCheckbox
-                                    label="Bus option"
-                                    width="sm"
-                                    tooltip="That field optional"
-                                    name="isBusService"
-                                    initialValue={false}
-                                >Yes/No</ProFormCheckbox>
-                            </ProFormGroup>
-
                         </ProFormList>
                         {/* <Divider style={{ color: '#f09101' }} orientation="center">
                             TRAINING POSITION
@@ -407,7 +415,6 @@ const AddNewPost: FC = () => {
                             //     {
                             //         required: true,
                             //         validator: async (_, value) => {
-                            //             console.log(value);
                             //             if (value && value.length > 0) {
                             //                 return;
                             //             }
@@ -501,7 +508,7 @@ const AddNewPost: FC = () => {
 
                                 <ProFormTimePicker.RangePicker
                                     name="trainingTimeFrom_timeTo"
-                                    rules={[{ required: true, message: 'Chose time from & time to!' }]}
+                                    rules={[{ required: true, message: 'Choose time from & time to!' }]}
                                 // initialValue={[postInfo?.data.timeFrom, postInfo?.data.timeTo]}
                                 />
 
@@ -532,10 +539,11 @@ const AddNewPost: FC = () => {
                     </ProForm>
                     {props.openAddTitleModal && <AddPostTitleModal fetchPostTitleOption={handler.fetchPostTitleOption} setOpenAddTitleModal={handler.setOpenAddTitleModal} open={props.openAddTitleModal} data={props.postTitleOptionsAPI} />}
                     {props.openAddDocumentModal && <AddDocumentModal fetchDocumentOption={handler.fetchDocumentOption} setOpenAddDocumentModal={handler.setOpenAddDocumentModal} open={props.openAddDocumentModal} data={props.documentOptionsAPI} />}
-                    {props.openAddCertificateModal && <AddCertificateModal fetchCertificateOption={handler.fetchCertificateOption} setOpenCertificateModal={handler.setOpenAddCertificateModal} open={props.openAddCertificateModal} data={props.certificateOptionsAPI} />}
+                    {props.openAddCertificateModal && <AddCertificateModal fetchCertificateRegistration={handler.fetchCertificateRegistration} fetchCertificateOption={handler.fetchCertificateOption} setOpenCertificateModal={handler.setOpenAddCertificateModal} open={props.openAddCertificateModal} data={props.certificateOptionsAPI} />}
 
                 </Box >
             </Box >
+
         </Spin>
     );
 };

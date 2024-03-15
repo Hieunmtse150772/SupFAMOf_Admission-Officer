@@ -1,22 +1,31 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { AxiosError } from 'axios';
+import SearchTrainingRegistrationParamsDto from 'dtos/searchTrainingRegistration.dto';
+import TrainingRegistrationDto from 'dtos/trainingRegistration.dto';
+import AssignTrainingClass from 'models/assignTraining.model';
 import CertificateCreated from 'models/certificate.model';
 import CertificateOptionI from 'models/certificateOption.model';
+import TrainingRegistrationI from 'models/trainingRegistrationI.model';
 import { certificateService } from 'services/certificate.service';
 
 interface CertificateState {
     certificateOption: CertificateOptionI[],
+    trainingRegistration: TrainingRegistrationDto,
     loading: boolean,
     error: string | null,
 }
 
 const initialState: CertificateState = {
     certificateOption: [],
+    trainingRegistration: {
+        data: [] as TrainingRegistrationI[],
+    }
+    ,
     loading: false,
     error: ''
 }
 export const getCertificate = createAsyncThunk(
-    'auth/get-certificate',
+    'certificates/get-certificate',
     async (_, { rejectWithValue }) => {
         try {
             const result = await certificateService.getCertificate()
@@ -27,8 +36,20 @@ export const getCertificate = createAsyncThunk(
         }
     },
 );
+export const getCertificateRegistration = createAsyncThunk(
+    'certificates/get-certificate-registration',
+    async (params: SearchTrainingRegistrationParamsDto, { rejectWithValue }) => {
+        try {
+            const result = await certificateService.getCertificateRegistration(params)
+            return result.data;
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data);
+        }
+    },
+);
 export const createCertificate = createAsyncThunk(
-    'auth/create-certificate',
+    'certificates/create-certificate',
     async (payload: CertificateCreated, { rejectWithValue }) => {
         try {
             const result = await certificateService.createCertificate(payload)
@@ -39,8 +60,45 @@ export const createCertificate = createAsyncThunk(
         }
     },
 );
+export const updateCertificate = createAsyncThunk(
+    'certificates/update-certificate',
+    async (payload: CertificateCreated, { rejectWithValue }) => {
+        try {
+            const result = await certificateService.updateCertificate(payload)
+            return result;
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data);
+        }
+    },
+);
+export const deleteCertificate = createAsyncThunk(
+    'certificates/delete-certificate',
+    async (id: number, { rejectWithValue }) => {
+        try {
+            const result = await certificateService.deleteCertificate(id)
+            return result;
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data);
+        }
+    },
+);
+export const assignTrainingClass = createAsyncThunk(
+    'certificates/assign-training-class',
+    async (params: AssignTrainingClass[], { rejectWithValue }) => {
+        try {
+            const result = await certificateService.assignTrainingClass(params)
+            return result;
+        } catch (error) {
+            const axiosError = error as AxiosError;
+            return rejectWithValue(axiosError.response?.data);
+        }
+    },
+);
+
 export const certificateSlice = createSlice({
-    name: 'certificate',
+    name: 'certificates',
     initialState,
     reducers: {},
     extraReducers: (builder) => {
@@ -57,17 +115,30 @@ export const certificateSlice = createSlice({
                 state.error = String(action.payload);
                 state.loading = false;
             })
-            .addCase(createCertificate.pending, (state) => {
+            .addCase(getCertificateRegistration.pending, (state) => {
                 state.loading = true;
                 state.error = "";
             })
-            .addCase(createCertificate.fulfilled, (state) => {
+            .addCase(getCertificateRegistration.fulfilled, (state, action) => {
+                state.trainingRegistration = action.payload;
                 state.loading = false;
             })
-            .addCase(createCertificate.rejected, (state, action) => {
+            .addCase(getCertificateRegistration.rejected, (state, action) => {
                 state.error = String(action.payload);
                 state.loading = false;
             })
+            .addMatcher(isAnyOf(createCertificate.pending, updateCertificate.pending, deleteCertificate.pending), (state) => {
+                state.loading = true;
+                state.error = "";
+            })
+            .addMatcher(isAnyOf(createCertificate.fulfilled, updateCertificate.fulfilled, deleteCertificate.fulfilled), (state) => {
+                state.loading = false;
+            })
+            .addMatcher(isAnyOf(createCertificate.rejected, updateCertificate.rejected, deleteCertificate.rejected), (state, action) => {
+                state.error = String(action.payload);
+                state.loading = false;
+            })
+
     },
 });
 

@@ -12,10 +12,13 @@ import { Small } from "components/Typography";
 import {
   SocialIconButton
 } from "components/authentication/StyledComponents";
+import AppConstants from "enums/app";
 import { loginAdministrator, loginGoogle } from "features/authSlice";
+import { signInWithPopup } from "firebase/auth";
 import GoogleIcon from "icons/GoogleIcon";
 import { FC, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { auth, provider } from '../../firebase';
 import './styles.scss';
 
 type LoginType = 'administration' | 'admissionOfficer';
@@ -25,7 +28,7 @@ const Login: FC = () => {
   const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
   let navigate = useNavigate();
-  const isAuthenticated = localStorage.getItem('user') ? true : false
+  const isAuthenticated = Boolean(localStorage.getItem(AppConstants.USER))
   const { token } = theme.useToken();
   const [loginType, setLoginType] = useState<LoginType>('admissionOfficer');
   const loginWithGoogle = async () => {
@@ -33,7 +36,9 @@ const Login: FC = () => {
       if (isAuthenticated) {
         navigate('/')
       } else {
-        const result = await dispatch(loginGoogle())
+        const response = await signInWithPopup(auth, provider);
+        const accessToken = await response.user.getIdToken(true);
+        const result = await dispatch(loginGoogle(accessToken));
         const user = unwrapResult(result)
         if (user.data.account.roleId === 1) {
           navigate('/dashboard');
@@ -54,9 +59,20 @@ const Login: FC = () => {
       username: value.username,
       password: value.password
     }
-    await dispatch(loginAdministrator(payload)).then(() => {
+    await dispatch(loginAdministrator(payload)).then((response: any) => {
       // navigate('/')
-      message.success('Login successful.')
+      console.log('response: ', response);
+      if (response.payload.status === 200) {
+        localStorage.setItem(AppConstants.ACCESS_TOKEN, response.payload.data.data.accessToken);
+        localStorage.setItem(AppConstants.USER, JSON.stringify(response.payload.data.data));
+        message.success('Login successful.');
+        console.log('response.payload.data.data.roleId: ', response.payload.data.data.roleId)
+        if (response.payload.data.data.roleId === 3) {
+          navigate('/administrator/dashboard');
+        }
+      } else {
+        message.error('Username or password is not correct')
+      }
     }).catch((error) => {
       message.error(error)
     })
@@ -75,7 +91,6 @@ const Login: FC = () => {
     >
       <Card sx={{ padding: 4, width: 650, boxShadow: 10, height: 510 }} >
         <LoginForm
-
           style={{ backgroundColor: 'rgba(255, 255, 255, 0.8)', }}
           logo={<img className="logo" src="/static/logo/supfamof_logo.png" alt="SupFAmOf Logo" />}
           // title={<span style={{ color: "#F09101" }}>SupFAmOf</span>}

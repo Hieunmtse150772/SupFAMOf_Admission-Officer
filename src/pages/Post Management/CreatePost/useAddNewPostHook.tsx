@@ -8,19 +8,22 @@ import { useAppSelector } from 'app/hooks';
 import { useAppDispatch } from 'app/store';
 import { AxiosResponse } from 'axios';
 import { Dayjs } from 'dayjs';
-import { geocodingDto } from 'dtos/GoogleAPI/geocoding.dto';
 import { getCertificate } from 'features/certificateSlice';
 import { getDocument } from 'features/documentSlice';
-import { geocodingApi } from 'features/googleAPISlice';
+import { getGeoApiFi, getGoogleAddress } from 'features/googleAPISlice';
+import { geocodingLeafLetApi } from 'features/leafLetAPISlice';
 import { createPost } from 'features/postSlice';
 import { getPostTitle } from 'features/postTitleSlice';
 import useTitle from 'hooks/useTitle';
-import { paramI } from 'models/geocodingParam.model';
+import geocodingLeafLetI from 'models/geocodingLeafLet.model';
+import { paramLeafLetI } from 'models/geocodingParam.model';
 import { PostCreatedV2 } from 'models/postCreated.model';
 import PostOptionI from 'models/postOption.model';
-import { Moment } from 'moment';
+import moment, { Moment } from 'moment';
 import { useEffect, useState } from 'react';
 import { useForm } from "react-hook-form";
+import { useNavigate } from 'react-router';
+import useSessionTimeOut from 'utils/useSessionTimeOut';
 import { uploadImage } from '../../../firebase';
 
 interface AdditionalPosition {
@@ -44,10 +47,19 @@ interface PostPosition {
     amount: number;
     salary: number;
     isBusService: boolean;
-    date: Date;
+    date: string;
+}
+interface GooglePlacePrediction {
+    description: string;
+    place_id: string;
+    // Các trường dữ liệu khác mà API trả về
+    // ...
 }
 type RangeType = 'start' | 'end';
-
+type LocationI = {
+    longitude: number,
+    latitude: number
+}
 type RangeDisabledTime = (
     now: Dayjs | null,
     type: RangeType,
@@ -57,41 +69,26 @@ type RangeDisabledTime = (
     disabledSeconds?: (selectedHour: number, selectedMinute: number) => number[];
 };
 const useAddNewPostHook = () => {
+    const { SessionTimeOut } = useSessionTimeOut();
     const {
         handleSubmit,
         control,
         formState: { errors },
-        setValue, reset
+        setValue, reset, getValues
     } = useForm();
-    const Formater = 'DD/MM/YYYY';
+    const Formater = 'YYYY-MM-DD';
     const dispatch = useAppDispatch();
     const { confirm } = Modal;
     const [form] = ProForm.useForm();
-
+    const navigate = useNavigate();
     useTitle("Add New Post");
 
     const postTitleOptionsAPI = useAppSelector(state => state.postTitle.postTitleOption)
     const documentOptionsAPI = useAppSelector(state => state.document.documentOption)
     const certificateOptionsAPI = useAppSelector(state => state.certificate.certificateOption)
-
-    const province = useAppSelector(state => state.address.province)
-    const district = useAppSelector(state => state.address.district)
-    const ward = useAppSelector(state => state.address.ward)
-
     const [error, setError] = useState<string>('');
     const [piority, setPiority] = useState<number | null>(0);
     const [isPremium, setIsPremium] = useState<boolean>(false);
-    const [messageApi, contextHolder] = message.useMessage();
-    const [additionalPositions, setAdditionalPositions] = useState<AdditionalPosition[]>([{
-        positionName: '',
-        amount: 0,
-        salary: 0,
-    }]);
-    const [additionalTrainingPositions, setAdditionalTrainingPositions] = useState<AdditionalTrainingPosition[]>([{
-        namePosition: '',
-        number: null,
-        salary: null,
-    }]);
     const [open, setOpen] = useState(false);
     const options = postTitleOptionsAPI?.map((title) => ({
         value: title.id,
@@ -103,23 +100,8 @@ const useAddNewPostHook = () => {
     }));
     const certificateOptions = certificateOptionsAPI?.map((title) => ({
         value: title.id,
-        label: title.certificateName
+        label: title?.certificateName
     }));
-    const provinceOptions = province?.map((province) => ({
-        value: province.province_id,
-        label: province.province_name
-    }));
-    const districtOptions = district?.map((district) => ({
-        value: district.district_id,
-        label: district.district_name
-    }));
-
-    const wardOptions = ward?.map((ward) => ({
-        value: ward.ward_id,
-        label: ward.ward_name
-    }));
-
-    const FormatTime = 'HH:mm:ss'
     const loading = useAppSelector(state => state.postTitle.loading);
     const [openAddTitleModal, setOpenAddTitleModal] = useState(false);
     const [openAddCertificateModal, setOpenAddCertificateModal] = useState(false);
@@ -134,6 +116,9 @@ const useAddNewPostHook = () => {
     const [errorUrl, setErrorUrl] = useState<string>('');
     const [fileImage, setFileImage] = useState<any>('');
     const [paramsCreatePost, setParamsCreatePost] = useState<PostCreatedV2>()
+    const [optionDate, setOptionDate] = useState<any[]>([])
+    const [optionAddress, setOptionAddress] = useState<any[]>([]);
+    const [disableDocumentSelect, setDisableDocumentSelect] = useState<boolean>(true)
     const disabledTime: RangeDisabledTime = (now, defaultType) => {
         if (defaultType === 'start') {
             // Vô hiệu hóa giờ từ 0-3 và từ 21-24 cho lựa chọn bắt đầu
@@ -166,11 +151,69 @@ const useAddNewPostHook = () => {
     };
 
     const handleChange: UploadProps['onChange'] = ({ fileList: newFileList }) => {
-        setFileList(newFileList);
-        if (photoUrl !== '') setErrorUrl('');
+        console.log('fileList: ', newFileList[0])
+        if (newFileList[0]?.size) {
+            if (newFileList[0]?.size < 307200) {
+                setFileList(newFileList);
+            } else {
+                setFileList([]);
+                message.error('The size of image to large, please choice another less than 300KB!');
+            }
+        } else setFileList([]);
     }
+
     const removeImage = () => {
-        setPhotoUrl('')
+        setPhotoUrl('');
+        setFileImage('');
+    }
+
+    const handleSearchAddress = async (keyWords: string) => {
+        try {
+            // Thực hiện gọi API Google ở đây
+            const response = await dispatch(getGoogleAddress({ address: keyWords, key: 'AIzaSyDSEKbLICxkqgw7vIuEbK9-f2oHiuKw-XY' }));
+            unwrapResult(response)
+            if (getGoogleAddress.fulfilled.match(response)) {
+                const optionsFromAPI = response.payload.data?.predictions?.map((prediction) => {
+                    return {
+                        label: prediction.description,
+                        value: prediction.description,
+                    }
+                });
+                return optionsFromAPI;
+            } else {
+                throw new Error('Failed to fetch data');
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            return [];
+        }
+    };
+    const handleSearchAddressGeoapifi = async (value: string) => {
+        try {
+            // Thực hiện gọi API Google ở đây
+            const keyWords = value ? value : '';
+            const response = await dispatch(getGeoApiFi({ address: keyWords, key: '6f44e55eb27841738cbd3be2852d936c' }));
+            unwrapResult(response);
+            if (getGeoApiFi.fulfilled.match(response)) {
+                const optionsFromAPI = response.payload.data?.features?.map((feature) => {
+                    return {
+                        label: feature.properties.formatted,
+                        value: `${feature.properties.formatted}+${String(feature.properties.lat)}+${String(feature.properties.lon)}`,
+                        key: feature.properties.place_id,
+                    }
+                });
+                return optionsFromAPI;
+            } else {
+                message.error('Search address fail!');
+                throw new Error('Failed to fetch data');
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            return [];
+        }
+    };
+    const onSelectOption = (value: any) => {
+
     }
     const onCloseAddTitleModal = () => {
         setOpenAddTitleModal(false);
@@ -199,13 +242,79 @@ const useAddNewPostHook = () => {
     const onChangeSliderPiority = (newValue: number | null) => {
         setPiority(newValue);
     };
-    const handlePostPosition = async (postPosition: PostPosition) => {
-        const geocodingParams: paramI = {
-            address: postPosition.location,
-            key: 'AIzaSyDSEKbLICxkqgw7vIuEbK9-f2oHiuKw-XY'
+    const validateAddress = async (rule: any, value: string) => {
+        const geocodingParams: paramLeafLetI = {
+            q: value,
+            format: 'json',
+            limit: 1
         }
-        const response = await dispatch(geocodingApi(geocodingParams))
-        const result: AxiosResponse<geocodingDto, any> = unwrapResult(response)
+        try {
+            const response = await dispatch(geocodingLeafLetApi(geocodingParams));
+            const result: AxiosResponse<geocodingLeafLetI[], any> = unwrapResult(response)
+            // Kiểm tra kết quả từ API
+            if (result.data.length === 0) {
+                return Promise.reject('Địa chỉ không hợp lệ');
+            }
+        } catch (error) {
+            console.error('Lỗi khi gọi API Leaflet:', error);
+            return Promise.reject('Có lỗi xảy ra khi kiểm tra địa chỉ');
+        }
+        return Promise.resolve();
+    }
+    // const handlePostPosition = async (postPosition: PostPosition) => {
+    //     const geocodingParams: paramLeafLetI = {
+    //         q: postPosition.location,
+    //         format: 'json',
+    //         limit: 1
+    //     }
+    //     const response = await dispatch(geocodingLeafLetApi(geocodingParams))
+    //     const result: AxiosResponse<geocodingLeafLetI[], any> = unwrapResult(response)
+    //     const parts = postPosition.date.split('/'); // Tách chuỗi thành mảng các phần tử, sử dụng dấu '/' để tách
+    //     // Lưu ý: Đối với định dạng 'YYYY-MM-DD', parts[0] là ngày, parts[1] là tháng và parts[2] là năm
+    //     const day = parseInt(parts[0], 10); // Chuyển phần tử đầu tiên thành số nguyên
+    //     const month = parseInt(parts[1], 10) - 1; // Chuyển phần tử thứ hai thành số nguyên, trừ đi 1 vì index của tháng trong Date bắt đầu từ 0
+    //     const year = parseInt(parts[2], 10);
+    //     const dateObject = new Date(year, month, day);
+    //     const formattedDate = moment(dateObject).format('YYYY-MM-DDTHH:mm:ss'); //ToIsoTostring sẽ tự đổi theo UTC nên sẽ chênh lệch múi giờ, thay vào đó sẽ xài moment
+    //     if (result.data.length !== 0) {
+    //         const repsonse = {
+    //             trainingCertificateId: postPosition.certificateOption,
+    //             positionDescription: postPosition.positionDescription,
+    //             documentId: postPosition.documentOption,
+    //             positionName: postPosition.positionName,
+    //             amount: postPosition.amount,
+    //             salary: postPosition.salary,
+    //             timeFrom: postPosition.timeFrom_timeTo[0],
+    //             timeTo: postPosition.timeFrom_timeTo[1],
+    //             isBusService: postPosition.isBusService,
+    //             schoolName: postPosition.schoolName,
+    //             location: postPosition.location,
+    //             latitude: result.data[0].lat,
+    //             longitude: result.data[0].lon,
+    //             date: formattedDate
+    //         }
+    //         return repsonse;
+    //     } else {
+    //         message.warning('Your address enter was not found, please enter the right address!');
+    //         setLoading(false);
+    //         return false;
+    //     }
+    // }
+    const handlePostPosition2 = async (postPosition: PostPosition, index: number) => {
+        const location = postPosition.location.split('+')
+        const address = location[0];
+        const latitude = location[1];
+        const longitude = location[2];
+        const parts = postPosition.date.split('-'); // Tách chuỗi thành mảng các phần tử, sử dụng dấu '/' để tách
+        // Lưu ý: Đối với định dạng 'YYYY-MM-DD', parts[0] là ngày, parts[1] là tháng và parts[2] là năm
+        const day = parseInt(parts[2], 10); // Chuyển phần tử đầu tiên thành số nguyên
+        const month = parseInt(parts[1], 10) - 1; // Chuyển phần tử thứ hai thành số nguyên, trừ đi 1 vì index của tháng trong Date bắt đầu từ 0
+        const year = parseInt(parts[0], 10);
+        const dateObject = new Date(year, month, day);
+        console.log("formattedDate", dateObject)
+        const formattedDate = moment(dateObject).format('YYYY-MM-DDTHH:mm:ss');
+        console.log("formattedDate", formattedDate)
+        // const formattedDate = moment(postPosition.date).format('YYYY-MM-DDTHH:mm:ss'); //ToIsoTostring sẽ tự đổi theo UTC nên sẽ chênh lệch múi giờ, thay vào đó sẽ xài moment
         const repsonse = {
             trainingCertificateId: postPosition.certificateOption,
             positionDescription: postPosition.positionDescription,
@@ -217,21 +326,19 @@ const useAddNewPostHook = () => {
             timeTo: postPosition.timeFrom_timeTo[1],
             isBusService: postPosition.isBusService,
             schoolName: postPosition.schoolName,
-            location: postPosition.location,
-            latitude: result.data.results[0].geometry.location.lat,
-            longitude: result.data.results[0].geometry.location.lng,
-            date: postPosition.date
+            location: address,
+            latitude: latitude,
+            longitude: longitude,
+            date: formattedDate
         }
-        console.log('respone position: ', repsonse)
         return repsonse;
+
     }
 
     const customRequest = async ({ file, onSuccess, onError }: any) => {
         try {
-            setTimeout(() => {
-                setFileImage(file);
-                onSuccess();
-            }, 2000);
+            setFileImage(file);
+            onSuccess();
             onSuccess();
         } catch (error) {
             console.error('Lỗi khi tải lên tệp:', error);
@@ -240,8 +347,12 @@ const useAddNewPostHook = () => {
     };
 
     const handleSubmitAnt = async (value: any) => {
-        console.log('description: ', description)
-        if (fileImage !== '' && description !== '') {
+        console.log('value: ', value);
+        console.log('location: ', form.getFieldValue('location1'))
+        if (description !== '') {
+            setError('');
+        }
+        if (description !== '') {
             setError('');
             const dateFrom = new Date(value?.dateFrom_dateTo[0]);
             const dateTo = new Date(value?.dateFrom_dateTo[1]);
@@ -251,31 +362,29 @@ const useAddNewPostHook = () => {
                 // content: 'Some descriptions',
                 onOk: async () => {
                     setLoading(true)
-                    const postPositionPromises = value?.postPositions?.map(async (postPosition: PostPosition) => handlePostPosition(postPosition));
+                    const postPositionPromises = value?.postPositions?.map(async (postPosition: PostPosition, index: number) => handlePostPosition2(postPosition, index));
                     try {
                         const postPositionsResults = await Promise.all(postPositionPromises);
-                        const photoUrl = await uploadImage(fileImage, setLoading); // Gọi hàm upload của bạn
+                        const photoUrl = fileImage !== '' ? await uploadImage(fileImage, setLoading) : 'https://daihoc.fpt.edu.vn/wp-content/uploads/2022/08/dai-hoc-fpt-tp.hcm-1659589303-910x910.jpeg'; // Gọi hàm upload của bạn
+                        setLoading(true);
                         const params: PostCreatedV2 = {
                             postCategoryId: value?.postCategory,
                             postDescription: description,
                             dateFrom: dateFrom,
                             dateTo: dateTo,
-                            priority: value?.piority,
+                            priority: 1,
                             isPremium: value?.isPremium,
                             postPositions: postPositionsResults,
                             postImg: photoUrl
                         }
-                        console.log('params: ', params);
                         setParamsCreatePost(params);
                     } catch (error) {
+                        setLoading(false);
                         console.error('Error in handlePostPosition:', error);
                         // Handle error appropriately
                     }
-
-
                 },
                 onCancel() {
-                    console.log('Cancel');
                 },
             });
         } else {
@@ -283,61 +392,106 @@ const useAddNewPostHook = () => {
                 setError('Description is required!')
                 message.warning('Add description to create post!');
             }
-            if (photoUrl === '') {
-                setErrorUrl('Image is required!')
-                message.warning('Add image to create post!');
-            }
+            // if (fileImage === '') {
+            //     setErrorUrl('Image is required!')
+            //     message.warning('Add image to create post!');
+            // }
         }
     }
     const handleAddPost = async (params: PostCreatedV2) => {
-        await dispatch(createPost(params)).then((response) => {
-            const result2 = unwrapResult(response);
-            if (result2.status === 200) {
-                setLoading(false)
-                message.success('Create post success!')
+        await dispatch(createPost(params)).then((response: any) => {
+            if (response.payload.status === 200) {
                 form.resetFields();
+                navigate('/dashboard/registration-list');
+                message.success('Create post success!');
                 setLoading(false);
+            } else if (response?.payload?.statusCode === 401) {
+                SessionTimeOut();
+            } else {
+                setLoading(false);
+                message.error(response.payload.message);
             }
         }).catch((error) => {
             message.error('Intenal server error!')
-            setLoading(false)
-            console.error(error)
+            setLoading(false);
+            console.error(error);
         })
     }
 
-    const handleDeleteTrainingPosition = (indexToDelete: number) => {
-        const updatedPositions = additionalTrainingPositions.filter((_, index) => index !== indexToDelete);
-        setAdditionalTrainingPositions(updatedPositions);
-    };
-    const handleDeletePosition = (indexToDelete: number) => {
-        if (additionalPositions.length === 1) {
-            messageApi.open({
-                type: 'warning',
-                content: 'Need at least 1 position to create a post!',
-            });
+    const handleChangeDateRangePicker = (event: any) => {
+        if (event !== null) {
+            const dateFrom = new Date(event[0]);
+            const dateTo = new Date(event[1]);
+            let dateArray = [];
+            let currentDate = new Date(dateFrom);
+
+            while (currentDate <= dateTo) {
+                dateArray.push(new Date(currentDate));
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            const optionDatePicker: any[] = dateArray?.map((date) => ({
+                value: moment(date).format('YYYY-MM-DD'),
+                label: moment(date).format(Formater)
+            }));
+            setOptionDate(optionDatePicker);
+        } else setOptionDate([])
+    }
+
+    const [selectedCertificates, setSelectedCertificates] = useState<number[]>([]);
+
+    // Hàm xử lý khi chọn chứng chỉ cho mỗi item
+    const handleCertificateChange = (index: number, value: any) => {
+        if (value) {
+            const updatedCertificates: number[] = [...selectedCertificates];
+            updatedCertificates[index] = value;
+            setSelectedCertificates(updatedCertificates);
         } else {
-            setError('')
-            const updatedPositions = additionalPositions.filter((_, index) => index !== indexToDelete);
-            setAdditionalPositions(updatedPositions);
-        }
+            const updatedCertificates: number[] = selectedCertificates.filter((items) => items !== index);
+            updatedCertificates[index] = value;
+            setSelectedCertificates(updatedCertificates);
+        };
     };
     const fetchPostTitleOption = async () => {
-        await dispatch(getPostTitle());
+        await dispatch(getPostTitle()).then((response: any) => {
+            if (response?.payload?.statusCode === 401) {
+                SessionTimeOut();
+            }
+        });
     }
+
     const fetchDocumentOption = async () => {
-        await dispatch(getDocument());
+        await dispatch(getDocument()).then((response: any) => {
+            if (response?.payload?.statusCode === 401) {
+                SessionTimeOut();
+            }
+        });
     }
+
     const fetchCertificateOption = async () => {
-        await dispatch(getCertificate());
+        await dispatch(getCertificate()).then((response: any) => {
+            if (response?.payload?.statusCode === 401) {
+                SessionTimeOut();
+            }
+        });
+    }
+    const fetchCertificateRegistration = async () => {
+
     }
     const handleChangePosition = (value: PostOptionI | null) => {
         setValue('postTitle', value?.id)
     }
+
     useEffect(() => {
-        fetchPostTitleOption();
-        fetchDocumentOption();
-        fetchCertificateOption();
+        const fetchDate = async () => {
+            await fetchPostTitleOption();
+            await fetchDocumentOption();
+            await fetchCertificateOption();
+        }
+        fetchDate();
     }, [])
+    useEffect(() => {
+    }, [optionDate])
+
     useEffect(() => {
         setLoading(loading)
     }, [loading])
@@ -351,10 +505,11 @@ const useAddNewPostHook = () => {
             handleAddPost(paramsCreatePost)
         }
     }, [paramsCreatePost])
+    useEffect(() => {
 
+    }, [disableDocumentSelect])
     const handler = {
         handleChangePosition,
-        handleDeletePosition,
         handleSubmit,
         onPremiumChange,
         onChangeSliderPiority,
@@ -364,7 +519,6 @@ const useAddNewPostHook = () => {
         onCloseAddTitleModal,
         onOpenAddTitleModal,
         fetchPostTitleOption,
-        handleDeleteTrainingPosition,
         handlePreview,
         handleChange,
         handleCancel,
@@ -380,7 +534,14 @@ const useAddNewPostHook = () => {
         setOpenAddCertificateModal,
         fetchDocumentOption,
         fetchCertificateOption,
-        disabledTime
+        disabledTime,
+        handleChangeDateRangePicker,
+        validateAddress,
+        handleSearchAddress,
+        onSelectOption,
+        handleSearchAddressGeoapifi,
+        fetchCertificateRegistration,
+        handleCertificateChange
     }
     const props = {
         open,
@@ -389,14 +550,8 @@ const useAddNewPostHook = () => {
         control,
         errors,
         piority,
-        additionalPositions,
         error,
-        additionalTrainingPositions,
-        contextHolder,
         openAddTitleModal,
-        provinceOptions,
-        districtOptions,
-        wardOptions,
         previewOpen,
         previewTitle,
         previewImage,
@@ -410,8 +565,11 @@ const useAddNewPostHook = () => {
         openAddCertificateModal,
         certificateOptionsAPI,
         documentOptionsAPI,
-        postTitleOptionsAPI
-
+        postTitleOptionsAPI,
+        optionDate,
+        optionAddress,
+        disableDocumentSelect,
+        selectedCertificates
     }
     return { handler, props }
 

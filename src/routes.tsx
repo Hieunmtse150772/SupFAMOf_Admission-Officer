@@ -1,7 +1,9 @@
 import AuthGuard from "components/authentication/AuthGuard";
+import AuthGuardAdmin from "components/authentication/AuthGuardAdmin";
 import GuestGuard from "components/authentication/GuestGuard";
-import DashboardLayout2 from "components/Layouts/antdesgin";
 import DashboardLayout from "components/Layouts/DashboardLayout";
+import DashboardLayoutAdmin from "components/Layouts/DashboardLayoutAdmin";
+
 import LoadingScreen from "components/LoadingScreen";
 import { FC, lazy, LazyExoticComponent, Suspense } from "react";
 import { Navigate } from "react-router-dom";
@@ -23,14 +25,20 @@ const ForgetPassword = Loadable(
 );
 
 // Dashboard pages
-const DashboardSaaS = Loadable(lazy(() => import("./pages/Dashboards/SaaS")));
-
+const DashboardSaaS = Loadable(lazy(() => import("./pages/DashboardsAdmission/SaaS")));
 // user profile
 const UserProfile = Loadable(lazy(() => import("./pages/UserProfile")));
+const AdmissionList = Loadable(lazy(() => import("./pages/AdmissionManagement")));
 
 // user management
 const UserList = Loadable(
   lazy(() => import("./pages/CollabManagement/ViewListCollab"))
+);
+const RoomList = Loadable(
+  lazy(() => import("./pages/RoomManagement/index"))
+);
+const CertificateList = Loadable(
+  lazy(() => import("./pages/ClassManagement/index"))
 );
 const UserGrid = Loadable(
   lazy(() => import("./pages/UserManagement/UserGrid"))
@@ -50,6 +58,21 @@ const ViewRegistration = Loadable(
 const ViewContract = Loadable(
   lazy(() => import("./pages/ContractManagement/ViewContractList"))
 );
+const AddContract = Loadable(
+  lazy(() => import("./pages/ContractManagement/AddContract"))
+);
+const Map = Loadable(
+  lazy(() => import("./pages/Map/map"))
+);
+const ViewRequest = Loadable(
+  lazy(() => import("./pages/Request Management/ViewRequest"))
+);
+const ViewCertificate = Loadable(
+  lazy(() => import("./pages/ClassManagement/CertificateManagement"))
+);
+const ViewApplicationList = Loadable(
+  lazy(() => import("./pages/ApplicationManagement"))
+);
 // error
 const Error = Loadable(lazy(() => import("./pages/404")));
 
@@ -66,6 +89,7 @@ const routes = [
         <Login />
       </GuestGuard>
     ),
+    title: 'Login'
   },
   {
     path: "register",
@@ -74,6 +98,8 @@ const routes = [
         <Register />
       </GuestGuard>
     ),
+    title: 'Register'
+
   },
   {
     path: "forget-password",
@@ -94,48 +120,85 @@ const routes = [
       {
         path: "",
         element: <DashboardSaaS />,
+        title: 'Dashboard'
       },
       {
         path: "user-profile",
         element: <UserProfile />,
       },
-
       {
         path: "user-list",
         element: <UserList />,
+        title: 'Collab Management'
       },
       {
-        path: "user-grid",
-        element: <UserGrid />,
+        path: "room-list",
+        element: <RoomList />,
+        title: 'Room Management'
       },
       {
-        path: "add-user",
-        element: <AddNewUser />,
+        path: "application-list",
+        element: <ViewApplicationList />,
+        title: 'Room Management'
+      },
+      {
+        path: "certificate-list",
+        element: <CertificateList />,
+        title: 'Certificate Management'
+      },
+      {
+        path: "certificate-list/:id",
+        element: <ViewCertificate />,
+        title: 'Registration Interview'
+
       },
       {
         path: "post-list",
         element: <ViewPostList />,
+        title: 'Post Management'
       },
       {
         path: "add-post",
         element: <AddNewPost />,
+        title: 'Add Post'
       },
       {
         path: "registration-list",
-        element: <ViewRegistration />
+        element: <ViewRegistration />,
+        title: 'Registration Management'
       },
       {
         path: "contract-list",
-        element: <ViewContract />
+        element: <ViewContract />,
+        title: 'Contract Management'
+      }
+      ,
+      {
+        path: "add-contract",
+        element: <AddContract />,
+        title: 'Add Contract'
+
+      }
+      ,
+      {
+        path: "request-list",
+        element: <ViewRequest />,
+        title: 'Request Management'
+
+      }
+      ,
+      {
+        path: "map",
+        element: <Map />
       }
     ],
   },
   {
-    path: "dashboard2",
+    path: "administrator/dashboard",
     element: (
-      <AuthGuard>
-        <DashboardLayout2 />
-      </AuthGuard>
+      <AuthGuardAdmin>
+        <DashboardLayoutAdmin />
+      </AuthGuardAdmin>
     ),
     children: [
       {
@@ -143,33 +206,9 @@ const routes = [
         element: <DashboardSaaS />,
       },
       {
-        path: "user-profile",
-        element: <UserProfile />,
+        path: "admission-list",
+        element: <AdmissionList />,
       },
-      {
-        path: "user-list",
-        element: <UserList />,
-      },
-      {
-        path: "user-grid",
-        element: <UserGrid />,
-      },
-      {
-        path: "add-user",
-        element: <AddNewUser />,
-      },
-      {
-        path: "post-list",
-        element: <ViewPostList />,
-      },
-      {
-        path: "add-post",
-        element: <AddNewPost />,
-      },
-      {
-        path: "registration-list",
-        element: <ViewRegistration />
-      }
     ],
   },
   {

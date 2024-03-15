@@ -7,10 +7,12 @@ import {
 import { unwrapResult } from '@reduxjs/toolkit';
 import { Space, Tag, message } from 'antd';
 import { useAppDispatch } from 'app/store';
-import { createPostTitle } from 'features/postTitleSlice';
+import { createPostTitle, deletePostTitle, updatePostTitle } from 'features/postTitleSlice';
 import PostOptionI from 'models/postOption.model';
 import PostTitleCreated from 'models/postTitle.model';
-import { FC, useState } from 'react';
+import moment from 'moment';
+import { FC, useEffect, useState } from 'react';
+import useSessionTimeOut from 'utils/useSessionTimeOut';
 
 interface AddPostTitleModalProps {
     open: boolean,
@@ -19,30 +21,30 @@ interface AddPostTitleModalProps {
     data: PostOptionI[],
 }
 const AddPostTitleModal: FC<AddPostTitleModalProps> = ({ open, setOpenAddTitleModal, fetchPostTitleOption, data }) => {
-    console.log('con c', open)
-    const dishpatch = useAppDispatch();
+    const Formatter = 'YYYY-MM-DD';
+    const dispatch = useAppDispatch();
     type DataItem = (typeof data)[number];
     const [dataSource, setDataSource] = useState<DataItem[]>(data);
-
+    const [editingDocumentId, setEditingDocumentId] = useState<number | null>(null);
+    const { SessionTimeOut } = useSessionTimeOut();
     const handleCreatePostTitle = async (value: any) => {
         const payload: PostTitleCreated = {
-            postTitleDescription: value?.postTitleDescription,
-            postTitleType: value?.postTitleType
+            postCategoryDescription: value?.postTitleDescription,
+            postCategoryType: value?.postTitleType
         }
         let result = false;
         try {
-            await dishpatch(createPostTitle(payload)).then((response) => {
-                console.log('response111: ', response.meta.requestStatus)
+            await dispatch(createPostTitle(payload)).then((response) => {
                 const result2 = unwrapResult(response);
-                console.log('first: ', result2)
                 if (result2.status === 200) {
                     fetchPostTitleOption();
                     message.success('Add position title success!');
                     result = true;
+                } else if (result2.status === 401) {
+                    SessionTimeOut();
                 }
             }
             ).catch((error) => {
-                console.log('error: ', error)
                 message.error('Server internal error');
                 result = false;
             })
@@ -53,11 +55,42 @@ const AddPostTitleModal: FC<AddPostTitleModalProps> = ({ open, setOpenAddTitleMo
 
         return result;
     }
-
+    const handleDeletPostTitle = async (row: DataItem) => {
+        await dispatch(deletePostTitle(row.id)).then((response: any) => {
+            if (response?.payload?.data?.status?.success) {
+                message.success('Update certificate success!');
+                fetchPostTitleOption();
+            } else if (response?.payload?.statusCode === 401) {
+                SessionTimeOut();
+            } else {
+                message.error(response?.payload?.message);
+            }
+        })
+    }
+    const handlerSaveChange = async (row: DataItem) => {
+        const params = {
+            postCategoryDescription: row.postCategoryDescription,
+            postCategoryType: row.postCategoryType,
+            postCategoryId: row.id
+        }
+        await dispatch(updatePostTitle(params)).then((response: any) => {
+            if (response?.payload?.data?.status?.success) {
+                message.success('Update certificate success!');
+                fetchPostTitleOption();
+            } else if (response?.payload?.statusCode === 401) {
+                SessionTimeOut();
+            } else {
+                message.error(response?.payload?.message);
+            }
+        })
+    }
+    useEffect(() => {
+        setDataSource(data)
+    }, [data])
     return (
         <>
             <ModalForm
-                title="Add more post category"
+                title="Category management"
                 open={open}
                 onFinish={(value) => handleCreatePostTitle(value)}
                 onOpenChange={setOpenAddTitleModal}
@@ -70,36 +103,53 @@ const AddPostTitleModal: FC<AddPostTitleModalProps> = ({ open, setOpenAddTitleMo
                 width={1000}        >
                 <ProList<DataItem>
                     rowKey="id"
-                    headerTitle="List Document"
+                    headerTitle="List Category"
                     dataSource={dataSource}
-                    // editable={{ onDelete: async (rows) => { handleDeleteDocument(rows) } }}
+                    editable={{
+                        onDelete: async (rows, row) => {
+                            handleDeletPostTitle(row)
+                            setEditingDocumentId(null);
+                        },
+                        onSave: async (rows, row) => {
+                            handlerSaveChange(row);
+                            setEditingDocumentId(null);
+                        },
+                        onCancel: async () => {
+                            setEditingDocumentId(null);
+                        }
+                    }}
                     metas={{
                         title: {
                             dataIndex: 'postCategoryDescription',
-                            editable: false
                         },
                         description: {
                             dataIndex: 'postCategoryType',
-                            editable: false,
                         },
                         content: {
                             dataIndex: 'createAt',
+                            render: (rows, row) => (<span>{moment(row.creatAt).format(Formatter)}</span>),
                             editable: false
                         },
                         subTitle: {
                             render: (rows, row) => {
                                 return (
                                     <Space size={0}>
-                                        {row?.isActive ? <Tag color="blue">isActive</Tag> : <Tag color="red">unActive</Tag>}
+                                        {row?.isActive ? <Tag color="blue">isActive</Tag> : <Tag color="red">inActive</Tag>}
                                     </Space>
                                 );
                             },
+                            editable: false
                         },
                         actions: {
                             render: (text, row, index, action) => [
                                 <span
                                     onClick={() => {
-                                        action?.startEditable(row.id);
+                                        if (editingDocumentId === null) {
+                                            setEditingDocumentId(row.id);
+                                            action?.startEditable(row.id);
+                                        } else {
+                                            message.warning('Only one row can be edited at a time!');
+                                        }
                                     }}
                                     key="link"
                                 >

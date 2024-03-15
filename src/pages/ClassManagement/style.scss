@@ -1,0 +1,11 @@
+.ant-ribbon-wrapper {
+  border-radius: 5px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  .ant-pro-checkcard-actions {
+    border-radius: 5px;
+  }
+}
+.ant-ribbon-wrapper:hover {
+  box-shadow: rgba(46, 201, 240, 0.4) -5px 5px,
+    rgba(46, 227, 240, 0.3) -10px 10px;
+}

@@ -1,20 +1,18 @@
 import {
   AppBar,
   Box,
-  Breadcrumbs,
   styled,
   Theme,
   Toolbar,
-  useMediaQuery,
+  useMediaQuery
 } from "@mui/material";
+import { Space } from "antd";
 import { H2 } from "components/Typography";
 import { TitleContext } from "contexts/TitleContext";
 import UserInfo from "models/userInfor.model";
 import { FC, useContext } from "react";
-import { useLocation } from "react-router";
-import NotificationsPopover from "./popovers/NotificationsPopover";
+import { useLocation, useParams } from "react-router";
 import ProfilePopover from "./popovers/ProfilePopover";
-import ServicePopover from "./popovers/ServicePopover";
 // root component interface
 interface DashboardNavBarProps {
   setShowMobileSideBar: () => void;
@@ -57,6 +55,8 @@ const DashboardNavbar: FC<DashboardNavBarProps> = ({
   const upSm = useMediaQuery((theme: Theme) => theme.breakpoints.up("sm"));
   const downSm = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   const path = location.pathname
+  const { id } = useParams<{ id: string }>(); // Get the 'id' parameter from the URL
+
   const items = [
     {
       path: '/dashboard',
@@ -64,7 +64,7 @@ const DashboardNavbar: FC<DashboardNavBarProps> = ({
     },
     {
       path: '/dashboard/add-post',
-      title: 'Add Post',
+      title: 'Add Recruitment Post ',
     },
     {
       path: '/dashboard/user-profile',
@@ -72,18 +72,44 @@ const DashboardNavbar: FC<DashboardNavBarProps> = ({
     },
     {
       path: '/dashboard/user-list',
-      title: 'Collab List',
+      title: 'Collaborator Management',
     },
     {
       path: '/dashboard/post-list',
-      title: 'Post List',
+      title: 'Post Management',
     },
     {
       path: '/dashboard/registration-list',
-      title: 'Registration List',
+      title: 'Registration Management',
+    },
+    {
+      path: '/dashboard/contract-list',
+      title: 'Contract Management',
+    },
+    {
+      path: '/dashboard/add-contract',
+      title: 'Add Contract',
+    },
+    {
+      path: '/dashboard/certificate-list',
+      title: 'Certificate Management',
+    },
+    {
+      path: '/dashboard/application-list',
+      title: 'Application Management',
+    },
+    {
+      path: '/dashboard/room-list',
+      title: 'Room Management',
+    },
+    {
+      path: `/dashboard/certificate-list/${id}`,
+      title: 'Interview Registration',
+      pathBack: '/dashboard/certificate-list',
+      titleBack: 'Certificate Management'
     }
   ];
-  const last = items.find((item) => item.path === location.pathname)?.title
+  const last = items.find((item) => item.path === location.pathname)
 
   if (downSm) {
     return (
@@ -113,9 +139,10 @@ const DashboardNavbar: FC<DashboardNavBarProps> = ({
   return (
     <DashboardNavbarRoot position="sticky">
       <StyledToolBar>
-        <Breadcrumbs aria-label="breadcrumb">
-          <h2 style={{ color: "#F09101" }}>{last}</h2>
-        </Breadcrumbs>
+        <Space>
+          {last?.pathBack && <a href={last?.pathBack} style={{ color: "#F09101", fontSize: '20px' }}>{last?.titleBack} /</a>}
+          <a href={last?.path} style={{ color: "#F09101", fontSize: '20px' }}> {last?.title}</a>
+        </Space>
         <H2
           fontSize={21}
           lineHeight={0}
@@ -128,12 +155,6 @@ const DashboardNavbar: FC<DashboardNavBarProps> = ({
 
         <Box flexGrow={1} ml={1} />
 
-        {upSm && (
-          <>
-            <NotificationsPopover />
-            <ServicePopover />
-          </>
-        )}
         <ProfilePopover userInfo={userInfo} />
       </StyledToolBar>
     </DashboardNavbarRoot>

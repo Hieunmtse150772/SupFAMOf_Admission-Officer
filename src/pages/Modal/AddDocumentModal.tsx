@@ -8,11 +8,13 @@ import {
 import { unwrapResult } from '@reduxjs/toolkit';
 import { Space, Spin, Tag, message } from 'antd';
 import { useAppDispatch } from 'app/store';
-import { createDocument, deleteDocument } from 'features/documentSlice';
+import { createDocument, deleteDocument, updateDocument } from 'features/documentSlice';
 import DocumentCreated from 'models/document.model';
 import DocumentOptionI from 'models/documentOption.model';
-import { FC, useState } from 'react';
-import { upload } from '../../firebase';
+import moment from 'moment';
+import { FC, useEffect, useState } from 'react';
+import useSessionTimeOut from 'utils/useSessionTimeOut';
+import { uploadDocs } from '../../firebase';
 
 interface AddDocumentModalProps {
     open: boolean,
@@ -23,10 +25,16 @@ interface AddDocumentModalProps {
 
 const AddDocumentModal: FC<AddDocumentModalProps> = ({ open, setOpenAddDocumentModal, fetchDocumentOption, data }) => {
     type DataItem = (typeof data)[number];
-
+    const Formatter = 'YYYY-MM-DD'
     const [dataSource, setDataSource] = useState<DataItem[]>(data);
     const [isLoading, setLoading] = useState<boolean>(false);
     const [url, setUrl] = useState<string>('');
+    const [editingDocumentId, setEditingDocumentId] = useState<number | null>(null);
+    const [fileDocs, setfileDocs] = useState<any>('');
+    const [fileDocsUpdate, setfileDocsUpdate] = useState<any>('');
+    const [form] = ProForm.useForm();
+    const { SessionTimeOut } = useSessionTimeOut();
+
     const dispatch = useAppDispatch();
     const handleDeleteDocument = async (id: any) => {
         const result = await dispatch(deleteDocument(id)).then((response) => {
@@ -34,39 +42,65 @@ const AddDocumentModal: FC<AddDocumentModalProps> = ({ open, setOpenAddDocumentM
             if (result2.status === 200) {
                 fetchDocumentOption();
                 message.success('Delete success!');
+            } else if (result2.status === 401) {
+                SessionTimeOut();
             }
         }
         ).catch((error) => {
-            console.log('error: ', error)
             message.error(error);
         })
     }
-    const handleCreateDocument = async (value: any) => {
-        console.log('value: ', value)
-
-        const payload: DocumentCreated = {
-            docName: value?.documentName,
-            docUrl: url
+    const handlerSaveChange = async (row: DataItem) => {
+        try {
+            const url = await uploadDocs(fileDocsUpdate, setLoading)
+            const params = {
+                docName: row.docName,
+                docUrl: fileDocsUpdate === '' ? row.docUrl : url,
+                documentId: row.id
+            }
+            await dispatch(updateDocument(params)).then((response: any) => {
+                if (response?.payload?.data?.status?.success) {
+                    message.success('Update certificate success!');
+                    fetchDocumentOption();
+                } else if (response?.payload?.statusCode === 401) {
+                    SessionTimeOut();
+                } else {
+                    message.error(response?.payload?.message);
+                }
+            })
+        } catch (error) {
+            message.error('Update document fail!');
         }
+
+    }
+    useEffect(() => { }, [editingDocumentId])
+    const handleCreateDocument = async (value: any) => {
         let result = false;
         try {
+            setLoading(true);
+            const url = await uploadDocs(fileDocs, setLoading)
+            const payload: DocumentCreated = {
+                docName: value?.documentName,
+                docUrl: url
+            }
             await dispatch(createDocument(payload)).then((response) => {
-                console.log('response111: ', response.meta.requestStatus)
                 const result2 = unwrapResult(response);
-                console.log('first: ', result2)
                 if (result2.status === 200) {
                     fetchDocumentOption();
                     message.success('Add Document success!');
                     result = true;
-                }
+                    setLoading(false);
+                } else if (result2.status === 401) {
+                    SessionTimeOut()
+                };
             }
             ).catch((error) => {
-                console.log('error: ', error)
                 message.error(error);
+                setLoading(false);
                 result = false;
             })
         } catch (error) {
-            message.error('Add position title fail!');
+            message.error('Add documents fail!');
             result = false;
         }
 
@@ -74,18 +108,40 @@ const AddDocumentModal: FC<AddDocumentModalProps> = ({ open, setOpenAddDocumentM
     }
     const customRequest = async ({ file, onSuccess, onError }: any) => {
         try {
-            await upload(file, setLoading, setUrl); // Gọi hàm upload của bạn
+            setTimeout(() => {
+                setfileDocs(file);
+                onSuccess();
+            }, 2000);
             onSuccess();
         } catch (error) {
             console.error('Lỗi khi tải lên tệp:', error);
             onError(error);
         }
     };
+    const customRequest2 = async ({ file, onSuccess, onError }: any) => {
+        try {
+            setTimeout(() => {
+                setfileDocsUpdate(file);
+                onSuccess();
+            }, 2000);
+            onSuccess();
+        } catch (error) {
+            console.error('Lỗi khi tải lên tệp:', error);
+            onError(error);
+        }
+    };
+    const handleRemoveDocs = () => {
+        setfileDocs('')
+    }
+    useEffect(() => {
+        setDataSource(data)
+    }, [data])
     return (
         <>
             <Spin spinning={isLoading} tip="Loading...">
                 <ModalForm
-                    title="Document Management"
+                    form={form}
+                    title="Document management"
                     open={open}
                     onFinish={(value) => handleCreateDocument(value)}
                     onOpenChange={setOpenAddDocumentModal}
@@ -100,39 +156,75 @@ const AddDocumentModal: FC<AddDocumentModalProps> = ({ open, setOpenAddDocumentM
                         rowKey="id"
                         headerTitle="List Document"
                         dataSource={dataSource}
-                        editable={{ onDelete: async (rows) => { handleDeleteDocument(rows) } }}
+                        editable={{
+                            onDelete: async (rows) => { handleDeleteDocument(rows) }, onCancel: async (rows) => {
+                                setEditingDocumentId(null);
+                                setfileDocsUpdate('');
+                                form.setFieldsValue({ uploadUpdate: null }); // Reset the value of uploadUpdate field to null
+                                form.resetFields()
+                            }, onSave: async (rows, row) => {
+                                handlerSaveChange(row);
+                                setEditingDocumentId(null)
+                                setfileDocsUpdate('');
+                                form.resetFields() // Reset the value of uploadUpdate field to null
+
+                            },
+                        }}
+
                         metas={{
                             title: {
                                 dataIndex: 'docName',
-                                editable: false
                             },
                             description: {
                                 dataIndex: 'docUrl',
-                                editable: false,
-                                render: (value, doc) => (<a href={doc.docUrl}>
-                                    {value}
-                                </a>)
+                                render: (value, doc) => {
+                                    const isEditing = doc.id === editingDocumentId; // Assume 'editingDocumentId' holds the ID of the currently edited document
+                                    return isEditing ? (
+                                        <ProForm.Group>
+                                            <ProFormUploadButton
+                                                name="uploadUpdate"
+                                                label="Upload Document"
+                                                max={1}
+                                                fieldProps={{
+                                                    name: 'add file',
+                                                    customRequest: customRequest2
+                                                }}
+                                                title="Upload"
+                                                width="md"
+                                            />
+                                        </ProForm.Group>
+                                    ) : (
+                                        <a href={doc.docUrl}>Document link</a>
+                                    );
+                                },
+                                editable: false
                             },
                             content: {
                                 dataIndex: 'createAt',
+                                render: (rows, row) => (<span>{moment(row.createAt).format(Formatter)}</span>),
                                 editable: false
                             },
                             subTitle: {
                                 render: (rows, row) => {
                                     return (
                                         <Space size={0}>
-                                            {row?.isActive ? <Tag color="blue">isActive</Tag> : <Tag color="red">unActive</Tag>}
+                                            {row?.isActive ? <Tag color="blue">isActive</Tag> : <Tag color="red">inActive</Tag>}
                                         </Space>
                                     );
                                 },
+                                editable: false
                             },
                             actions: {
                                 render: (text, row, index, action) => [
                                     <span
                                         onClick={() => {
-                                            action?.startEditable(row.id);
+                                            if (editingDocumentId === null) {
+                                                setEditingDocumentId(row.id);
+                                                action?.startEditable(row.id);
+                                            } else {
+                                                message.warning('Only one row can be edited at a time!');
+                                            }
                                         }}
-                                        key="link"
                                     >
                                         Edit
                                     </span>,
@@ -161,7 +253,8 @@ const AddDocumentModal: FC<AddDocumentModalProps> = ({ open, setOpenAddDocumentM
                             max={1}
                             fieldProps={{
                                 name: 'add file',
-                                customRequest: customRequest
+                                customRequest: customRequest,
+                                onRemove: handleRemoveDocs
                             }}
                             title="Upload"
                             width="md"
@@ -171,7 +264,7 @@ const AddDocumentModal: FC<AddDocumentModalProps> = ({ open, setOpenAddDocumentM
 
                     </ProForm.Group>
                 </ModalForm>
-            </Spin>
+            </Spin >
         </>
     );
 };

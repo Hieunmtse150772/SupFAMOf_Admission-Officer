@@ -7,43 +7,47 @@ import {
 import { unwrapResult } from '@reduxjs/toolkit';
 import { Space, Tag, message } from 'antd';
 import { useAppDispatch } from 'app/store';
-import { createCertificate } from 'features/certificateSlice';
+import { createCertificate, deleteCertificate, updateCertificate } from 'features/certificateSlice';
 import CertificateCreated from 'models/certificate.model';
 import CertificateOptionI from 'models/certificateOption.model';
-import { FC, useState } from 'react';
+import moment from 'moment';
+import { FC, useEffect, useState } from 'react';
+import useSessionTimeOut from 'utils/useSessionTimeOut';
 
 interface AddCertificateModalProps {
     open: boolean,
     setOpenCertificateModal: React.Dispatch<React.SetStateAction<boolean>>,
     fetchCertificateOption: () => void,
-    data: CertificateOptionI[]
+    data: CertificateOptionI[],
+    fetchCertificateRegistration: () => void
 }
-const AddCertificateModal: FC<AddCertificateModalProps> = ({ open, setOpenCertificateModal, fetchCertificateOption, data }) => {
-    console.log('con c', open)
+const AddCertificateModal: FC<AddCertificateModalProps> = ({ open, setOpenCertificateModal, fetchCertificateOption, data, fetchCertificateRegistration }) => {
+    const Formatter = 'YYYY-MM-DD';
     const dispatch = useAppDispatch();
+    const { SessionTimeOut } = useSessionTimeOut();
     type DataItem = (typeof data)[number];
     const [dataSource, setDataSource] = useState<DataItem[]>(data);
-
+    const [editingDocumentId, setEditingDocumentId] = useState<number | null>(null);
 
     const handleCreatePostTitle = async (value: any) => {
         const payload: CertificateCreated = {
-            trainingTypeId: value?.postTitleDescription,
-            certificateName: value?.postTitleType
+            trainingTypeId: value?.trainingTypeId,
+            certificateName: value?.certificateName,
         }
         let result = false;
         try {
-            await dispatch(createCertificate(payload)).then((response) => {
-                console.log('response111: ', response.meta.requestStatus)
+            await dispatch(createCertificate(payload)).then((response: any) => {
                 const result2 = unwrapResult(response);
-                console.log('first: ', result2)
                 if (result2.status === 200) {
                     fetchCertificateOption();
+                    fetchCertificateRegistration();
                     message.success('Add certificate success!');
                     result = true;
+                } else if (response?.payload?.statusCode === 401) {
+                    SessionTimeOut();
                 }
             }
             ).catch((error) => {
-                console.log('error: ', error)
                 message.error(error);
                 result = false;
             })
@@ -54,11 +58,45 @@ const AddCertificateModal: FC<AddCertificateModalProps> = ({ open, setOpenCertif
 
         return result;
     }
-
+    const handleDeleteCertificate = async (row: DataItem) => {
+        const result = await dispatch(deleteCertificate(row.id))
+        const response = unwrapResult(result)
+        if (response.data.status?.success) {
+            message.success(response.data.status?.message);
+            fetchCertificateOption();
+            fetchCertificateRegistration();
+        } else if (response?.data?.status?.errorCode === 401) {
+            SessionTimeOut();
+        } else {
+            message.error(response.data.status?.message);
+        }
+    }
+    const handlerSaveChange = async (row: DataItem) => {
+        const params = {
+            trainingTypeId: row.trainingTypeId,
+            certificateName: row?.certificateName,
+            trainingCertificateId: row?.id
+        }
+        await dispatch(updateCertificate(params)).then((response: any) => {
+            if (response?.payload?.data?.status?.success) {
+                message.success('Update certificate success!');
+                fetchCertificateOption();
+            } else if (response?.payload?.statusCode === 401) {
+                SessionTimeOut();
+            } else {
+                message.error(response?.payload?.message)
+            }
+        }).catch((error) => {
+            console.log("Error in getting the data", error)
+        })
+    }
+    useEffect(() => {
+        setDataSource(data)
+    }, [data])
     return (
         <>
             <ModalForm
-                title="Add more post category"
+                title="Certificate management"
                 open={open}
                 onFinish={(value) => handleCreatePostTitle(value)}
                 onOpenChange={setOpenCertificateModal}
@@ -72,36 +110,53 @@ const AddCertificateModal: FC<AddCertificateModalProps> = ({ open, setOpenCertif
             >
                 <ProList<DataItem>
                     rowKey="id"
-                    headerTitle="List Document"
+                    headerTitle="List Certificate"
                     dataSource={dataSource}
-                    // editable={{ onDelete: async (rows) => { handleDeleteDocument(rows) } }}
+                    editable={{
+                        onDelete: async (rows, row) => {
+                            setEditingDocumentId(null);
+                            handleDeleteCertificate(row);
+                        },
+                        onSave: async (rows, row) => {
+                            setEditingDocumentId(null);
+                            handlerSaveChange(row);
+                        },
+                        onCancel: async (rows) => {
+                            setEditingDocumentId(null);
+                        },
+                    }}
                     metas={{
                         title: {
                             dataIndex: 'certificateName',
-                            editable: false
                         },
                         description: {
                             dataIndex: 'trainingTypeId',
-                            editable: false
                         },
                         content: {
                             dataIndex: 'createAt',
+                            render: (rows, row) => (<span>{moment(row.createAt).format(Formatter)}</span>),
                             editable: false
                         },
                         subTitle: {
                             render: (rows, row) => {
                                 return (
                                     <Space size={0}>
-                                        {row?.isActive ? <Tag color="blue">isActive</Tag> : <Tag color="red">unActive</Tag>}
+                                        {row?.isActive ? <Tag color="blue">isActive</Tag> : <Tag color="red">inActive</Tag>}
                                     </Space>
                                 );
                             },
+                            editable: false
                         },
                         actions: {
                             render: (text, row, index, action) => [
                                 <span
                                     onClick={() => {
-                                        action?.startEditable(row.id);
+                                        if (editingDocumentId === null) {
+                                            setEditingDocumentId(row.id);
+                                            action?.startEditable(row.id);
+                                        } else {
+                                            message.warning('Only one row can be edited at a time!');
+                                        }
                                     }}
                                     key="link"
                                 >

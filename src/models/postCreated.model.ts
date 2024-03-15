@@ -12,22 +12,50 @@ type PostCreated = {
     postPositions: PositionCreatedI[],
 }
 export type PostUpdated = {
+    dateFrom: string,
+    dateTo: string
     postId: number,
     postCategoryId: number,
     postDescription: string,
+    priority: number,
+    isPremium: boolean,
     postImg: string,
-    postPositions: [
-        {
-            id: number,
-            positionName: string,
-            schoolName: string,
-            location: string,
-            latitude: number,
-            longtitude: number,
-            amount: number,
-            salary: number
-        }
-    ]
+    postPositions: PositionUpdated[]
+}
+export type PositionUpdated = {
+    id: number;
+    positionDescription: string,
+    positionName: string,
+    schoolName: string,
+    location: string,
+    latitude: number,
+    longitude: number,
+    amount: number,
+    salary: number,
+    trainingCertificateId: number,
+    isBusService: boolean,
+    documentId: number,
+    date: string,
+    timeFrom: Date,
+    timeTo: Date,
+}
+export type PositionAddNewUpdated = {
+    id: number;
+    positionDescription: string,
+    positionName: string,
+    schoolName: string,
+    location: string,
+    latitude: number,
+    longitude: number,
+    amount: number,
+    salary: number,
+    trainingCertificateId: number,
+    isBusService: boolean,
+    documentId: number,
+    date: string,
+    timeFrom: Date,
+    timeTo: Date,
+
 }
 export type PositionCreatedI = {
     positionName: string,
@@ -50,6 +78,7 @@ export type PostCreatedV2 = {
     postPositions: PositionCreatedV2I[],
 }
 export type PositionCreatedV2I = {
+    date: string,
     trainingCertificateId: number,
     documentId: number,
     positionName: string,

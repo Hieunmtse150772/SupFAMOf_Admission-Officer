@@ -1,12 +1,18 @@
 import {
   PostAdd as AddPostIcon,
+  AddToPhotosOutlined,
   PersonAdd as AddUserIcon,
+  Assignment,
+  ClassOutlined,
   DocumentScannerOutlined as DocumentIcon,
   Login as LoginIcon,
+  Map as MapIcon,
+  MessageOutlined as MessageIcon,
   LocalPostOffice as PostList,
   AppRegistration as RegistrationList,
   GridView as UserGridIcon
 } from "@mui/icons-material";
+import SchoolIcon from '@mui/icons-material/School';
 import DashboardIcon from "./Dashboard";
 import SessionsIcon from "./Sessions";
 import UserManagementIcon from "./UserManagement";
@@ -25,5 +31,11 @@ export default {
   UserProfileIcon,
   UserManagementIcon,
   RegistrationList,
-  DocumentIcon
+  DocumentIcon,
+  MapIcon,
+  AddToPhotosOutlined,
+  Assignment,
+  SchoolIcon,
+  ClassOutlined,
+  MessageIcon
 };

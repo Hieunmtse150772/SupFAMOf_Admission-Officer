@@ -3,7 +3,10 @@ type CertificateOptionI = {
     trainingTypeId: string,
     certificateName: string,
     isActive: boolean,
+    status: number,
     createAt: Date,
-    updateAt: Date
+    updateAt: Date,
+    actions: any[],
+    avatar: any
 }
 export default CertificateOptionI;

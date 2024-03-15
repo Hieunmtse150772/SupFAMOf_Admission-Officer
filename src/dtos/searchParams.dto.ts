@@ -1,6 +1,9 @@
 export default interface SearchParamsDto {
     page?: number;
     PageSize?: number;
-    sort?: string;
-    status?: number;
+    Sort?: string;
+    Status?: number | null;
+    Order?: string;
+    class?: string,
+    date?: Date
 }
