@@ -5,8 +5,8 @@
   "type": "module",
   "dependencies": {
     "@ant-design/icons": "^5.2.6",
-    "@ant-design/pro-components": "^2.6.16",
-    "@ant-design/pro-layout": "^7.16.13",
+    "@ant-design/pro-components": "^2.7.18",
+    "@ant-design/pro-layout": "^7.20.1",
     "@emotion/react": "11.9.0",
     "@emotion/styled": "11.8.1",
     "@mui/icons-material": "5.8.2",
